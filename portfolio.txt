@@ -1,0 +1,62 @@
+# Arnav Verma
+
+**Computer Science & Artificial Intelligence Undergraduate | Builder & Product Enthusiast**
+
+📍 Faridabad, Haryana, India
+
+🔗 [GitHub](https://www.google.com/search?q=https://github.com/Shadow4335) | [LinkedIn](https://www.google.com/search?q=https://linkedin.com/in/arnav-verma-51b5b1391)
+
+---
+
+### About Me
+
+I am a Computer Science & Artificial Intelligence undergraduate at Newton School of Technology & Rishihood University, focused on building impactful software, scalable system architectures, and user-centric products. My work spans dynamic forecasting models, AI-assisted civic solutions, and product teardowns. Whether competing in fast-paced national hackathons or analyzing consumer tech platforms, I bridge the gap between technical execution and strategic product thinking.
+
+---
+
+### Core Competencies & Tooling
+
+* **Frontend & Prototyping:** HTML5, CSS3, Google Stitch, Rapid Prototyping
+* **Development & Acceleration:** Antigravity, GitHub Copilot, Git/GitHub, System Architecture Modeling
+* **Product & Strategy:** Product Teardowns, MVP Scoping, Feature Viability, Regulatory Compliance Research (ASCI & CCPA Guidelines)
+* **Design & CAD:** Onshape 3D CAD
+
+---
+
+### Featured Projects & Hackathon Work
+
+* **Dynamic Train ETA Forecasting System | Smart India Hackathon**
+* Architected end-to-end system blueprints and dynamic delay prediction models tailored for Indian Railways.
+* Designed intuitive UI prompt flows and dynamic visualization wireframes for passenger delay communication.
+
+
+* **BrandGuard | Brand Governance & Compliance Platform**
+* Conceptualized an automated pre-publication governance engine designed to audit brand assets against advertising standards.
+* Researched and integrated regulatory constraints based on ASCI rulings and Consumer Protection (CCPA) frameworks.
+
+
+* **AI Emergency Coordinator MVP**
+* Scoped core MVP feature architecture and formulated the product viability model for an automated crisis response coordinator.
+
+
+* **Product Teardown: Blinkit vs. Zepto**
+* Authored a comparative product and UX analysis evaluating quick-commerce delivery mechanics, dark store routing, and user retention hooks.
+
+
+
+---
+
+### Campus Leadership & Affiliations
+
+* **Active Member**, Society for Aerospace and Space Technologies
+* **Active Member**, Product and Consulting Club
+
+---
+
+### Quick Bio Snippets *(Ready for Portfolio Cards / Hero Banners)*
+
+> **Short (Hero Subtitle):**
+> First-year CS & AI student passionate about predictive modeling, AI products, and building practical technology that scales.
+
+> **Full Bio (About Section):**
+> Computer Science & AI undergraduate at Newton School of Technology & Rishihood University. Active hackathon builder, aerospace tech enthusiast, and product thinker exploring the intersection of intelligent systems, regulatory tech, and everyday utility.
