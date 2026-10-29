@@ -1511,6 +1511,102 @@
       .intro-bar span:last-child { display: none; }
     }
 
+    /* =========================================================
+       CUSTOM CURSOR — positions come from the small script at the
+       end of <body>; everything visual lives here. Only active on
+       mouse/trackpad devices (html.has-cursor).
+    ========================================================= */
+    .cursor-dot,
+    .cursor-ring,
+    .cursor-glow {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      display: none;
+      will-change: transform;
+    }
+
+    .has-cursor .cursor-dot,
+    .has-cursor .cursor-ring,
+    .has-cursor .cursor-glow { display: block; }
+
+    .has-cursor body,
+    .has-cursor a,
+    .has-cursor label,
+    .has-cursor button { cursor: none; }
+
+    .cursor-dot {
+      z-index: 2001;
+      width: 6px;
+      height: 6px;
+      margin: -3px 0 0 -3px;
+      border-radius: 50%;
+      background: #fff;
+      transition: opacity 0.2s ease, scale 0.25s var(--ease-out);
+    }
+
+    .cursor-ring {
+      z-index: 2000;
+      width: 36px;
+      height: 36px;
+      margin: -18px 0 0 -18px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(96 165 250 / 0.7);
+      transition:
+        scale 0.35s var(--ease-out),
+        background 0.3s ease,
+        border-color 0.3s ease,
+        opacity 0.2s ease;
+    }
+
+    .cursor-glow {
+      z-index: -1; /* sits under page content */
+      width: 520px;
+      height: 520px;
+      margin: -260px 0 0 -260px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(59 130 246 / 0.10) 0%, rgba(139 92 246 / 0.05) 40%, transparent 70%);
+      transition: opacity 0.4s ease;
+    }
+
+    /* Over links and buttons: ring grows and fills, dot shrinks */
+    .cursor-link .cursor-ring {
+      scale: 1.7;
+      background: rgba(59 130 246 / 0.12);
+      border-color: var(--color-accent-light);
+    }
+
+    .cursor-link .cursor-dot { scale: 0.4; }
+
+    /* Over cards: ring expands softly */
+    .cursor-card .cursor-ring {
+      scale: 2.4;
+      border-color: rgba(139 92 246 / 0.5);
+      background: rgba(139 92 246 / 0.06);
+    }
+
+    .cursor-down .cursor-ring { scale: 0.75; }
+
+    .cursor-hidden .cursor-dot,
+    .cursor-hidden .cursor-ring,
+    .cursor-hidden .cursor-glow { opacity: 0; }
+
+    /* Spotlight that follows the cursor inside cards */
+    .has-cursor .project-card,
+    .has-cursor .skill-card,
+    .has-cursor .stat-card,
+    .has-cursor .leadership-item {
+      background-image: radial-gradient(
+        320px circle at var(--mx, -999px) var(--my, -999px),
+        rgba(96 165 250 / 0.12),
+        transparent 60%
+      );
+    }
+
+    /* Buttons lean slightly toward the cursor */
+    .btn { transition: transform var(--transition), box-shadow var(--transition), background var(--transition), translate 0.3s var(--ease-out); }
+
     @media (prefers-reduced-motion: reduce) {
       :root { --intro: 0s; }
       .intro, .skip-input { display: none; }
@@ -2149,6 +2245,77 @@
       </nav>
     </div>
   </footer>
+
+  <!-- Custom cursor (styles in CSS; script below only feeds positions) -->
+  <div class="cursor-glow" aria-hidden="true"></div>
+  <div class="cursor-ring" aria-hidden="true"></div>
+  <div class="cursor-dot" aria-hidden="true"></div>
+
+  <script>
+    (function () {
+      // Mouse/trackpad only, and respect reduced-motion settings
+      if (!matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      var root = document.documentElement;
+      var dot = document.querySelector('.cursor-dot');
+      var ring = document.querySelector('.cursor-ring');
+      var glow = document.querySelector('.cursor-glow');
+      var LINKS = 'a, button, label, .btn';
+      var CARDS = '.project-card, .skill-card, .stat-card, .leadership-item';
+
+      var mx = innerWidth / 2, my = innerHeight / 2; // pointer
+      var rx = mx, ry = my, gx = mx, gy = my;        // eased followers
+
+      root.classList.add('has-cursor', 'cursor-hidden');
+
+      addEventListener('mousemove', function (e) {
+        mx = e.clientX;
+        my = e.clientY;
+        root.classList.remove('cursor-hidden');
+        dot.style.transform = 'translate(' + mx + 'px,' + my + 'px)';
+
+        var link = e.target.closest(LINKS);
+        var card = e.target.closest(CARDS);
+        root.classList.toggle('cursor-link', !!link);
+        root.classList.toggle('cursor-card', !link && !!card);
+
+        // Feed the card spotlight its local coordinates
+        if (card) {
+          var r = card.getBoundingClientRect();
+          card.style.setProperty('--mx', (mx - r.left) + 'px');
+          card.style.setProperty('--my', (my - r.top) + 'px');
+        }
+
+        // Buttons lean a few pixels toward the pointer
+        var btn = e.target.closest('.btn');
+        document.querySelectorAll('.btn').forEach(function (b) {
+          if (b !== btn) b.style.translate = '';
+        });
+        if (btn) {
+          var b = btn.getBoundingClientRect();
+          btn.style.translate =
+            ((mx - b.left - b.width / 2) * 0.2) + 'px ' +
+            ((my - b.top - b.height / 2) * 0.3) + 'px';
+        }
+      });
+
+      document.addEventListener('mouseleave', function () { root.classList.add('cursor-hidden'); });
+      addEventListener('mousedown', function () { root.classList.add('cursor-down'); });
+      addEventListener('mouseup', function () { root.classList.remove('cursor-down'); });
+
+      // Ring and glow ease toward the pointer every frame
+      (function follow() {
+        rx += (mx - rx) * 0.18;
+        ry += (my - ry) * 0.18;
+        gx += (mx - gx) * 0.08;
+        gy += (my - gy) * 0.08;
+        ring.style.transform = 'translate(' + rx + 'px,' + ry + 'px)';
+        glow.style.transform = 'translate(' + gx + 'px,' + gy + 'px)';
+        requestAnimationFrame(follow);
+      })();
+    })();
+  </script>
 
 </body>
 </html>
