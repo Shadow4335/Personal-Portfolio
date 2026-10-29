@@ -1481,24 +1481,6 @@
       to   { opacity: 1; transform: none;               filter: blur(0); }
     }
 
-    /* Big loading counter, bottom-right */
-    .intro-count {
-      --to: 100;
-      position: absolute;
-      right: 1.5rem;
-      bottom: 1rem;
-      font-family: var(--font-base);
-      font-size: clamp(4.5rem, 16vw, 11rem);
-      font-weight: 900;
-      letter-spacing: -0.06em;
-      line-height: 1;
-      color: rgba(248 250 252 / 0.92);
-      counter-reset: num var(--num);
-      animation: count-up 4.9s cubic-bezier(0.45, 0, 0.2, 1) 0.1s both;
-    }
-
-    .intro-count::before { content: counter(num); }
-
     .intro-skip {
       position: absolute;
       left: 1.5rem;
@@ -1669,7 +1651,6 @@
       </ul>
     </div>
 
-    <div class="intro-count"></div>
     <label for="skip-intro" class="intro-skip">Skip intro →</label>
   </div>
 
