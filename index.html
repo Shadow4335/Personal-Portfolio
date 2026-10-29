@@ -954,6 +954,73 @@
     .back-to-top:hover span { transform: translateY(-3px); }
 
     /* =========================================================
+       SKILLS BANNER — two marquee rows scrolling in opposite directions
+    ========================================================= */
+    .marquee {
+      border-top: 1px solid var(--color-border);
+      padding-block: 2rem;
+      overflow: hidden;
+      display: grid;
+      gap: 0.6rem;
+      -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+      mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+    }
+
+    .marquee-track {
+      display: flex;
+      width: max-content;
+      animation: marquee 38s linear infinite;
+    }
+
+    .marquee-track--reverse { animation-direction: reverse; animation-duration: 46s; }
+
+    .marquee:hover .marquee-track { animation-play-state: paused; }
+
+    .marquee-group {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .marquee-item {
+      font-family: var(--font-display);
+      font-stretch: 125%;
+      font-size: clamp(1.5rem, 3.6vw, 2.75rem);
+      font-weight: 600;
+      color: var(--color-heading);
+      white-space: nowrap;
+      padding-inline: 1.25rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 2.5rem;
+    }
+
+    /* Amber diamond separator, drawn in CSS */
+    .marquee-item::after {
+      content: '';
+      width: 0.28em;
+      height: 0.28em;
+      border: 2px solid var(--color-amber);
+      transform: rotate(45deg);
+      box-shadow: 0 0 10px rgba(242 169 59 / 0.35);
+    }
+
+    .marquee-track--reverse .marquee-item {
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(199 204 214 / 0.35);
+    }
+
+    .marquee-track--reverse .marquee-item::after {
+      border-width: 1px;
+      border-color: rgba(108 198 230 / 0.6);
+      box-shadow: none;
+    }
+
+    @keyframes marquee {
+      to { transform: translateX(-50%); }
+    }
+
+    /* =========================================================
        MOTION HELPERS
     ========================================================= */
     @keyframes fade-up {
@@ -1231,29 +1298,6 @@
       border-color: var(--color-border-hover);
     }
 
-    .nm-readout {
-      display: grid;
-      gap: 1.1rem;
-      padding: 1.25rem;
-      border: 1px solid var(--color-border);
-      background: var(--gradient-card-top), var(--color-bg-card);
-      clip-path: polygon(var(--chamfer) 0, 100% 0, 100% calc(100% - var(--chamfer)), calc(100% - var(--chamfer)) 100%, 0 100%, 0 var(--chamfer));
-    }
-
-    .nm-group .skill-title {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      margin-bottom: 0.5rem;
-      font-size: 0.875rem;
-    }
-
-    .nm-group .hud-icon {
-      width: 22px;
-      height: 22px;
-      flex-shrink: 0;
-    }
-
     .nm-hint {
       font-family: var(--font-mono);
       font-size: 0.6875rem;
@@ -1519,12 +1563,6 @@
     .neural:has(#nm-cad:checked)   .nm-hub:not(.nm-hub--cad),
     .neural:has(#nm-ai:checked)    .nm-hub:not(.nm-hub--ai) { --dim: 0.12; }
 
-    /* Readout follows the filter */
-    .neural:has(#nm-front:checked) .nm-group:not(.nm-group--front),
-    .neural:has(#nm-dev:checked)   .nm-group:not(.nm-group--dev),
-    .neural:has(#nm-prod:checked)  .nm-group:not(.nm-group--prod),
-    .neural:has(#nm-cad:checked)   .nm-group:not(.nm-group--cad),
-    .neural:has(#nm-ai:checked)    .nm-group:not(.nm-group--ai) { opacity: 0.28; }
 
     /* Active filter button */
     #nm-all:checked   ~ .nm-panel label[for="nm-all"],
@@ -1974,101 +2012,296 @@
     }
 
     /* =========================================================
-       NEURAL MAP — fitted to the instrument-panel design
+       NEURAL MAP — constellation styling + systems index
        (the 3D engine above is unchanged; this only restyles it)
     ========================================================= */
     .neural {
-      grid-template-columns: minmax(0, 1fr);
-      gap: 1rem;
+      --r1: clamp(96px, 15vw, 172px);
+      --r2: clamp(52px, 7.5vw, 92px);
+      grid-template-columns: minmax(0, 1fr) minmax(0, 21rem);
+      gap: 1.5rem;
+      animation-duration: 80s;
     }
 
-    .nm-panel { flex-direction: row; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
-
-    .nm-filters label {
-      clip-path: none;
-      font-size: 0.625rem;
-      letter-spacing: 0.12em;
-      border-color: var(--color-border-strong);
-      background: transparent;
-    }
-
-    .nm-filters label span { color: var(--color-amber); }
-
-    #nm-all:checked   ~ .nm-panel label[for="nm-all"],
-    #nm-front:checked ~ .nm-panel label[for="nm-front"],
-    #nm-dev:checked   ~ .nm-panel label[for="nm-dev"],
-    #nm-prod:checked  ~ .nm-panel label[for="nm-prod"],
-    #nm-cad:checked   ~ .nm-panel label[for="nm-cad"],
-    #nm-ai:checked    ~ .nm-panel label[for="nm-ai"] {
-      background: var(--color-amber);
-      border-color: var(--color-amber);
-    }
-
-    .nm-hint::before { color: var(--color-amber); }
-
+    /* ── Stage: quiet instrument panel ── */
     .nm-stage {
-      min-height: 32rem;
+      order: -1;
+      min-height: 33rem;
       clip-path: none;
       border-color: var(--color-border);
       background:
-        linear-gradient(rgba(255 255 255 / 0.05), rgba(255 255 255 / 0.05)) center / 100% 1px no-repeat,
-        linear-gradient(rgba(255 255 255 / 0.05), rgba(255 255 255 / 0.05)) center / 1px 100% no-repeat,
-        radial-gradient(circle at 50% 50%, rgba(108 198 230 / 0.08), transparent 55%),
-        linear-gradient(rgba(255 255 255 / 0.025) 1px, transparent 1px) 0 0 / 32px 32px,
-        linear-gradient(90deg, rgba(255 255 255 / 0.025) 1px, transparent 1px) 0 0 / 32px 32px,
+        radial-gradient(circle at 50% 50%, rgba(108 198 230 / 0.06), transparent 50%),
+        radial-gradient(rgba(255 255 255 / 0.05) 1px, transparent 1px) 0 0 / 24px 24px,
         var(--color-panel);
     }
 
-    /* Hubs read as amber category headers, like the table below */
+    .nm-stage::before {
+      content: 'Skill graph · 21 nodes';
+      top: 1.1rem;
+      left: 1.25rem;
+      font-size: 0.625rem;
+      letter-spacing: 0.14em;
+    }
+
+    .nm-stage::after {
+      content: 'Drag to rotate';
+      bottom: 1.1rem;
+      left: 1.25rem;
+      right: auto;
+      font-size: 0.625rem;
+      letter-spacing: 0.14em;
+      color: var(--color-text-muted);
+    }
+
+    .nm-ring {
+      border: 1px solid rgba(255 255 255 / 0.06);
+      left: calc(var(--r1) * -1.05);
+      top: calc(var(--r1) * -1.05);
+      width: calc(var(--r1) * 2.1);
+      height: calc(var(--r1) * 2.1);
+    }
+
+    /* ── Links: hairlines, signal only on core → hub ── */
+    .nm-link { --alpha: calc(0.32 * var(--dim)); }
+    .nm-link--leaf { --alpha: calc(0.16 * var(--dim)); }
+
+    .nm-link,
+    .nm-link::after { animation-duration: 4.5s; }
+
+    .nm-link--leaf,
+    .nm-link--leaf::after {
+      animation: none;
+      background: linear-gradient(90deg, rgba(255 255 255 / calc(var(--alpha) * 0.5)), rgba(255 255 255 / var(--alpha)));
+    }
+
+    /* ── Core: small and calm ── */
+    .nm-node--core .nm-label {
+      width: 3.6rem;
+      height: 3.6rem;
+      font-size: 0.625rem;
+      letter-spacing: 0.2em;
+      border-color: rgba(255 255 255 / 0.18);
+      background: radial-gradient(circle at 40% 35%, #2a303c, #0c1018 70%);
+      box-shadow: 0 0 30px rgba(108 198 230 / 0.12);
+      animation: none;
+    }
+
+    .nm-node--core small { display: none; }
+
+    /* ── Hubs: amber captions with a ring marker ── */
     .nm-node--hub .nm-label {
       clip-path: none;
-      color: var(--color-amber);
-      border-color: rgba(242 169 59 / 0.55);
-      box-shadow: 0 0 18px rgba(242 169 59 / 0.15);
-    }
-
-    .nm-node--hub .hud-icon { color: var(--color-amber); }
-    .nm-label { background: rgba(7 8 12 / 0.85); border-color: rgba(255 255 255 / 0.16); }
-
-    /* Systems table (the map's readout) */
-    .nm-readout {
-      display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 0;
+      gap: 0.5rem;
       padding: 0;
-      clip-path: none;
-      background: var(--color-panel);
-      border: 1px solid var(--color-border);
-    }
-
-    .nm-group {
-      padding: 1.25rem 1.1rem 1.4rem;
-      transition: opacity 0.4s ease, background 0.4s ease;
-    }
-
-    .nm-group + .nm-group { border-left: 1px solid var(--color-border); }
-
-    .nm-group h3 {
-      font-family: var(--font-mono);
-      font-stretch: 100%;
+      background: none;
+      border: 0;
+      box-shadow: none;
       font-size: 0.625rem;
-      font-weight: 500;
+      letter-spacing: 0.16em;
+      color: var(--color-amber);
+      text-shadow: 0 0 12px rgba(7 8 12 / 0.9);
+      translate: -6px -50%;
+    }
+
+    .nm-node--hub .hud-icon { display: none; }
+
+    .nm-node--hub .nm-label::before {
+      content: '';
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      border: 1.5px solid var(--color-amber);
+      background: var(--color-panel);
+      box-shadow: 0 0 0 3px rgba(242 169 59 / 0.12);
+      flex-shrink: 0;
+    }
+
+    /* ── Leaves: dot + plain label; labels show on the near side only ── */
+    .nm-node--leaf .nm-label {
+      gap: 0.45rem;
+      padding: 0;
+      background: none;
+      border: 0;
+      font-family: var(--font-base);
+      font-size: 0.75rem;
+      letter-spacing: 0;
+      color: var(--color-text);
+      text-shadow: 0 0 10px rgba(7 8 12 / 0.95), 0 0 2px rgba(7 8 12 / 0.95);
+      translate: -3px -50%;
+    }
+
+    .nm-node--leaf .nm-label::before {
+      width: 5px;
+      height: 5px;
+      flex-shrink: 0;
+      background: #dfe5ee;
+      box-shadow: none;
+    }
+
+    /* Text fades out as a node turns away; the dot stays */
+    .nm-node--leaf .nm-label {
+      --text: clamp(0, calc((var(--depth) - 0.62) * 4), 1);
+      color: rgba(199 204 214 / var(--text));
+    }
+
+    .nm-node--hub { opacity: calc(max(var(--depth), 0.55) * var(--dim)); }
+
+    /* A hovered or selected cluster shows every label at full strength */
+    .nm-hub:hover .nm-node--leaf .nm-label,
+    .neural:has(#nm-ai:checked)    .nm-hub--ai    .nm-node--leaf .nm-label,
+    .neural:has(#nm-prod:checked)  .nm-hub--prod  .nm-node--leaf .nm-label,
+    .neural:has(#nm-dev:checked)   .nm-hub--dev   .nm-node--leaf .nm-label,
+    .neural:has(#nm-front:checked) .nm-hub--front .nm-node--leaf .nm-label,
+    .neural:has(#nm-cad:checked)   .nm-hub--cad   .nm-node--leaf .nm-label,
+    .neural:has(label[for="nm-ai"]:hover)    .nm-hub--ai    .nm-node--leaf .nm-label,
+    .neural:has(label[for="nm-prod"]:hover)  .nm-hub--prod  .nm-node--leaf .nm-label,
+    .neural:has(label[for="nm-dev"]:hover)   .nm-hub--dev   .nm-node--leaf .nm-label,
+    .neural:has(label[for="nm-front"]:hover) .nm-hub--front .nm-node--leaf .nm-label,
+    .neural:has(label[for="nm-cad"]:hover)   .nm-hub--cad   .nm-node--leaf .nm-label {
+      color: var(--color-heading);
+    }
+
+    .nm-hub:hover .nm-node,
+    .neural:has(#nm-ai:checked)    .nm-hub--ai    .nm-node,
+    .neural:has(#nm-prod:checked)  .nm-hub--prod  .nm-node,
+    .neural:has(#nm-dev:checked)   .nm-hub--dev   .nm-node,
+    .neural:has(#nm-front:checked) .nm-hub--front .nm-node,
+    .neural:has(#nm-cad:checked)   .nm-hub--cad   .nm-node { opacity: 1; }
+
+    /* Node hover: amber, no box */
+    .nm-node:hover .nm-label {
+      border: 0;
+      box-shadow: none;
+      scale: 1.06;
+    }
+
+    .nm-node--leaf:hover .nm-label { color: var(--color-amber); }
+
+    /* Hovering an index row previews that cluster on the map */
+    .neural:has(label[for="nm-ai"]:hover)    .nm-hub:not(.nm-hub--ai),
+    .neural:has(label[for="nm-prod"]:hover)  .nm-hub:not(.nm-hub--prod),
+    .neural:has(label[for="nm-dev"]:hover)   .nm-hub:not(.nm-hub--dev),
+    .neural:has(label[for="nm-front"]:hover) .nm-hub:not(.nm-hub--front),
+    .neural:has(label[for="nm-cad"]:hover)   .nm-hub:not(.nm-hub--cad) { --dim: 0.2; }
+
+    /* ── Systems index (filters + readout in one list) ── */
+    .nm-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      align-self: stretch;
+    }
+
+    .nm-index-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding-bottom: 0.9rem;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .nm-reset {
+      cursor: pointer;
+      color: var(--color-text-muted);
+      transition: color var(--transition);
+    }
+
+    .nm-reset:hover { color: var(--color-heading); }
+
+    .nm-index { display: flex; flex-direction: column; }
+
+    .nm-row {
+      display: grid;
+      grid-template-columns: 1.75rem minmax(0, 1fr) auto;
+      gap: 0.75rem;
+      align-items: start;
+      padding: 1rem 0.25rem 1rem 0;
+      border-bottom: 1px solid var(--color-border);
+      cursor: pointer;
+      position: relative;
+      transition: background 0.3s ease, opacity 0.4s ease, padding 0.3s var(--ease-out);
+    }
+
+    /* amber bar marks the active row */
+    .nm-row::before {
+      content: '';
+      position: absolute;
+      left: -1px;
+      top: 0.9rem;
+      bottom: 0.9rem;
+      width: 2px;
+      background: var(--color-amber);
+      transform: scaleY(0);
+      transition: transform 0.35s var(--ease-out);
+    }
+
+    .nm-row:hover { background: rgba(255 255 255 / 0.02); }
+
+    .nm-row-idx,
+    .nm-row-count {
+      font-family: var(--font-mono);
+      font-size: 0.625rem;
+      letter-spacing: 0.12em;
+      color: var(--color-text-muted);
+      padding-top: 0.2rem;
+    }
+
+    .nm-row-body { display: grid; gap: 0.3rem; }
+
+    .nm-row-title {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
       letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: var(--color-amber);
-      margin-bottom: 0.8rem;
+      color: var(--color-heading);
+      transition: color var(--transition);
     }
 
-    .nm-group li { font-size: 0.8125rem; line-height: 1.75; color: var(--color-heading); }
+    .nm-row-skills { font-size: 0.8125rem; line-height: 1.6; color: var(--color-text-muted); }
 
-    /* Hovering a column glows its cluster on the map is CSS-only via :has */
-    .neural:has(.nm-group--front:hover) .nm-hub:not(.nm-hub--front),
-    .neural:has(.nm-group--dev:hover)   .nm-hub:not(.nm-hub--dev),
-    .neural:has(.nm-group--prod:hover)  .nm-hub:not(.nm-hub--prod),
-    .neural:has(.nm-group--cad:hover)   .nm-hub:not(.nm-hub--cad),
-    .neural:has(.nm-group--ai:hover)    .nm-hub:not(.nm-hub--ai) { --dim: 0.2; }
+    .nm-row:hover .nm-row-title { color: var(--color-amber); }
 
-    .nm-group:hover { background: rgba(242 169 59 / 0.04); }
+    /* Active row */
+    #nm-ai:checked    ~ .nm-panel label[for="nm-ai"],
+    #nm-prod:checked  ~ .nm-panel label[for="nm-prod"],
+    #nm-dev:checked   ~ .nm-panel label[for="nm-dev"],
+    #nm-front:checked ~ .nm-panel label[for="nm-front"],
+    #nm-cad:checked   ~ .nm-panel label[for="nm-cad"] {
+      background: rgba(242 169 59 / 0.05);
+      padding-left: 0.85rem;
+      color: inherit;
+      border-color: var(--color-border);
+    }
+
+    #nm-ai:checked    ~ .nm-panel label[for="nm-ai"]::before,
+    #nm-prod:checked  ~ .nm-panel label[for="nm-prod"]::before,
+    #nm-dev:checked   ~ .nm-panel label[for="nm-dev"]::before,
+    #nm-front:checked ~ .nm-panel label[for="nm-front"]::before,
+    #nm-cad:checked   ~ .nm-panel label[for="nm-cad"]::before { transform: scaleY(1); }
+
+    #nm-ai:checked    ~ .nm-panel label[for="nm-ai"] .nm-row-title,
+    #nm-prod:checked  ~ .nm-panel label[for="nm-prod"] .nm-row-title,
+    #nm-dev:checked   ~ .nm-panel label[for="nm-dev"] .nm-row-title,
+    #nm-front:checked ~ .nm-panel label[for="nm-front"] .nm-row-title,
+    #nm-cad:checked   ~ .nm-panel label[for="nm-cad"] .nm-row-title { color: var(--color-amber); }
+
+    #nm-ai:checked    ~ .nm-panel label[for="nm-ai"] .nm-row-skills,
+    #nm-prod:checked  ~ .nm-panel label[for="nm-prod"] .nm-row-skills,
+    #nm-dev:checked   ~ .nm-panel label[for="nm-dev"] .nm-row-skills,
+    #nm-front:checked ~ .nm-panel label[for="nm-front"] .nm-row-skills,
+    #nm-cad:checked   ~ .nm-panel label[for="nm-cad"] .nm-row-skills { color: var(--color-text); }
+
+    /* "Show all" reads as active when nothing is focused */
+    #nm-all:checked ~ .nm-panel label[for="nm-all"].nm-reset { color: var(--color-amber); background: none; border: 0; }
+
+    /* Unfocused rows step back */
+    .neural:has(.nm-radio:not(#nm-all):checked) .nm-row { opacity: 0.5; }
+    .neural:has(.nm-radio:not(#nm-all):checked) .nm-row:hover,
+    #nm-ai:checked    ~ .nm-panel label[for="nm-ai"],
+    #nm-prod:checked  ~ .nm-panel label[for="nm-prod"],
+    #nm-dev:checked   ~ .nm-panel label[for="nm-dev"],
+    #nm-front:checked ~ .nm-panel label[for="nm-front"],
+    #nm-cad:checked   ~ .nm-panel label[for="nm-cad"] { opacity: 1; }
 
     /* =========================================================
        RESPONSIVE
@@ -2087,13 +2320,8 @@
       .mission-card:nth-child(3) { border-left: 0; }
       .mission-card:nth-child(n + 3) { border-top: 1px solid var(--color-border); }
 
-      .nm-readout { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .nm-group + .nm-group { border-left: 0; }
-      .nm-group { border-top: 1px solid var(--color-border); }
-      .nm-group:nth-child(even) { border-left: 1px solid var(--color-border); }
-      .nm-group:first-child { border-top: 0; }
-      .nm-group:nth-child(2) { border-top: 0; }
-      .nm-stage { order: 0; min-height: 26rem; }
+      .neural { grid-template-columns: 1fr; }
+      .nm-stage { min-height: 26rem; }
     }
 
     @media (max-width: 768px) {
@@ -2128,11 +2356,20 @@
     }
 
     @media (max-width: 520px) {
+      .neural { --r1: 92px; --r2: 46px; }
+      .nm-stage { min-height: 24rem; }
+      .nm-node--core .nm-label { width: 2.75rem; height: 2.75rem; font-size: 0.5rem; }
+      /* On phones skill names appear only for the selected cluster; the index lists them all */
+      .nm-node--leaf .nm-label { font-size: 0.625rem; --text: 0; }
+      /* Focused cluster swings left of the core so its labels have room */
+      .neural:has(#nm-front:checked) { --spin: -28deg; }
+      .neural:has(#nm-dev:checked)   { --spin: -100deg; }
+      .neural:has(#nm-prod:checked)  { --spin: -172deg; }
+      .neural:has(#nm-cad:checked)   { --spin: -244deg; }
+      .neural:has(#nm-ai:checked)    { --spin: -316deg; }
+      .nm-node--hub .nm-label { font-size: 0.5625rem; letter-spacing: 0.12em; }
       .mission-grid { grid-template-columns: 1fr; }
       .mission-card + .mission-card { border-left: 0; border-top: 1px solid var(--color-border); }
-      .nm-readout { grid-template-columns: 1fr; }
-      .nm-group:nth-child(even) { border-left: 0; }
-      .nm-group:nth-child(2) { border-top: 1px solid var(--color-border); }
       .cert-list a { grid-template-columns: 1fr auto; }
       .cert-list a .mono { grid-column: 1; grid-row: 2; }
       .cert-list a .arrow { grid-row: 1 / span 2; grid-column: 2; }
@@ -2318,6 +2555,44 @@
         </div>
       </div>
     </section>
+
+    <!-- ── SKILLS BANNER ───────────────────────────────────── -->
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-track">
+        <div class="marquee-group">
+          <span class="marquee-item">HTML5</span>
+          <span class="marquee-item">CSS3</span>
+          <span class="marquee-item">Python</span>
+          <span class="marquee-item">Git &amp; GitHub</span>
+          <span class="marquee-item">Google Stitch</span>
+          <span class="marquee-item">Onshape CAD</span>
+        </div>
+        <div class="marquee-group">
+          <span class="marquee-item">HTML5</span>
+          <span class="marquee-item">CSS3</span>
+          <span class="marquee-item">Python</span>
+          <span class="marquee-item">Git &amp; GitHub</span>
+          <span class="marquee-item">Google Stitch</span>
+          <span class="marquee-item">Onshape CAD</span>
+        </div>
+      </div>
+      <div class="marquee-track marquee-track--reverse">
+        <div class="marquee-group">
+          <span class="marquee-item">Product Teardowns</span>
+          <span class="marquee-item">MVP Scoping</span>
+          <span class="marquee-item">System Architecture</span>
+          <span class="marquee-item">Rapid Prototyping</span>
+          <span class="marquee-item">GitHub Copilot</span>
+        </div>
+        <div class="marquee-group">
+          <span class="marquee-item">Product Teardowns</span>
+          <span class="marquee-item">MVP Scoping</span>
+          <span class="marquee-item">System Architecture</span>
+          <span class="marquee-item">Rapid Prototyping</span>
+          <span class="marquee-item">GitHub Copilot</span>
+        </div>
+      </div>
+    </div>
 
     <!-- Curved horizon into the instrument band -->
     <div class="horizon" aria-hidden="true"></div>
@@ -2527,22 +2802,58 @@
             <input type="radio" name="nm-cluster" id="nm-cad" class="nm-radio sr-only" />
 
             <div class="nm-panel">
-              <div class="nm-filters" role="group" aria-label="Focus a skill cluster">
-                <label for="nm-all">All <span>21</span></label>
-                <label for="nm-ai">AI · Data <span>06</span></label>
-                <label for="nm-prod">Product <span>05</span></label>
-                <label for="nm-dev">Development <span>05</span></label>
-                <label for="nm-front">Frontend <span>04</span></label>
-                <label for="nm-cad">Design · CAD <span>01</span></label>
+              <div class="nm-index-head">
+                <span class="mono">Systems index</span>
+                <label for="nm-all" class="nm-reset mono">Show all · 21</label>
               </div>
-              <p class="nm-hint">Drag to rotate · Hover a node · Pick a cluster</p>
+              <div class="nm-index" role="group" aria-label="Focus a skill cluster">
+                <label for="nm-ai" class="nm-row">
+                  <span class="nm-row-idx">01</span>
+                  <span class="nm-row-body">
+                    <span class="nm-row-title">AI · Data</span>
+                    <span class="nm-row-skills">Data analysis · Data visualization · Data-driven decisions · Responsible AI · AI app building · AI-assisted development</span>
+                  </span>
+                  <span class="nm-row-count">06</span>
+                </label>
+                <label for="nm-prod" class="nm-row">
+                  <span class="nm-row-idx">02</span>
+                  <span class="nm-row-body">
+                    <span class="nm-row-title">Product</span>
+                    <span class="nm-row-skills">Product teardowns · MVP scoping · Feature viability · ASCI guidelines · CCPA compliance</span>
+                  </span>
+                  <span class="nm-row-count">05</span>
+                </label>
+                <label for="nm-dev" class="nm-row">
+                  <span class="nm-row-idx">03</span>
+                  <span class="nm-row-body">
+                    <span class="nm-row-title">Development</span>
+                    <span class="nm-row-skills">Python · Git / GitHub · System architecture · GitHub Copilot · Antigravity</span>
+                  </span>
+                  <span class="nm-row-count">05</span>
+                </label>
+                <label for="nm-front" class="nm-row">
+                  <span class="nm-row-idx">04</span>
+                  <span class="nm-row-body">
+                    <span class="nm-row-title">Frontend</span>
+                    <span class="nm-row-skills">HTML5 · CSS3 · Google Stitch · Rapid prototyping</span>
+                  </span>
+                  <span class="nm-row-count">04</span>
+                </label>
+                <label for="nm-cad" class="nm-row">
+                  <span class="nm-row-idx">05</span>
+                  <span class="nm-row-body">
+                    <span class="nm-row-title">Design · CAD</span>
+                    <span class="nm-row-skills">Onshape 3D CAD</span>
+                  </span>
+                  <span class="nm-row-count">01</span>
+                </label>
+              </div>
             </div>
 
             <div class="nm-stage" aria-hidden="true">
               <div class="nm-tilt">
                 <div class="nm-spin">
                   <i class="nm-ring"></i>
-                  <i class="nm-ring nm-ring--tilted"></i>
                   <span class="nm-node nm-node--core"><span class="nm-label">ARNAV<small>// core</small></span></span>
                   <div class="nm-hub nm-hub--ai" style="--lon: 288deg; --lat: -22deg">
                     <i class="nm-link"></i>
@@ -2659,55 +2970,6 @@
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-
-            <div class="nm-readout">
-              <div class="nm-group nm-group--ai">
-                <h3>AI · Data</h3>
-                <ul>
-                  <li>Data analysis</li>
-                  <li>Data visualization</li>
-                  <li>Data-driven decisions</li>
-                  <li>Responsible AI</li>
-                  <li>AI app building</li>
-                  <li>AI-assisted development</li>
-                </ul>
-              </div>
-              <div class="nm-group nm-group--prod">
-                <h3>Product</h3>
-                <ul>
-                  <li>Product teardowns</li>
-                  <li>MVP scoping</li>
-                  <li>Feature viability</li>
-                  <li>ASCI guidelines</li>
-                  <li>CCPA compliance</li>
-                </ul>
-              </div>
-              <div class="nm-group nm-group--dev">
-                <h3>Development</h3>
-                <ul>
-                  <li>Python</li>
-                  <li>Git / GitHub</li>
-                  <li>System architecture</li>
-                  <li>GitHub Copilot</li>
-                  <li>Antigravity</li>
-                </ul>
-              </div>
-              <div class="nm-group nm-group--front">
-                <h3>Frontend</h3>
-                <ul>
-                  <li>HTML5</li>
-                  <li>CSS3</li>
-                  <li>Google Stitch</li>
-                  <li>Rapid prototyping</li>
-                </ul>
-              </div>
-              <div class="nm-group nm-group--cad">
-                <h3>Design · CAD</h3>
-                <ul>
-                  <li>Onshape 3D CAD</li>
-                </ul>
               </div>
             </div>
           </div>
