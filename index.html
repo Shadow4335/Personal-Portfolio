@@ -1115,6 +1115,105 @@
       text-transform: uppercase;
     }
 
+    /* About: "Currently" note */
+    .about-text .about-now {
+      font-size: 0.9375rem;
+      color: var(--color-text-muted);
+      border-left: 2px solid var(--color-accent);
+      padding: 0.25rem 0 0.25rem 1rem;
+    }
+
+    .about-now-label {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--color-accent-light);
+      margin-bottom: 0.2rem;
+    }
+
+    .about-now-label::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      margin-right: 0.5rem;
+      border-radius: 50%;
+      background: #22c55e;
+      vertical-align: 0.1em;
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    /* Education & certifications */
+    .cred-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+      gap: var(--space-md);
+      align-items: start;
+    }
+
+    .edu-card {
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      transition: border-color var(--transition), transform var(--transition);
+    }
+
+    .edu-card:hover {
+      border-color: var(--color-border-hover);
+      transform: translateY(-4px);
+    }
+
+    .cred-meta {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      color: var(--color-text-muted);
+    }
+
+    .cred-title {
+      font-size: 1.375rem;
+      font-weight: 700;
+      margin-block: 0.5rem;
+    }
+
+    .cred-issuer {
+      color: var(--color-accent-light);
+      font-size: 0.9375rem;
+    }
+
+    .cert-list {
+      display: grid;
+      border-top: 1px solid var(--color-border);
+    }
+
+    .cert-list a {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1.1rem 0.25rem;
+      border-bottom: 1px solid var(--color-border);
+      color: var(--color-heading);
+      transition: padding var(--transition), background var(--transition);
+    }
+
+    .cert-list a:hover {
+      padding-inline: 1rem;
+      background: rgba(59 130 246 / 0.06);
+    }
+
+    .cert-name { font-weight: 600; }
+
+    .cert-list .cred-meta { white-space: nowrap; }
+
+    @media (max-width: 768px) {
+      .cred-grid { grid-template-columns: 1fr; }
+      .cert-list a { flex-direction: column; gap: 0.25rem; }
+    }
+
     /* Leadership: timeline rail */
     .leadership-list {
       position: relative;
@@ -1596,7 +1695,8 @@
     .has-cursor .project-card,
     .has-cursor .skill-card,
     .has-cursor .stat-card,
-    .has-cursor .leadership-item {
+    .has-cursor .leadership-item,
+    .has-cursor .edu-card {
       background-image: radial-gradient(
         320px circle at var(--mx, -999px) var(--my, -999px),
         rgba(96 165 250 / 0.12),
@@ -1835,7 +1935,7 @@
           </a>
 
           <a
-            href="https://linkedin.com/in/arnav-verma-51b5b1391"
+            href="https://www.linkedin.com/in/arnav-verma-nst"
             target="_blank"
             rel="noopener noreferrer"
             class="btn btn-ghost"
@@ -1891,7 +1991,13 @@
             <p class="reveal">
               My work spans dynamic forecasting models, AI-assisted civic solutions,
               and product teardowns. Outside the classroom I'm an active hackathon
-              builder and aerospace tech enthusiast.
+              builder, and I explore my interest in aviation and aerospace through
+              the Society for Aerospace and Space Technologies (SAST).
+            </p>
+            <p class="about-now reveal">
+              <span class="about-now-label">Currently</span>
+              Registered for <strong>CodeSprint 2026</strong> by Elite Coders, a build
+              sprint that goes from idea to MVP to open source to pitch.
             </p>
           </div>
 
@@ -2007,6 +2113,19 @@
             </div>
           </div>
 
+          <div class="skill-card reveal">
+            <div class="skill-icon" aria-hidden="true">🤖</div>
+            <h3 class="skill-title">AI &amp; Data</h3>
+            <div class="skill-tags">
+              <span class="tag">Data Analysis</span>
+              <span class="tag">Data Visualization</span>
+              <span class="tag">Data-driven Decision Making</span>
+              <span class="tag">Responsible AI</span>
+              <span class="tag">AI App Building</span>
+              <span class="tag">Vibe Coding</span>
+            </div>
+          </div>
+
         </div>
       </div>
     </section>
@@ -2083,11 +2202,11 @@
               <span class="project-badge">Hackathon</span>
             </div>
             <h3 class="project-title">ODYSSEY: Train ETA &amp; Delay Propagation Engine</h3>
-            <p class="project-context">Smart India Hackathon</p>
+            <p class="project-context">Smart India Hackathon 2026</p>
             <ul class="project-desc">
               <li>
-                Network-aware railway intelligence platform that forecasts real-time
-                arrival times for Indian Railways.
+                Co-developed a real-time train ETA prediction model: a network-aware
+                railway intelligence platform that forecasts arrival times for Indian Railways.
               </li>
               <li>
                 Tracks cascading delay propagation using recursive section-level ML
@@ -2100,7 +2219,44 @@
             </div>
           </article>
 
-          <!-- Project 4 -->
+          <!-- Project 4 · Lumen (NST Vanguards Build Week) -->
+          <article class="project-card reveal">
+            <div class="project-header">
+              <div class="project-icon" aria-hidden="true">💜</div>
+              <span class="project-badge">Build Week</span>
+            </div>
+            <h3 class="project-title">Lumen</h3>
+            <p class="project-context">Student Expense Tracker · Team Odyssey</p>
+            <ul class="project-desc">
+              <li>
+                Expense tracker with Lumi, an AI financial companion that helps students
+                see where small daily spends add up and build better money habits.
+              </li>
+              <li>
+                Built during NST Vanguards Build Week, including the LUMEN design system:
+                component library, type scale and WCAG accessibility checks.
+              </li>
+            </ul>
+          </article>
+
+          <!-- Project 5 · ISS tracker -->
+          <article class="project-card reveal">
+            <div class="project-header">
+              <div class="project-icon" aria-hidden="true">🛰️</div>
+              <span class="project-badge">Aerospace</span>
+            </div>
+            <h3 class="project-title">ISS Live Tracker</h3>
+            <p class="project-context">Real-Time Space Station Tracking</p>
+            <ul class="project-desc">
+              <li>
+                Engineered a Python-based live tracker for the International Space
+                Station.
+              </li>
+            </ul>
+            <p class="project-stack">Python</p>
+          </article>
+
+          <!-- Project 6 -->
           <article class="project-card reveal">
             <div class="project-header">
               <div class="project-icon" aria-hidden="true">🚨</div>
@@ -2116,21 +2272,78 @@
             </ul>
           </article>
 
-          <!-- Project 5 -->
+          <!-- Project 7 -->
           <article class="project-card reveal">
             <div class="project-header">
               <div class="project-icon" aria-hidden="true">📦</div>
               <span class="project-badge">Product Analysis</span>
             </div>
             <h3 class="project-title">Product Teardown: Blinkit vs. Zepto</h3>
-            <p class="project-context">Quick-Commerce UX Analysis</p>
+            <p class="project-context">Quick-Commerce UX Analysis · Arthakram</p>
             <ul class="project-desc">
               <li>
                 Authored a comparative product and UX analysis evaluating quick-commerce
                 delivery mechanics, dark store routing, and user retention hooks.
               </li>
+              <li>
+                Done as a member of Arthakram, the college Product &amp; Consulting Club.
+              </li>
             </ul>
           </article>
+
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ── EDUCATION & CERTIFICATIONS ──────────────────────── -->
+    <section id="credentials" class="section" aria-labelledby="credentials-heading">
+      <div class="container">
+
+        <p class="section-label reveal">04 · Education &amp; Certifications</p>
+        <h2 id="credentials-heading" class="section-heading reveal">Learning</h2>
+
+        <div class="cred-grid">
+
+          <article class="edu-card reveal">
+            <p class="cred-meta">2026 – 2030</p>
+            <h3 class="cred-title">Computer Science &amp; Artificial Intelligence</h3>
+            <p class="cred-issuer">Newton School of Technology &amp; Rishihood University</p>
+          </article>
+
+          <ul class="cert-list" role="list">
+            <li class="reveal">
+              <a href="https://www.coursera.org/account/accomplishments/specialization/6A6J3F564U45" target="_blank" rel="noopener noreferrer">
+                <span class="cert-name">Google AI Professional Certificate</span>
+                <span class="cred-meta">Coursera · May 2026 ↗</span>
+              </a>
+            </li>
+            <li class="reveal">
+              <a href="https://www.coursera.org/account/accomplishments/records/P7HEIVPUP4HW" target="_blank" rel="noopener noreferrer">
+                <span class="cert-name">Google AI for App Building</span>
+                <span class="cred-meta">Coursera · May 2026 ↗</span>
+              </a>
+            </li>
+            <li class="reveal">
+              <a href="https://www.coursera.org/account/accomplishments/records/UO1EOYSPSXA3" target="_blank" rel="noopener noreferrer">
+                <span class="cert-name">Google AI for Data Analysis</span>
+                <span class="cred-meta">Coursera · May 2026 ↗</span>
+              </a>
+            </li>
+            <li class="reveal">
+              <a href="https://www.coursera.org/account/accomplishments/records/XZKQEDQD5EEQ" target="_blank" rel="noopener noreferrer">
+                <span class="cert-name">Google AI for Content Creation</span>
+                <span class="cred-meta">Coursera · May 2026 ↗</span>
+              </a>
+            </li>
+            <li class="reveal">
+              <a href="https://www.credly.com/badges/ab36fc5f-b718-4007-abd7-f0cb8115f9ec" target="_blank" rel="noopener noreferrer">
+                <span class="cert-name">Google AI for Writing &amp; Communicating</span>
+                <span class="cred-meta">Coursera · May 2026 ↗</span>
+              </a>
+            </li>
+          </ul>
 
         </div>
       </div>
@@ -2142,7 +2355,7 @@
     <section id="leadership" class="section" aria-labelledby="leadership-heading">
       <div class="container">
 
-        <p class="section-label reveal">04 · Campus &amp; Leadership</p>
+        <p class="section-label reveal">05 · Campus &amp; Leadership</p>
         <h2 id="leadership-heading" class="section-heading reveal">Affiliations</h2>
 
         <div class="leadership-list">
@@ -2150,16 +2363,16 @@
           <div class="leadership-item reveal">
             <div class="leadership-dot" aria-hidden="true"></div>
             <div>
-              <p class="leadership-role">Active Member</p>
-              <p class="leadership-org">Society for Aerospace and Space Technologies</p>
+              <p class="leadership-role">Member · Sep 2026 – Present</p>
+              <p class="leadership-org">Society for Aerospace and Space Technologies (SAST)</p>
             </div>
           </div>
 
           <div class="leadership-item reveal">
             <div class="leadership-dot" aria-hidden="true"></div>
             <div>
-              <p class="leadership-role">Active Member</p>
-              <p class="leadership-org">Product and Consulting Club</p>
+              <p class="leadership-role">Member · Sep 2026 – Present</p>
+              <p class="leadership-org">Arthakram, Product &amp; Consulting Club</p>
             </div>
           </div>
 
@@ -2173,7 +2386,7 @@
     <section id="contact" class="contact section" aria-labelledby="contact-heading">
       <div class="container">
 
-        <p class="section-label reveal" style="justify-content: center; text-align: center;">05 · Contact</p>
+        <p class="section-label reveal" style="justify-content: center; text-align: center;">06 · Contact</p>
         <h2 id="contact-heading" class="contact-heading reveal">Let&rsquo;s build<br />something.</h2>
         <p class="contact-sub reveal">
           I'm always open to new ideas, collaborations, and conversations.
@@ -2206,7 +2419,7 @@
           </a>
 
           <a
-            href="https://linkedin.com/in/arnav-verma-51b5b1391"
+            href="https://www.linkedin.com/in/arnav-verma-nst"
             target="_blank"
             rel="noopener noreferrer"
             class="btn btn-ghost"
@@ -2262,7 +2475,7 @@
       var ring = document.querySelector('.cursor-ring');
       var glow = document.querySelector('.cursor-glow');
       var LINKS = 'a, button, label, .btn';
-      var CARDS = '.project-card, .skill-card, .stat-card, .leadership-item';
+      var CARDS = '.project-card, .skill-card, .stat-card, .leadership-item, .edu-card';
 
       var mx = innerWidth / 2, my = innerHeight / 2; // pointer
       var rx = mx, ry = my, gx = mx, gy = my;        // eased followers
