@@ -6,10 +6,13 @@
   var last = performance.now();
 
   function frame(now) {
+    requestAnimationFrame(frame);
     var dt = Math.min((now - last) / 16.67, 4);
     last = now;
-    for (var i = 0; i < subs.length; i++) subs[i](now, dt);
-    requestAnimationFrame(frame);
+    // One failing subscriber must not stop the others
+    for (var i = 0; i < subs.length; i++) {
+      try { subs[i](now, dt); } catch (e) { if (window.console) console.error(e); subs.splice(i--, 1); }
+    }
   }
 
   FD.ticker = {

@@ -1600,3 +1600,74 @@ html.fd-locked { overflow: hidden; }
 .cursor-hidden .cursor-dot,
 .cursor-hidden .cursor-ring,
 .cursor-hidden .cursor-glow { opacity: 0; }
+
+/* =========================================================
+   MOTION — reveals, typing eyebrows, scroll progress
+   (html.motion is set by motion.js unless reduced motion)
+========================================================= */
+html.lenis, html.lenis body { height: auto; }
+.lenis:not(.lenis-autoToggle).lenis-stopped { overflow: clip; }
+.lenis.lenis-smooth iframe { pointer-events: none; }
+
+/* 2px horizon line at the top */
+.scroll-progress {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 200;
+  height: 2px;
+  background: linear-gradient(90deg, var(--curtain), var(--frost), var(--sun));
+  transform-origin: left;
+  transform: scaleX(0);
+  pointer-events: none;
+}
+
+/* Section entrance: fade in and rise 24px */
+.js .reveal { opacity: 0; transition: opacity var(--dur-slow) var(--ease-out), translate var(--dur-slow) var(--ease-out); }
+.js.motion .reveal { translate: 0 24px; }
+.js .reveal.is-in { opacity: 1; translate: 0 0; }
+
+/* Split headings: each line slides up 100% from a mask */
+.motion .section-heading,
+.motion .contact-heading { opacity: 1; translate: none; transition: none; }
+.line { display: block; overflow: hidden; padding-bottom: 0.08em; margin-bottom: -0.08em; }
+.line-inner { display: block; transform: translateY(105%); transition: transform var(--dur-slow) var(--ease-out); }
+.is-in .line-inner { transform: none; }
+
+/* Eyebrows type on letter by letter */
+.motion .eyebrow.is-in { animation: type-on var(--dur-fast) steps(var(--n, 20)) both; }
+@keyframes type-on {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0 0 0); }
+}
+
+/* Reduced motion: reveals become 200ms fades, nothing else moves */
+@media (prefers-reduced-motion: reduce) {
+  .js .reveal { transition: opacity 200ms linear; translate: none; }
+  .card, .card:hover { translate: none; }
+  .card > * { transform: none; }
+  .marquee-track, .stop i::before, .eq i { animation: none !important; }
+  ::view-transition-new(root) { animation: none; }
+}
+
+/* =========================================================
+   CURSOR STATES — 1.6× over links, [ ] over cards, DRAG on the map
+========================================================= */
+.cursor-ring::before,
+.cursor-ring::after {
+  position: absolute;
+  top: 50%;
+  translate: 0 -50%;
+  font: 500 11px/1 var(--font-mono);
+  letter-spacing: 0.18em;
+  color: var(--sun-ink);
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+
+.cursor-card .cursor-ring { border-color: transparent; border-radius: var(--radius-0); background: none; }
+.cursor-card .cursor-ring::before { content: '['; left: 0; opacity: 1; font-size: 22px; font-weight: 400; }
+.cursor-card .cursor-ring::after { content: ']'; right: 0; opacity: 1; font-size: 22px; font-weight: 400; }
+
+.cursor-drag .cursor-ring { border-color: var(--sun-ink); background: var(--panel); }
+.cursor-drag .cursor-ring::after { content: 'DRAG'; left: 50%; translate: -50% -50%; opacity: 1; font-size: 7px; letter-spacing: 0.12em; }
+.cursor-drag .cursor-dot { scale: 0; }
