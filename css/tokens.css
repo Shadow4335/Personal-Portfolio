@@ -1,0 +1,109 @@
+/* Flight Deck — generated from tokens.json. Default theme: dark (Night flight). Switch with <html data-theme="light">. */
+:root, [data-theme="dark"] {
+  color-scheme: dark;
+  --void: #010206;
+  --deck: #07080d;
+  --panel: #0c0e16;
+  --raised: #141a2b;
+  --line: rgba(220,235,243,0.09);
+  --line-strong: rgba(220,235,243,0.18);
+  --ink: #f8fafb;
+  --text: #c9d1de;
+  --muted: #7b87a0;
+  --faint: #2c3346;
+  --echo-1: #515d75;
+  --echo-2: #1c2338;
+  --royal: #1e337c;
+  --curtain: #2c4378;
+  --steel: #7b87a0;
+  --frost: #dcebf3;
+  --sky: #8ea4e6;
+  --sky-glow: rgba(142,164,230,0.18);
+  --sun: #e8c27a;
+  --sun-ink: #e8c27a;
+  --on-sun: #0b0a07;
+  --cta: #f8fafb;
+  --on-cta: #0b1430;
+  --go: #4ade80;
+  --alert: #ff8a6b;
+  --scrim: rgba(1,2,6,0.72);
+  --glow-sky: 0 0 0 1px rgba(142,164,230,0.55), 0 0 24px rgba(142,164,230,0.25);
+  --glow-sun: 0 0 32px rgba(232,194,122,0.35);
+  --lift: 0 24px 60px rgba(0,0,0,0.6);
+  --curtain-glow: 0 0 80px rgba(44,67,120,0.45);
+}
+[data-theme="light"] {
+  color-scheme: light;
+  --void: #f4f6fa;
+  --deck: #ffffff;
+  --panel: #e9edf5;
+  --raised: #dde3ef;
+  --line: rgba(10,15,31,0.10);
+  --line-strong: rgba(10,15,31,0.22);
+  --ink: #0a0f1f;
+  --text: #2a3247;
+  --muted: #56607a;
+  --faint: #a7b0c4;
+  --echo-1: #8d97ad;
+  --echo-2: #c4cbda;
+  --royal: #1e337c;
+  --curtain: #3a56a8;
+  --steel: #6f7b96;
+  --frost: #dcebf3;
+  --sky: #2a43a0;
+  --sky-glow: rgba(42,67,160,0.12);
+  --sun: #e8c27a;
+  --sun-ink: #7d5a17;
+  --cta: #1e337c;
+  --on-cta: #f8fafb;
+  --go: #15803d;
+  --alert: #b93a1c;
+  --scrim: rgba(244,246,250,0.78);
+  --glow-sky: 0 0 0 1px rgba(42,67,160,0.6), 0 0 18px rgba(42,67,160,0.15);
+  --glow-sun: 0 0 24px rgba(232,194,122,0.45);
+  --lift: 0 24px 48px rgba(10,15,31,0.12);
+  --curtain-glow: 0 0 60px rgba(58,86,168,0.18);
+}
+:root {
+  --font-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-serif: "Instrument Serif", Georgia, "Times New Roman", serif;
+  --font-sans: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "IBM Plex Mono", "SF Mono", Menlo, monospace;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+  --space-10: 160px;
+  --radius-0: 0px;
+  --radius-sm: 2px;
+  --radius-pill: 9999px;
+  --dur-tick: 90ms;
+  --dur-fast: 180ms;
+  --dur-base: 360ms;
+  --dur-slow: 720ms;
+  --dur-cinematic: 1400ms;
+  --stagger: 60ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-exit: cubic-bezier(0.7, 0, 0.84, 0);
+}
+.display-xl { font-family: var(--font-display); font-size: 120px; line-height: 0.92; font-weight: 800; letter-spacing: -0.02em; }
+.display-l { font-family: var(--font-display); font-size: 72px; line-height: 0.95; font-weight: 750; letter-spacing: -0.015em; }
+.heading-1 { font-family: var(--font-display); font-size: 48px; line-height: 1.02; font-weight: 700; letter-spacing: -0.01em; }
+.heading-2 { font-family: var(--font-display); font-size: 30px; line-height: 1.1; font-weight: 700; }
+.heading-3 { font-family: var(--font-display); font-size: 20px; line-height: 1.3; font-weight: 650; }
+.emphasis-xl { font-family: var(--font-serif); font-size: 72px; line-height: 0.95; font-weight: 400; font-style: italic; }
+.emphasis-l { font-family: var(--font-serif); font-size: 48px; line-height: 1.02; font-weight: 400; font-style: italic; }
+.body-l { font-family: var(--font-sans); font-size: 19px; line-height: 30px; font-weight: 400; }
+.body { font-family: var(--font-sans); font-size: 16px; line-height: 26px; font-weight: 400; }
+.body-s { font-family: var(--font-sans); font-size: 14px; line-height: 22px; font-weight: 400; }
+.ui { font-family: var(--font-sans); font-size: 15px; line-height: 20px; font-weight: 500; }
+.label { font-family: var(--font-mono); font-size: 12px; line-height: 16px; font-weight: 500; letter-spacing: 0.16em; }
+.label-s { font-family: var(--font-mono); font-size: 11px; line-height: 14px; font-weight: 500; letter-spacing: 0.18em; }
+.readout { font-family: var(--font-mono); font-size: 14px; line-height: 22px; font-weight: 400; }
+.numeral { font-family: var(--font-mono); font-size: 64px; line-height: 1.0; font-weight: 500; letter-spacing: -0.03em; }
