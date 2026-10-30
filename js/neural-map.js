@@ -60,3 +60,26 @@
       requestAnimationFrame(frame);
     })();
   })();
+
+// Neural map: tooltip with the skill name and its cluster on node hover
+(function () {
+  var stage = document.querySelector('.nm-stage');
+  var tip = stage && stage.querySelector('.nm-tip');
+  if (!tip) return;
+  var name = tip.querySelector('b'), cluster = tip.querySelector('span');
+
+  stage.addEventListener('pointerover', function (e) {
+    var node = e.target.closest('.nm-node--leaf');
+    if (!node) return;
+    var hub = node.closest('.nm-hub').querySelector('.nm-node--hub .nm-label');
+    name.textContent = node.textContent.trim();
+    cluster.textContent = hub.textContent.trim();
+    var s = stage.getBoundingClientRect(), n = node.getBoundingClientRect();
+    tip.style.translate = (n.left - s.left + 14) + 'px ' + (n.top - s.top + 10) + 'px';
+    tip.hidden = false;
+  });
+
+  stage.addEventListener('pointerout', function (e) {
+    if (e.target.closest('.nm-node--leaf')) tip.hidden = true;
+  });
+})();

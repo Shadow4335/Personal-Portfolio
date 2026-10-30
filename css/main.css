@@ -1,83 +1,21 @@
 /* =========================================================
-   DESIGN TOKENS
+   ARNAV VERMA · FLIGHT DECK
+   Every colour, size, duration and easing comes from
+   css/tokens.css. No hex values in this file.
 ========================================================= */
-:root {
-  /* Legacy names mapped onto the Flight Deck tokens (css/tokens.css) */
-  --color-bg:           var(--void);
-  --color-band:         var(--deck);
-  --color-panel:        var(--panel);
-  --color-bg-card:      var(--panel);
-  --color-bg-elevated:  var(--raised);
-  --color-border:       var(--line);
-  --color-border-strong: var(--line-strong);
-  --color-border-hover: color-mix(in srgb, var(--sun-ink) 55%, transparent);
-  --color-text:         var(--text);
-  --color-text-muted:   var(--muted);
-  --color-heading:      var(--ink);
-  --color-amber:        var(--sun-ink);
-  --color-accent:       var(--sky);
-  --color-accent-light: var(--sky);
-  --color-accent-glow:  var(--sky-glow);
-  --color-go:           var(--go);
-  --color-on-accent:    var(--on-sun);
-  --gradient-hero:      linear-gradient(90deg, var(--curtain), var(--frost), var(--sun));
-  --gradient-card-top:  none;
-  --chamfer:            0px;
-  --chamfer-line:       transparent;
-  --font-base:    var(--font-sans);
-  --space-xs: var(--space-2);
-  --space-sm: var(--space-4);
-  --space-md: var(--space-6);
-  --space-lg: var(--space-8);
-  --space-xl: var(--space-10);
-  --radius-md: 0;
-  --radius-lg: 0;
-  --transition: var(--dur-fast) var(--ease-out);
-  --nav-height: 64px;
-}
 
 /* =========================================================
    RESET & BASE
 ========================================================= */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html {
-  scroll-behavior: smooth;
-  font-size: 16px;
-  -webkit-text-size-adjust: 100%;
-}
-
-body {
-  font-family: var(--font-base);
-  background-color: var(--color-bg);
-  color: var(--color-text);
-  line-height: 1.6;
-  overflow-x: hidden;
-  /* Starfield backdrop: tiled star layers (unchanged from the previous theme) */
-  background-image:
-    radial-gradient(1px 1px at 12% 18%, color-mix(in srgb, var(--ink) 70%, transparent), transparent),
-    radial-gradient(1px 1px at 68% 32%, color-mix(in srgb, var(--ink) 50%, transparent), transparent),
-    radial-gradient(1.5px 1.5px at 38% 74%, color-mix(in srgb, var(--sky) 60%, transparent), transparent),
-    radial-gradient(1px 1px at 86% 82%, color-mix(in srgb, var(--ink) 45%, transparent), transparent),
-    radial-gradient(1px 1px at 24% 56%, color-mix(in srgb, var(--ink) 35%, transparent), transparent),
-    radial-gradient(1.5px 1.5px at 92% 12%, color-mix(in srgb, var(--sun) 50%, transparent), transparent);
-  background-size: 320px 320px, 260px 260px, 410px 410px, 370px 370px, 190px 190px, 530px 530px;
-  background-attachment: fixed;
-}
+html { -webkit-text-size-adjust: 100%; --nav-height: 64px; }
 
 img { display: block; max-width: 100%; }
-a { color: inherit; text-decoration: none; transition: color var(--transition); }
-ul { list-style: none; }
-strong { color: var(--color-heading); font-weight: 500; }
-
-h1, h2, h3 {
-  font-family: var(--font-display);
-  font-stretch: 125%;
-  color: var(--color-heading);
-  line-height: 1.08;
-  letter-spacing: -0.01em;
-  font-weight: 600;
-}
+a { color: inherit; text-decoration: none; transition: color var(--dur-fast) var(--ease-out); }
+ul, ol { list-style: none; }
+button { font: inherit; }
+strong { color: var(--ink); font-weight: 500; }
 
 .sr-only {
   position: absolute;
@@ -91,123 +29,44 @@ h1, h2, h3 {
   border: 0;
 }
 
-.skip-link {
-  position: absolute;
-  top: -100%;
-  left: 1rem;
-  background: var(--color-amber);
-  color: var(--color-on-accent);
-  padding: 0.5rem 1rem;
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  z-index: 9999;
-}
-.skip-link:focus { top: 1rem; }
-
-:focus-visible { outline: 2px solid var(--color-amber); outline-offset: 3px; }
+.skip-link { position: absolute; top: -100%; left: var(--space-4); z-index: 9999; }
+.skip-link:focus { top: var(--space-4); }
 
 section[id] { scroll-margin-top: var(--nav-height); }
 
-.container { width: min(68rem, 100% - 3rem); margin-inline: auto; }
-
-/* Small mono caps used for labels everywhere */
-.mono {
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  font-weight: 400;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-}
-
-/* Thin bracket ticks on panel corners (top-left / bottom-right) */
-.panel {
-  position: relative;
-  background: var(--color-panel);
-  border: 1px solid var(--color-border);
-}
-
-.panel::after {
-  content: '';
-  position: absolute;
-  right: -1px;
-  bottom: -1px;
-  width: 9px;
-  height: 9px;
-  border-right: 1px solid var(--color-border-strong);
-  border-bottom: 1px solid var(--color-border-strong);
-  pointer-events: none;
-}
-
 /* =========================================================
-   NAVIGATION — glass canopy
+   NAVIGATION
 ========================================================= */
 .site-nav {
   position: sticky;
   top: 0;
   z-index: 100;
   height: var(--nav-height);
-  background: color-mix(in srgb, var(--void) 55%, transparent);
+  background: color-mix(in srgb, var(--void) 72%, transparent);
   -webkit-backdrop-filter: blur(12px) saturate(150%);
   backdrop-filter: blur(12px) saturate(150%);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--line);
 }
 
-.nav-inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 100%;
-}
+.nav-inner { display: flex; align-items: center; height: 100%; }
 
 .nav-logo {
   display: inline-flex;
   align-items: center;
-  gap: 0.65rem;
-  font-family: var(--font-display);
+  gap: var(--space-3);
+  font: 700 15px/20px var(--font-display);
   font-stretch: 112%;
-  font-weight: 600;
-  font-size: 0.9375rem;
-  color: var(--color-heading);
+  color: var(--ink);
 }
 
-/* Logo glyph: a planet with an amber orbit */
-.logo-mark {
-  position: relative;
-  width: 18px;
-  height: 18px;
-}
-
-.logo-mark::before {
-  content: '';
-  position: absolute;
-  inset: 4px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, var(--frost), var(--steel));
-}
-
-.logo-mark::after {
-  content: '';
-  position: absolute;
-  inset: 6px -2px;
-  border: 1.5px solid var(--color-amber);
-  border-radius: 50%;
-  rotate: -24deg;
-}
-
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 1.75rem;
-}
+.nav-links { display: flex; align-items: center; gap: var(--space-6); }
 
 .nav-links a {
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
   position: relative;
+  font: 500 11px/14px var(--font-mono);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
 
 .nav-links a::after {
@@ -217,13 +76,12 @@ section[id] { scroll-margin-top: var(--nav-height); }
   bottom: -4px;
   width: 100%;
   height: 1px;
-  background: var(--color-amber);
   transform: scaleX(0);
   transform-origin: left;
-  transition: transform 0.3s var(--ease-out);
+  transition: transform var(--dur-base) var(--ease-out);
 }
 
-.nav-links a:hover { color: var(--color-heading); }
+.nav-links a:hover { color: var(--ink); }
 .nav-links a:hover::after { transform: scaleX(1); }
 
 .nav-toggle { display: none; }
@@ -232,1586 +90,44 @@ section[id] { scroll-margin-top: var(--nav-height); }
   display: none;
   flex-direction: column;
   gap: 5px;
+  padding: var(--space-1);
   cursor: pointer;
-  padding: 4px;
 }
 
 .nav-toggle-label span {
   display: block;
   width: 22px;
   height: 1.5px;
-  background: var(--color-text);
-  transition: transform var(--transition), opacity var(--transition);
-}
-
-/* =========================================================
-   BUTTONS
-========================================================= */
-.btn {
-  position: relative;
-  overflow: hidden;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.85rem 1.1rem;
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--color-heading);
-  border: 1px solid var(--color-border-strong);
-  background: color-mix(in srgb, var(--ink) 1%, transparent);
-  cursor: pointer;
-  transition: background var(--transition), border-color var(--transition), color var(--transition), translate 0.45s var(--ease-out);
-}
-
-.btn:hover { border-color: color-mix(in srgb, var(--ink) 40%, transparent); background: color-mix(in srgb, var(--ink) 4%, transparent); }
-
-.btn-primary {
-  background: var(--color-amber);
-  border-color: var(--color-amber);
-  color: var(--color-on-accent);
-}
-
-.btn-primary:hover { background: var(--sun); border-color: var(--sun); color: var(--color-on-accent); }
-
-/* Sheen sweep */
-.btn::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(110deg, transparent 30%, color-mix(in srgb, var(--ink) 22%, transparent) 50%, transparent 70%);
-  transform: translateX(-120%);
-  transition: transform 0.7s var(--ease-out);
-  pointer-events: none;
-}
-
-.btn:hover::after { transform: translateX(120%); }
-
-.text-link {
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--color-heading);
-  border-bottom: 1px solid transparent;
-  padding-bottom: 2px;
-  transition: color var(--transition), border-color var(--transition);
-}
-
-.text-link:hover { color: var(--color-amber); border-color: var(--color-amber); }
-
-/* ── Stats strip ── */
-.stats {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  margin-top: 3.5rem;
-  border-block: 1px solid var(--color-border);
-}
-
-.stat {
-  padding: 1.1rem 1.25rem 1.25rem 0;
-  transition: background 0.3s ease;
-}
-
-.stat + .stat { border-left: 1px solid var(--color-border); padding-left: 1.25rem; }
-
-.stat-number {
-  font-family: var(--font-display);
-  font-stretch: 125%;
-  font-weight: 600;
-  font-size: 1.75rem;
-  color: var(--color-heading);
-  line-height: 1.2;
-  margin-top: 0.35rem;
-}
-
-.band { background: var(--color-band); }
-
-.section {
-  padding-block: var(--space-xl);
-  border-top: 1px solid var(--color-border);
-}
-
-
-
-
-/* =========================================================
-   OVERVIEW
-========================================================= */
-.overview-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: clamp(2rem, 5vw, 3.5rem);
-  align-items: start;
-}
-
-.overview-copy p { font-size: 0.9375rem; line-height: 1.75; margin-bottom: 1.1rem; }
-
-.current-mission { padding: 1.5rem; }
-
-.current-mission .mono:first-child { color: var(--color-amber); }
-
-.current-mission h3 { font-size: 1.25rem; margin-block: 0.6rem 0.75rem; }
-
-.current-mission p { font-size: 0.875rem; color: var(--color-text-muted); margin-bottom: 1.1rem; }
-
-.stages {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.6rem;
-}
-
-.chip {
-  font-family: var(--font-mono);
-  font-size: 0.625rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--color-text);
-  border: 1px solid var(--color-border-strong);
-  padding: 0.45rem 0.65rem;
-  background: color-mix(in srgb, var(--ink) 1.5%, transparent);
-}
-
-.chip--amber { color: var(--color-amber); border-color: color-mix(in srgb, var(--sun) 60%, transparent); }
-.chip--cyan  { color: var(--color-accent); border-color: color-mix(in srgb, var(--sky) 50%, transparent); }
-
-.arrow { color: var(--color-text-muted); font-size: 0.75rem; }
-
-/* Stage chips light up in sequence */
-.stages .chip:not(.chip--amber) { animation: chip-on 6s ease-in-out infinite; animation-delay: calc(var(--i) * 1.2s); }
-
-@keyframes chip-on {
-  0%, 22%, 100% { border-color: var(--color-border-strong); color: var(--color-text); }
-  8%, 16%       { border-color: var(--color-amber); color: var(--color-amber); }
-}
-
-/* =========================================================
-   MISSION LOG — featured rows
-========================================================= */
-.feature {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: clamp(2rem, 5vw, 4rem);
-  align-items: start;
-  padding-block: 3.25rem;
-  border-top: 1px solid var(--color-border);
-}
-
-.feature:first-of-type { border-top: 0; padding-top: 0; }
-
-.tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1rem; }
-
-.tag {
-  font-family: var(--font-mono);
-  font-size: 0.5625rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-  border: 1px solid var(--color-border-strong);
-  padding: 0.25rem 0.45rem;
-}
-
-.tag--amber { color: var(--color-amber); border-color: color-mix(in srgb, var(--sun) 60%, transparent); }
-
-.feature-title { font-size: clamp(1.75rem, 3.2vw, 2.25rem); font-weight: 700; margin-bottom: 0.5rem; }
-
-.feature-sub { font-size: 0.9375rem; color: var(--color-heading); margin-bottom: 1.1rem; }
-
-.feature-points { margin-bottom: 1.1rem; }
-
-.feature-points li {
-  position: relative;
-  padding-left: 0.9rem;
-  font-size: 0.8125rem;
-  line-height: 1.7;
-  margin-bottom: 0.5rem;
-}
-
-.feature-points li::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0.65em;
-  width: 4px;
-  height: 4px;
-  background: var(--color-text-muted);
-  border-radius: 50%;
-}
-
-.stack { font-family: var(--font-mono); font-size: 0.6875rem; color: var(--color-text-muted); margin-bottom: 1.4rem; }
-
-.feature-links { display: flex; flex-wrap: wrap; gap: 1.25rem; }
-
-.feature-visual { padding: 1.25rem; }
-
-/* ODYSSEY: delay propagation strip */
-.delay-note { font-family: var(--font-mono); font-size: 0.6875rem; color: var(--color-text-muted); margin: 1.5rem 0 1.1rem 1.25rem; }
-
-.corridor {
-  position: relative;
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  padding-bottom: 0.5rem;
-}
-
-.corridor::before {
-  content: '';
-  position: absolute;
-  left: 10%;
-  right: 10%;
-  top: 22px;
-  height: 1px;
-  background: color-mix(in srgb, var(--ink) 25%, transparent);
-}
-
-.stop {
-  position: relative;
-  display: grid;
-  justify-items: center;
-  gap: 1.1rem;
-  padding-top: 18px;
-}
-
-.stop i {
-  position: relative;
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: var(--ink);
-}
-
-/* delay ring grows with each downstream station */
-.stop i::before {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: var(--ring);
-  height: var(--ring);
-  translate: -50% -50%;
-  border-radius: 50%;
-  border: 1px solid color-mix(in srgb, var(--sun) 55%, transparent);
-  animation: ring-pulse 3.2s ease-out infinite;
-  animation-delay: var(--d);
-}
-
-.stop--late i { background: var(--color-amber); box-shadow: 0 0 10px color-mix(in srgb, var(--sun) 60%, transparent); }
-.stop--risk i::before { border-style: dashed; border-color: color-mix(in srgb, var(--ink) 30%, transparent); }
-.stop--clear i::before { display: none; }
-
-@keyframes ring-pulse {
-  0%   { scale: 0.6; opacity: 0; }
-  30%  { opacity: 1; }
-  100% { scale: 1; opacity: 0.85; }
-}
-
-.stop span { font-family: var(--font-mono); font-size: 0.625rem; letter-spacing: 0.12em; color: var(--color-text-muted); }
-
-/* BrandGuard: pre-publication check list */
-.check-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  padding-block: 0.8rem;
-  border-top: 1px solid var(--color-border);
-  font-size: 0.8125rem;
-  color: var(--color-heading);
-}
-
-.feature-visual .panel-head { padding-bottom: 0.9rem; }
-
-.badge {
-  font-family: var(--font-mono);
-  font-size: 0.5625rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  padding: 0.25rem 0.45rem;
-  border: 1px solid color-mix(in srgb, var(--sky) 45%, transparent);
-  color: var(--color-accent);
-  white-space: nowrap;
-}
-
-.badge--flag { border-color: color-mix(in srgb, var(--sun) 70%, transparent); color: var(--color-amber); animation: flag-blink 2.4s steps(1) infinite; }
-.badge--wait { border-color: var(--color-border-strong); color: var(--color-text-muted); }
-
-@keyframes flag-blink { 50% { background: color-mix(in srgb, var(--sun) 12%, transparent); } }
-
-/* ReeSolve: case lifecycle */
-.lifecycle { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; margin-top: 1.1rem; }
-
-.reopen {
-  margin-top: 1.25rem;
-  padding-top: 0.9rem;
-  border-top: 1px solid var(--color-border);
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  color: var(--color-text-muted);
-}
-
-/* ── More missions grid ── */
-.more { margin-top: 3.5rem; }
-
-.more > .mono { display: block; margin-bottom: 1.1rem; }
-
-.mission-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  border: 1px solid var(--color-border);
-  background: var(--color-panel);
-}
-
-.mission-card {
-  display: flex;
-  flex-direction: column;
-  padding: 1.25rem;
-  transition: background 0.3s ease;
-}
-
-.mission-card + .mission-card { border-left: 1px solid var(--color-border); }
-
-.mission-card:hover { background: color-mix(in srgb, var(--ink) 2%, transparent); }
-
-.mission-card h3 { font-size: 1.0625rem; margin-bottom: 0.75rem; }
-
-.mission-card p { font-size: 0.8125rem; line-height: 1.6; color: var(--color-text-muted); flex: 1; margin-bottom: 1.25rem; }
-
-.mission-card .tag { align-self: flex-start; margin-bottom: 0.9rem; }
-
-.mission-card .stack { margin: 0; }
-
-/* =========================================================
-   EDUCATION
-========================================================= */
-.edu-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: clamp(2rem, 5vw, 3.5rem);
-  align-items: start;
-}
-
-.edu-card { padding: 1.5rem 1.25rem; transition: border-color 0.3s ease; }
-
-.edu-card h3 { font-size: 1.25rem; margin-block: 0.6rem; }
-
-.edu-card p:last-child { font-size: 0.8125rem; color: var(--color-text-muted); }
-
-.cert-list { border-top: 1px solid var(--color-border); }
-
-.cert-list a {
-  display: grid;
-  grid-template-columns: 1fr auto auto;
-  align-items: center;
-  gap: 1rem;
-  padding: 1.05rem 0;
-  border-bottom: 1px solid var(--color-border);
-  font-size: 0.8125rem;
-  color: var(--color-heading);
-  transition: padding 0.3s var(--ease-out), background 0.3s ease;
-}
-
-.cert-list a:hover { padding-inline: 0.75rem; background: color-mix(in srgb, var(--ink) 2%, transparent); }
-
-.cert-list .arrow { color: var(--color-heading); transition: translate 0.3s var(--ease-out); }
-.cert-list a:hover .arrow { translate: 2px -2px; color: var(--color-amber); }
-
-/* =========================================================
-   AFFILIATIONS
-========================================================= */
-.aff-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
-}
-
-.aff-card { padding: 1.5rem 1.25rem 1.75rem; transition: border-color 0.3s ease; }
-
-.aff-card h3 { font-size: 1.0625rem; line-height: 1.3; margin-block: 0.6rem; }
-
-.aff-card p:last-child { font-size: 0.8125rem; color: var(--color-text-muted); }
-
-.edu-card:hover,
-.aff-card:hover,
-.current-mission:hover,
-.feature-visual:hover { border-color: color-mix(in srgb, var(--ink) 16%, transparent); }
-
-/* =========================================================
-   CONTACT + FOOTER
-========================================================= */
-
-.contact .mono:first-child { color: var(--color-amber); }
-
-
-
-.contact-sub { max-width: 32rem; font-size: 0.9375rem; margin-bottom: 1.75rem; }
-
-.contact-links { display: flex; flex-wrap: wrap; gap: 0.6rem; }
-
-.contact-links .btn-primary { text-transform: none; letter-spacing: 0.02em; }
-
-.site-footer { border-top: 1px solid var(--color-border); padding-block: 1.25rem; }
-
-.footer-inner {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  gap: 1rem;
-  align-items: center;
-}
-
-.footer-inner > :last-child { justify-self: end; color: var(--color-heading); }
-
-.back-to-top span { display: inline-block; transition: transform var(--transition); }
-.back-to-top:hover span { transform: translateY(-3px); }
-
-/* =========================================================
-   SKILLS BANNER — two marquee rows scrolling in opposite directions
-========================================================= */
-.marquee {
-  border-top: 1px solid var(--color-border);
-  padding-block: 2rem;
-  overflow: hidden;
-  display: grid;
-  gap: 0.6rem;
-  -webkit-mask-image: linear-gradient(90deg, transparent, black 10%, black 90%, transparent);
-  mask-image: linear-gradient(90deg, transparent, black 10%, black 90%, transparent);
-}
-
-.marquee-track {
-  display: flex;
-  width: max-content;
-  animation: marquee 38s linear infinite;
-}
-
-.marquee-track--reverse { animation-direction: reverse; animation-duration: 46s; }
-
-.marquee:hover .marquee-track { animation-play-state: paused; }
-
-.marquee-group {
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-}
-
-.marquee-item {
-  font-family: var(--font-display);
-  font-stretch: 125%;
-  font-size: clamp(1.5rem, 3.6vw, 2.75rem);
-  font-weight: 600;
-  color: var(--color-heading);
-  white-space: nowrap;
-  padding-inline: 1.25rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 2.5rem;
-}
-
-/* Amber diamond separator, drawn in CSS */
-.marquee-item::after {
-  content: '';
-  width: 0.28em;
-  height: 0.28em;
-  border: 2px solid var(--color-amber);
-  transform: rotate(45deg);
-  box-shadow: 0 0 10px color-mix(in srgb, var(--sun) 35%, transparent);
-}
-
-.marquee-track--reverse .marquee-item {
-  color: transparent;
-  -webkit-text-stroke: 1px color-mix(in srgb, var(--text) 35%, transparent);
-}
-
-.marquee-track--reverse .marquee-item::after {
-  border-width: 1px;
-  border-color: color-mix(in srgb, var(--sky) 60%, transparent);
-  box-shadow: none;
-}
-
-@keyframes marquee {
-  to { transform: translateX(-50%); }
-}
-
-/* =========================================================
-   MOTION HELPERS
-========================================================= */
-@keyframes fade-up {
-  from { opacity: 0; transform: translateY(24px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-.fade-in { animation: fade-up 0.9s var(--ease-out) both; animation-delay: var(--intro, 0s); }
-.delay-1 { animation-delay: calc(var(--intro, 0s) + 0.15s); }
-.delay-2 { animation-delay: calc(var(--intro, 0s) + 0.30s); }
-.delay-3 { animation-delay: calc(var(--intro, 0s) + 0.45s); }
-.delay-4 { animation-delay: calc(var(--intro, 0s) + 0.60s); }
-
-.scroll-progress {
-  position: fixed;
-  inset: 0 0 auto 0;
-  height: 2px;
-  background: var(--gradient-hero);
-  transform-origin: left;
-  transform: scaleX(0);
-  z-index: 200;
-  pointer-events: none;
-  display: none;
-}
-
-/* Count-up numbers via a registered integer property */
-@property --num {
-  syntax: '<integer>';
-  initial-value: 0;
-  inherits: false;
-}
-
-.count {
-  --num: var(--to);
-  counter-reset: num var(--num);
-  animation: count-up 1.6s var(--ease-out) calc(var(--intro, 0s) + 0.3s) both;
-}
-
-.count::before { content: counter(num); }
-
-@keyframes count-up {
-  from { --num: 0; }
-  to   { --num: var(--to); }
-}
-
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .scroll-progress {
-      display: block;
-      animation: progress linear both;
-      animation-timeline: scroll(root);
-    }
-
-    @keyframes progress { to { transform: scaleX(1); } }
-
-    .reveal {
-      animation: reveal linear both;
-      animation-timeline: view();
-      animation-range: entry 0% entry 70%;
-    }
-
-    @keyframes reveal {
-      from { opacity: 0; translate: 0 40px; filter: blur(6px); }
-      to   { opacity: 1; translate: 0 0;    filter: blur(0); }
-    }
-
-    /* Hero drifts up and fades as you scroll past it */
-    .hero-inner {
-      animation: hero-exit linear both;
-      animation-timeline: view();
-      animation-range: exit 0% exit 100%;
-    }
-
-    @keyframes hero-exit {
-      to { opacity: 0; transform: translateY(-60px) scale(0.97); }
-    }
-  }
-}
-
-/* =========================================================
-   HUD ICONS — pure CSS glyphs drawn with ::before / ::after
-========================================================= */
-.hud-icon {
-  position: relative;
-  border-radius: 0;
-  font-size: 0;
-  color: var(--color-accent);
-  background:
-    linear-gradient(var(--color-accent), var(--color-accent)) 0 0 / 6px 1px no-repeat,
-    linear-gradient(var(--color-accent), var(--color-accent)) 0 0 / 1px 6px no-repeat,
-    linear-gradient(var(--color-accent), var(--color-accent)) 100% 100% / 6px 1px no-repeat,
-    linear-gradient(var(--color-accent), var(--color-accent)) 100% 100% / 1px 6px no-repeat,
-    color-mix(in srgb, var(--sky) 5%, transparent);
-  border: 1px solid color-mix(in srgb, var(--sky) 18%, transparent);
-  transition: color 0.3s ease, transform 0.5s var(--ease-out), box-shadow 0.3s ease;
-}
-
-.hud-icon::before,
-.hud-icon::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  margin: auto;
-  box-sizing: border-box;
-}
-
-.project-card:hover .hud-icon,
-.skill-card:hover .hud-icon {
-  color: var(--color-amber);
-  box-shadow: 0 0 16px color-mix(in srgb, var(--sun) 25%, transparent), inset 0 0 12px color-mix(in srgb, var(--sun) 12%, transparent);
-}
-
-/* [ ] angled brackets */
-.i-brackets::before,
-.i-brackets::after {
-  width: 22%;
-  height: 54%;
-  border: 2px solid currentColor;
-}
-.i-brackets::before { border-right: 0; translate: -95% 0; }
-.i-brackets::after  { border-left: 0;  translate: 95% 0; }
-
-/* >> chevrons */
-.i-chevron::before,
-.i-chevron::after {
-  width: 28%;
-  height: 28%;
-  border: solid currentColor;
-  border-width: 2px 2px 0 0;
-  rotate: 45deg;
-}
-.i-chevron::before { translate: -40% 0; opacity: 0.45; }
-.i-chevron::after  { translate: 25% 0; }
-
-/* targeting crosshair */
-.i-crosshair::before {
-  width: 66%;
-  height: 66%;
-  background:
-    linear-gradient(currentColor, currentColor) center / 1.5px 100% no-repeat,
-    linear-gradient(currentColor, currentColor) center / 100% 1.5px no-repeat;
-  -webkit-mask: radial-gradient(circle, transparent 18%, black 19%);
-  mask: radial-gradient(circle, transparent 18%, black 19%);
-}
-.i-crosshair::after {
-  width: 40%;
-  height: 40%;
-  border: 1.5px solid currentColor;
-  border-radius: 50%;
-}
-
-/* telemetry bars */
-.i-bars::before {
-  width: 56%;
-  height: 50%;
-  background:
-    linear-gradient(currentColor, currentColor) 0% 100% / 20% 45% no-repeat,
-    linear-gradient(currentColor, currentColor) 50% 100% / 20% 100% no-repeat,
-    linear-gradient(currentColor, currentColor) 100% 100% / 20% 70% no-repeat;
-}
-
-/* hull diamond */
-.i-diamond::before {
-  width: 42%;
-  height: 42%;
-  border: 2px solid currentColor;
-  rotate: 45deg;
-}
-.i-diamond::after {
-  width: 14%;
-  height: 14%;
-  background: currentColor;
-  rotate: 45deg;
-}
-
-/* radar sweep */
-.i-radar::before {
-  width: 64%;
-  height: 64%;
-  border: 1.5px solid currentColor;
-  border-radius: 50%;
-  background: conic-gradient(from 0deg, color-mix(in srgb, var(--sky) 55%, transparent), transparent 28%);
-  animation: radar-sweep 3s linear infinite;
-}
-.i-radar::after {
-  width: 10%;
-  height: 10%;
-  border-radius: 50%;
-  background: currentColor;
-}
-
-@keyframes radar-sweep { to { rotate: 1turn; } }
-
-/* orbit: planet with a tilted ring and a satellite */
-.i-orbit::before {
-  width: 74%;
-  height: 30%;
-  border: 1.5px solid currentColor;
-  border-radius: 50%;
-  rotate: -25deg;
-}
-.i-orbit::after {
-  width: 22%;
-  height: 22%;
-  border-radius: 50%;
-  background: currentColor;
-  box-shadow: 0 0 10px currentColor;
-}
-
-/* =========================================================
-   SKILLS — 3D NEURAL MAP
-   Scene graph: .nm-tilt (drag pitch/yaw) → .nm-spin (auto spin)
-   → .nm-hub (lon/lat) → .nm-hubpos (out to radius 1)
-   → .nm-arm (fan angle) → leaf node (out to radius 2).
-   Every label undoes the rotations above it so it faces you.
-========================================================= */
-@property --spin  { syntax: '<angle>'; inherits: true; initial-value: 0deg; }
-@property --yaw   { syntax: '<angle>'; inherits: true; initial-value: 0deg; }
-@property --tilt  { syntax: '<angle>'; inherits: true; initial-value: 0deg; }
-@property --fx    { syntax: '<angle>'; inherits: true; initial-value: -12deg; }
-@property --dim   { syntax: '<number>'; inherits: true; initial-value: 1; }
-
-.neural {
-  --r1: clamp(100px, 22vw, 200px);  /* core → hub */
-  --r2: clamp(58px, 11vw, 118px);   /* hub → skill */
-  --pitch: calc(var(--tilt) + var(--fx));
-  display: grid;
-  grid-template-columns: minmax(0, 20rem) minmax(0, 1fr);
-  gap: var(--space-md);
-  align-items: stretch;
-  animation: nm-spin 48s linear infinite;
-  transition: --spin 1.4s var(--ease-out), --fx 1.2s var(--ease-out);
-}
-
-@keyframes nm-spin {
-  from { --spin: 0deg; }
-  to   { --spin: 360deg; }
-}
-
-/* Pause the spin while exploring or dragging */
-.neural:has(.nm-stage:hover),
-.neural.is-dragging { animation-play-state: paused; }
-
-/* ── Control panel ── */
-.nm-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.nm-filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.nm-filters label {
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-  border: 1px solid var(--color-border);
-  padding: 0.45rem 0.7rem;
-  cursor: pointer;
-  clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
-  background: color-mix(in srgb, var(--sky) 3%, transparent);
-  transition: color 0.25s ease, background 0.25s ease, border-color 0.25s ease;
-}
-
-.nm-filters label span { color: var(--color-accent); margin-left: 0.3rem; }
-
-.nm-filters label:hover {
-  color: var(--color-heading);
-  border-color: var(--color-border-hover);
-}
-
-.nm-hint {
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-}
-
-.nm-hint::before { content: '▸ '; color: var(--color-amber); }
-
-/* ── Stage ── */
-.nm-stage {
-  position: relative;
-  min-height: 40rem;
-  perspective: 1100px;
-  overflow: hidden;
-  cursor: grab;
-  touch-action: pan-y;
-  user-select: none;
-  border: 1px solid var(--color-border);
-  clip-path: polygon(var(--chamfer) 0, 100% 0, 100% calc(100% - var(--chamfer)), calc(100% - var(--chamfer)) 100%, 0 100%, 0 var(--chamfer));
-  background:
-    /* corner-cut edge lines */
-    linear-gradient(135deg, transparent calc(50% - 1px), var(--chamfer-line) calc(50% - 1px) calc(50% + 0.5px), transparent calc(50% + 0.5px)) 0 0 / var(--chamfer) var(--chamfer) no-repeat,
-    linear-gradient(135deg, transparent calc(50% - 0.5px), var(--chamfer-line) calc(50% - 0.5px) calc(50% + 1px), transparent calc(50% + 1px)) 100% 100% / var(--chamfer) var(--chamfer) no-repeat,
-    /* targeting crosshair through the centre */
-    linear-gradient(color-mix(in srgb, var(--sky) 7%, transparent), color-mix(in srgb, var(--sky) 7%, transparent)) center / 100% 1px no-repeat,
-    linear-gradient(color-mix(in srgb, var(--sky) 7%, transparent), color-mix(in srgb, var(--sky) 7%, transparent)) center / 1px 100% no-repeat,
-    /* HUD grid and a soft core glow */
-    radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--sky) 10%, transparent), transparent 55%),
-    linear-gradient(color-mix(in srgb, var(--sky) 3.5%, transparent) 1px, transparent 1px) 0 0 / 32px 32px,
-    linear-gradient(90deg, color-mix(in srgb, var(--sky) 3.5%, transparent) 1px, transparent 1px) 0 0 / 32px 32px,
-    var(--color-bg-card);
-}
-
-.neural.is-dragging .nm-stage { cursor: grabbing; }
-
-/* Readout text in the stage corners */
-.nm-stage::before,
-.nm-stage::after {
-  position: absolute;
-  font-family: var(--font-mono);
-  font-size: 0.625rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-  z-index: 1;
-  pointer-events: none;
-}
-
-.nm-stage::before { content: 'NEURAL MAP // 05 CLUSTERS · 21 NODES'; top: 1rem; left: 1.5rem; }
-.nm-stage::after  { content: 'SIGNAL: NOMINAL'; bottom: 1rem; right: 1.5rem; color: var(--color-go); }
-
-.nm-tilt,
-.nm-spin,
-.nm-hub,
-.nm-hubpos,
-.nm-arm {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 0;
-  height: 0;
-  transform-style: preserve-3d;
-}
-
-.nm-tilt {
-  left: 50%;
-  top: 50%;
-  transform: rotateX(var(--pitch)) rotateY(var(--yaw));
-}
-
-.nm-spin { transform: rotateY(var(--spin)); }
-.nm-hub  { transform: rotateY(var(--lon)) rotateX(var(--lat)); }
-.nm-hubpos { transform: translateZ(var(--r1)); }
-.nm-arm  { transform: rotateZ(var(--a)) rotateX(var(--s)); }
-
-/* Orbital rings around the core */
-.nm-ring {
-  position: absolute;
-  left: calc(var(--r1) * -1.15);
-  top: calc(var(--r1) * -1.15);
-  width: calc(var(--r1) * 2.3);
-  height: calc(var(--r1) * 2.3);
-  border: 1px dashed color-mix(in srgb, var(--sky) 16%, transparent);
-  border-radius: 50%;
-  transform: rotateX(90deg);
-}
-
-.nm-ring--tilted {
-  border-style: solid;
-  border-color: color-mix(in srgb, var(--sun) 14%, transparent);
-  transform: rotateX(70deg) rotateY(28deg);
-}
-
-/* ── Synapse links: two crossed planes so they read from any angle ── */
-.nm-link {
-  position: absolute;
-  left: 0;
-  top: -0.5px;
-  width: var(--r1);
-  height: 1px;
-  transform-origin: 0 50%;
-  transform: rotateY(-90deg);
-  transform-style: preserve-3d;
-  --alpha: calc(0.55 * var(--dim));
-}
-
-.nm-link--leaf { width: var(--r2); --alpha: calc(0.38 * var(--dim)); }
-
-.nm-link,
-.nm-link::after {
-  background:
-    linear-gradient(90deg, transparent, color-mix(in srgb, var(--ink) calc(var(--alpha) * 140%), transparent), transparent) -40% 0 / 35% 100% no-repeat,
-    linear-gradient(90deg, color-mix(in srgb, var(--sky) calc(var(--alpha) * 40%), transparent), color-mix(in srgb, var(--sky) calc(var(--alpha) * 100%), transparent));
-  animation: nm-signal 2.8s linear infinite;
-}
-
-.nm-link--leaf,
-.nm-link--leaf::after { animation-duration: 2.2s; animation-delay: 0.6s; }
-
-.nm-link::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  transform: rotateX(90deg);
-}
-
-@keyframes nm-signal {
-  to { background-position: 140% 0, 0 0; }
-}
-
-/* ── Nodes (0×0 anchors that face the camera) ── */
-.nm-node {
-  position: absolute;
-  left: 0;
-  top: 0;
-  /* depth cue from the node's current angle to the viewer */
-  --depth: calc(0.3 + 0.7 * (0.5 + 0.5 * cos(var(--lon, 0deg) + var(--spin) + var(--yaw))));
-  opacity: calc(var(--depth) * var(--dim));
-  transition: opacity 0.4s ease;
-}
-
-.nm-node--core {
-  opacity: 1;
-  transform: rotateY(calc(-1 * (var(--spin) + var(--yaw)))) rotateX(calc(-1 * var(--pitch)));
-}
-
-.nm-node--hub {
-  transform:
-    rotateX(calc(-1 * var(--lat))) rotateY(calc(-1 * var(--lon)))
-    rotateY(calc(-1 * (var(--spin) + var(--yaw)))) rotateX(calc(-1 * var(--pitch)));
-}
-
-.nm-node--leaf {
-  transform:
-    translateZ(var(--r2))
-    rotateX(calc(-1 * var(--s))) rotateZ(calc(-1 * var(--a)))
-    rotateX(calc(-1 * var(--lat))) rotateY(calc(-1 * var(--lon)))
-    rotateY(calc(-1 * (var(--spin) + var(--yaw)))) rotateX(calc(-1 * var(--pitch)));
-}
-
-.nm-label {
-  position: absolute;
-  left: 0;
-  top: 0;
-  translate: -50% -50%;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  white-space: nowrap;
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  letter-spacing: 0.04em;
-  color: var(--color-text);
-  padding: 0.3rem 0.55rem 0.3rem 0.45rem;
-  background: color-mix(in srgb, var(--void) 78%, transparent);
-  border: 1px solid color-mix(in srgb, var(--sky) 25%, transparent);
-  transition: color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, scale 0.35s var(--ease-out);
-}
-
-/* glowing synapse dot on leaf labels */
-.nm-node--leaf .nm-label::before {
-  content: '';
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--color-accent);
-  box-shadow: 0 0 8px var(--color-accent);
-}
-
-.nm-node--hub .nm-label {
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--color-heading);
-  padding: 0.4rem 0.7rem 0.4rem 0.4rem;
-  border-color: color-mix(in srgb, var(--sky) 55%, transparent);
-  box-shadow: 0 0 18px color-mix(in srgb, var(--sky) 18%, transparent);
-  clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px);
-}
-
-.nm-node--hub .hud-icon { width: 22px; height: 22px; }
-
-.nm-node--core .nm-label {
-  flex-direction: column;
-  gap: 0;
-  width: 5.5rem;
-  height: 5.5rem;
-  justify-content: center;
-  border-radius: 50%;
-  font-size: 0.8125rem;
-  font-weight: 500;
-  letter-spacing: 0.18em;
-  color: var(--color-heading);
-  border-color: color-mix(in srgb, var(--sky) 60%, transparent);
-  background: radial-gradient(circle, color-mix(in srgb, var(--sky) 28%, transparent), color-mix(in srgb, var(--void) 90%, transparent) 70%);
-  box-shadow: 0 0 40px color-mix(in srgb, var(--sky) 35%, transparent), inset 0 0 20px color-mix(in srgb, var(--sky) 25%, transparent);
-  animation: nm-core-pulse 3.2s ease-in-out infinite;
-}
-
-.nm-node--core small {
-  font-size: 0.5625rem;
-  letter-spacing: 0.12em;
-  color: var(--color-accent-light);
-}
-
-@keyframes nm-core-pulse {
-  50% { box-shadow: 0 0 60px color-mix(in srgb, var(--sky) 50%, transparent), inset 0 0 26px color-mix(in srgb, var(--sky) 35%, transparent); }
-}
-
-/* ── Hover: highlight a cluster, light up a node ── */
-.nm-spin:has(.nm-hub:hover) .nm-hub:not(:hover) { --dim: 0.22; }
-
-.nm-node:hover { opacity: 1; z-index: 2; }
-
-.nm-node:hover .nm-label {
-  color: var(--color-amber);
-  border-color: var(--color-amber);
-  box-shadow: 0 0 22px color-mix(in srgb, var(--sun) 35%, transparent);
-  scale: 1.12;
-}
-
-.nm-node:hover .nm-label::before {
-  background: var(--color-amber);
-  box-shadow: 0 0 10px var(--color-amber);
-}
-
-/* ── Filters: focus a cluster (rotate it to the front, dim the rest) ── */
-.neural:has(.nm-radio:not(#nm-all):checked) { animation: none; }
-
-/* Each cluster turns ~35° off-centre so its hub isn't hidden behind the core */
-.neural:has(#nm-front:checked) { --spin: 35deg;   --fx: 4deg; }
-.neural:has(#nm-dev:checked)   { --spin: -37deg;  --fx: -22deg; }
-.neural:has(#nm-prod:checked)  { --spin: -109deg; --fx: 2deg; }
-.neural:has(#nm-cad:checked)   { --spin: -181deg; --fx: -24deg; }
-.neural:has(#nm-ai:checked)    { --spin: -253deg; --fx: 6deg; }
-
-.neural:has(#nm-front:checked) .nm-hub:not(.nm-hub--front),
-.neural:has(#nm-dev:checked)   .nm-hub:not(.nm-hub--dev),
-.neural:has(#nm-prod:checked)  .nm-hub:not(.nm-hub--prod),
-.neural:has(#nm-cad:checked)   .nm-hub:not(.nm-hub--cad),
-.neural:has(#nm-ai:checked)    .nm-hub:not(.nm-hub--ai) { --dim: 0.12; }
-
-
-/* Active filter button */
-#nm-all:checked   ~ .nm-panel label[for="nm-all"],
-#nm-front:checked ~ .nm-panel label[for="nm-front"],
-#nm-dev:checked   ~ .nm-panel label[for="nm-dev"],
-#nm-prod:checked  ~ .nm-panel label[for="nm-prod"],
-#nm-cad:checked   ~ .nm-panel label[for="nm-cad"],
-#nm-ai:checked    ~ .nm-panel label[for="nm-ai"] {
-  color: var(--color-on-accent);
-  background: var(--color-accent);
-  border-color: var(--color-accent);
-}
-
-#nm-all:checked   ~ .nm-panel label[for="nm-all"] span,
-#nm-front:checked ~ .nm-panel label[for="nm-front"] span,
-#nm-dev:checked   ~ .nm-panel label[for="nm-dev"] span,
-#nm-prod:checked  ~ .nm-panel label[for="nm-prod"] span,
-#nm-cad:checked   ~ .nm-panel label[for="nm-cad"] span,
-#nm-ai:checked    ~ .nm-panel label[for="nm-ai"] span { color: var(--color-on-accent); }
-
-/* Keyboard focus on the hidden radios shows on their labels */
-#nm-all:focus-visible   ~ .nm-panel label[for="nm-all"],
-#nm-front:focus-visible ~ .nm-panel label[for="nm-front"],
-#nm-dev:focus-visible   ~ .nm-panel label[for="nm-dev"],
-#nm-prod:focus-visible  ~ .nm-panel label[for="nm-prod"],
-#nm-cad:focus-visible   ~ .nm-panel label[for="nm-cad"],
-#nm-ai:focus-visible    ~ .nm-panel label[for="nm-ai"] {
-  outline: 2px solid var(--color-amber);
-  outline-offset: 2px;
-}
-
-@media (max-width: 900px) {
-  .neural { grid-template-columns: 1fr; }
-  .nm-stage { min-height: 26rem; order: -1; }
-  .nm-stage::before { content: 'NEURAL MAP // 21 NODES'; }
-}
-
-@media (max-width: 520px) {
-  .neural { --r1: 74px; --r2: 46px; }
-  .nm-label { font-size: 0.5625rem; padding: 0.2rem 0.4rem 0.2rem 0.3rem; }
-  .nm-node--hub .nm-label { font-size: 0.5625rem; }
-  .nm-node--hub .hud-icon { width: 16px; height: 16px; }
-  .nm-node--core .nm-label { width: 4rem; height: 4rem; font-size: 0.6875rem; }
-}
-
-/* =========================================================
-   CUSTOM CURSOR — positions come from the small script at the
-   end of <body>; everything visual lives here. Only active on
-   mouse/trackpad devices (html.has-cursor).
-========================================================= */
-.cursor-dot,
-.cursor-ring,
-.cursor-glow {
-  position: fixed;
-  top: 0;
-  left: 0;
-  pointer-events: none;
-  display: none;
-  will-change: transform;
-}
-
-.has-cursor .cursor-dot,
-.has-cursor .cursor-ring,
-.has-cursor .cursor-glow { display: block; }
-
-.has-cursor body,
-.has-cursor a,
-.has-cursor label,
-.has-cursor button { cursor: none; }
-
-.cursor-dot {
-  z-index: 2001;
-  width: 6px;
-  height: 6px;
-  margin: -3px 0 0 -3px;
-  border-radius: 50%;
-  background: var(--ink);
-  transition: opacity 0.2s ease, scale 0.25s var(--ease-out);
-}
-
-.cursor-ring {
-  z-index: 2000;
-  width: 36px;
-  height: 36px;
-  margin: -18px 0 0 -18px;
-  border-radius: 50%;
-  border: 1.5px solid color-mix(in srgb, var(--sky) 70%, transparent);
-  /* size is eased by the script (in transform) so states blend smoothly */
-  transition:
-    background 0.3s ease,
-    border-color 0.3s ease,
-    opacity 0.2s ease;
-}
-
-.cursor-glow {
-  z-index: -1; /* sits under page content */
-  width: 520px;
-  height: 520px;
-  margin: -260px 0 0 -260px;
-  border-radius: 50%;
-  background: radial-gradient(circle, color-mix(in srgb, var(--sky) 10%, transparent) 0%, color-mix(in srgb, var(--sun) 5%, transparent) 40%, transparent 70%);
-  transition: opacity 0.4s ease;
-}
-
-/* Over links and buttons: ring fills, dot shrinks (ring size set in script) */
-.cursor-link .cursor-ring {
-  background: color-mix(in srgb, var(--sky) 12%, transparent);
-  border-color: var(--color-accent-light);
-}
-
-.cursor-link .cursor-dot { scale: 0.4; }
-
-/* Over cards: ring tints violet */
-.cursor-card .cursor-ring {
-  border-color: color-mix(in srgb, var(--sun) 50%, transparent);
-  background: color-mix(in srgb, var(--sun) 6%, transparent);
-}
-
-.cursor-down .cursor-dot { scale: 0.6; }
-
-.cursor-hidden .cursor-dot,
-.cursor-hidden .cursor-ring,
-.cursor-hidden .cursor-glow { opacity: 0; }
-
-/* Spotlight that follows the cursor inside cards */
-.has-cursor .mission-card,
-.has-cursor .feature-visual,
-.has-cursor .current-mission,
-.has-cursor .missions-panel,
-.has-cursor .edu-card,
-.has-cursor .aff-card,
-.has-cursor .stat {
-  --spot: radial-gradient(
-    320px circle at var(--mx, -999px) var(--my, -999px),
-    color-mix(in srgb, var(--sky) 12%, transparent),
-    transparent 60%
-  );
-}
-
-/* Panels pick up the spotlight as a background layer */
-.has-cursor .mission-card,
-.has-cursor .feature-visual,
-.has-cursor .current-mission,
-.has-cursor .missions-panel,
-.has-cursor .edu-card,
-.has-cursor .aff-card,
-.has-cursor .stat {
-  background-image: var(--spot);
-}
-
-/* Buttons lean slightly toward the cursor */
-.btn { transition: transform var(--transition), box-shadow var(--transition), background var(--transition), translate 0.45s var(--ease-out); }
-
-
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-}
-
-/* =========================================================
-   NEURAL MAP — constellation styling + systems index
-   (the 3D engine above is unchanged; this only restyles it)
-========================================================= */
-.neural {
-  --r1: clamp(96px, 15vw, 172px);
-  --r2: clamp(52px, 7.5vw, 92px);
-  grid-template-columns: minmax(0, 1fr) minmax(0, 21rem);
-  gap: 1.5rem;
-  animation-duration: 80s;
-}
-
-/* ── Stage: quiet instrument panel ── */
-.nm-stage {
-  order: -1;
-  min-height: 33rem;
-  clip-path: none;
-  border-color: var(--color-border);
-  background:
-    radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--sky) 6%, transparent), transparent 50%),
-    radial-gradient(color-mix(in srgb, var(--ink) 5%, transparent) 1px, transparent 1px) 0 0 / 24px 24px,
-    var(--color-panel);
-}
-
-.nm-stage::before {
-  content: 'Skill graph · 21 nodes';
-  top: 1.1rem;
-  left: 1.25rem;
-  font-size: 0.625rem;
-  letter-spacing: 0.14em;
-}
-
-.nm-stage::after {
-  content: 'Drag to rotate';
-  bottom: 1.1rem;
-  left: 1.25rem;
-  right: auto;
-  font-size: 0.625rem;
-  letter-spacing: 0.14em;
-  color: var(--color-text-muted);
-}
-
-.nm-ring {
-  border: 1px solid color-mix(in srgb, var(--ink) 6%, transparent);
-  left: calc(var(--r1) * -1.05);
-  top: calc(var(--r1) * -1.05);
-  width: calc(var(--r1) * 2.1);
-  height: calc(var(--r1) * 2.1);
-}
-
-/* ── Links: hairlines, signal only on core → hub ── */
-.nm-link { --alpha: calc(0.32 * var(--dim)); }
-.nm-link--leaf { --alpha: calc(0.16 * var(--dim)); }
-
-.nm-link,
-.nm-link::after { animation-duration: 4.5s; }
-
-.nm-link--leaf,
-.nm-link--leaf::after {
-  animation: none;
-  background: linear-gradient(90deg, color-mix(in srgb, var(--ink) calc(var(--alpha) * 50%), transparent), color-mix(in srgb, var(--ink) calc(var(--alpha) * 100%), transparent));
-}
-
-/* ── Core: small and calm ── */
-.nm-node--core .nm-label {
-  width: 3.6rem;
-  height: 3.6rem;
-  font-size: 0.625rem;
-  letter-spacing: 0.2em;
-  border-color: color-mix(in srgb, var(--ink) 18%, transparent);
-  background: radial-gradient(circle at 40% 35%, var(--raised), var(--panel) 70%);
-  box-shadow: 0 0 30px color-mix(in srgb, var(--sky) 12%, transparent);
-  animation: none;
-}
-
-.nm-node--core small { display: none; }
-
-/* ── Hubs: amber captions with a ring marker ── */
-.nm-node--hub .nm-label {
-  clip-path: none;
-  gap: 0.5rem;
-  padding: 0;
-  background: none;
-  border: 0;
-  box-shadow: none;
-  font-size: 0.625rem;
-  letter-spacing: 0.16em;
-  color: var(--color-amber);
-  text-shadow: 0 0 12px color-mix(in srgb, var(--void) 90%, transparent);
-  translate: -6px -50%;
-}
-
-.nm-node--hub .hud-icon { display: none; }
-
-.nm-node--hub .nm-label::before {
-  content: '';
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  border: 1.5px solid var(--color-amber);
-  background: var(--color-panel);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--sun) 12%, transparent);
-  flex-shrink: 0;
-}
-
-/* ── Leaves: dot + plain label; labels show on the near side only ── */
-.nm-node--leaf .nm-label {
-  gap: 0.45rem;
-  padding: 0;
-  background: none;
-  border: 0;
-  font-family: var(--font-base);
-  font-size: 0.75rem;
-  letter-spacing: 0;
-  color: var(--color-text);
-  text-shadow: 0 0 10px color-mix(in srgb, var(--void) 95%, transparent), 0 0 2px color-mix(in srgb, var(--void) 95%, transparent);
-  translate: -3px -50%;
-}
-
-.nm-node--leaf .nm-label::before {
-  width: 5px;
-  height: 5px;
-  flex-shrink: 0;
-  background: var(--ink);
-  box-shadow: none;
-}
-
-/* Text fades out as a node turns away; the dot stays */
-.nm-node--leaf .nm-label {
-  --lbl: clamp(0, calc((var(--depth) - 0.62) * 4), 1);
-  color: color-mix(in srgb, var(--text) calc(var(--lbl) * 100%), transparent);
-}
-
-.nm-node--hub { opacity: calc(max(var(--depth), 0.55) * var(--dim)); }
-
-/* A hovered or selected cluster shows every label at full strength */
-.nm-hub:hover .nm-node--leaf .nm-label,
-.neural:has(#nm-ai:checked)    .nm-hub--ai    .nm-node--leaf .nm-label,
-.neural:has(#nm-prod:checked)  .nm-hub--prod  .nm-node--leaf .nm-label,
-.neural:has(#nm-dev:checked)   .nm-hub--dev   .nm-node--leaf .nm-label,
-.neural:has(#nm-front:checked) .nm-hub--front .nm-node--leaf .nm-label,
-.neural:has(#nm-cad:checked)   .nm-hub--cad   .nm-node--leaf .nm-label,
-.neural:has(label[for="nm-ai"]:hover)    .nm-hub--ai    .nm-node--leaf .nm-label,
-.neural:has(label[for="nm-prod"]:hover)  .nm-hub--prod  .nm-node--leaf .nm-label,
-.neural:has(label[for="nm-dev"]:hover)   .nm-hub--dev   .nm-node--leaf .nm-label,
-.neural:has(label[for="nm-front"]:hover) .nm-hub--front .nm-node--leaf .nm-label,
-.neural:has(label[for="nm-cad"]:hover)   .nm-hub--cad   .nm-node--leaf .nm-label {
-  color: var(--color-heading);
-}
-
-.nm-hub:hover .nm-node,
-.neural:has(#nm-ai:checked)    .nm-hub--ai    .nm-node,
-.neural:has(#nm-prod:checked)  .nm-hub--prod  .nm-node,
-.neural:has(#nm-dev:checked)   .nm-hub--dev   .nm-node,
-.neural:has(#nm-front:checked) .nm-hub--front .nm-node,
-.neural:has(#nm-cad:checked)   .nm-hub--cad   .nm-node { opacity: 1; }
-
-/* Node hover: amber, no box */
-.nm-node:hover .nm-label {
-  border: 0;
-  box-shadow: none;
-  scale: 1.06;
-}
-
-.nm-node--leaf:hover .nm-label { color: var(--color-amber); }
-
-/* Hovering an index row previews that cluster on the map */
-.neural:has(label[for="nm-ai"]:hover)    .nm-hub:not(.nm-hub--ai),
-.neural:has(label[for="nm-prod"]:hover)  .nm-hub:not(.nm-hub--prod),
-.neural:has(label[for="nm-dev"]:hover)   .nm-hub:not(.nm-hub--dev),
-.neural:has(label[for="nm-front"]:hover) .nm-hub:not(.nm-hub--front),
-.neural:has(label[for="nm-cad"]:hover)   .nm-hub:not(.nm-hub--cad) { --dim: 0.2; }
-
-/* ── Systems index (filters + readout in one list) ── */
-.nm-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  align-self: stretch;
-}
-
-.nm-index-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  padding-bottom: 0.9rem;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.nm-reset {
-  cursor: pointer;
-  color: var(--color-text-muted);
-  transition: color var(--transition);
-}
-
-.nm-reset:hover { color: var(--color-heading); }
-
-.nm-index { display: flex; flex-direction: column; }
-
-.nm-row {
-  display: grid;
-  grid-template-columns: 1.75rem minmax(0, 1fr) auto;
-  gap: 0.75rem;
-  align-items: start;
-  padding: 1rem 0.25rem 1rem 0;
-  border-bottom: 1px solid var(--color-border);
-  cursor: pointer;
-  position: relative;
-  transition: background 0.3s ease, opacity 0.4s ease, padding 0.3s var(--ease-out);
-}
-
-/* amber bar marks the active row */
-.nm-row::before {
-  content: '';
-  position: absolute;
-  left: -1px;
-  top: 0.9rem;
-  bottom: 0.9rem;
-  width: 2px;
-  background: var(--color-amber);
-  transform: scaleY(0);
-  transition: transform 0.35s var(--ease-out);
-}
-
-.nm-row:hover { background: color-mix(in srgb, var(--ink) 2%, transparent); }
-
-.nm-row-idx,
-.nm-row-count {
-  font-family: var(--font-mono);
-  font-size: 0.625rem;
-  letter-spacing: 0.12em;
-  color: var(--color-text-muted);
-  padding-top: 0.2rem;
-}
-
-.nm-row-body { display: grid; gap: 0.3rem; }
-
-.nm-row-title {
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--color-heading);
-  transition: color var(--transition);
-}
-
-.nm-row-skills { font-size: 0.8125rem; line-height: 1.6; color: var(--color-text-muted); }
-
-.nm-row:hover .nm-row-title { color: var(--color-amber); }
-
-/* Active row */
-#nm-ai:checked    ~ .nm-panel label[for="nm-ai"],
-#nm-prod:checked  ~ .nm-panel label[for="nm-prod"],
-#nm-dev:checked   ~ .nm-panel label[for="nm-dev"],
-#nm-front:checked ~ .nm-panel label[for="nm-front"],
-#nm-cad:checked   ~ .nm-panel label[for="nm-cad"] {
-  background: color-mix(in srgb, var(--sun) 5%, transparent);
-  padding-left: 0.85rem;
-  color: inherit;
-  border-color: var(--color-border);
-}
-
-#nm-ai:checked    ~ .nm-panel label[for="nm-ai"]::before,
-#nm-prod:checked  ~ .nm-panel label[for="nm-prod"]::before,
-#nm-dev:checked   ~ .nm-panel label[for="nm-dev"]::before,
-#nm-front:checked ~ .nm-panel label[for="nm-front"]::before,
-#nm-cad:checked   ~ .nm-panel label[for="nm-cad"]::before { transform: scaleY(1); }
-
-#nm-ai:checked    ~ .nm-panel label[for="nm-ai"] .nm-row-title,
-#nm-prod:checked  ~ .nm-panel label[for="nm-prod"] .nm-row-title,
-#nm-dev:checked   ~ .nm-panel label[for="nm-dev"] .nm-row-title,
-#nm-front:checked ~ .nm-panel label[for="nm-front"] .nm-row-title,
-#nm-cad:checked   ~ .nm-panel label[for="nm-cad"] .nm-row-title { color: var(--color-amber); }
-
-#nm-ai:checked    ~ .nm-panel label[for="nm-ai"] .nm-row-skills,
-#nm-prod:checked  ~ .nm-panel label[for="nm-prod"] .nm-row-skills,
-#nm-dev:checked   ~ .nm-panel label[for="nm-dev"] .nm-row-skills,
-#nm-front:checked ~ .nm-panel label[for="nm-front"] .nm-row-skills,
-#nm-cad:checked   ~ .nm-panel label[for="nm-cad"] .nm-row-skills { color: var(--color-text); }
-
-/* "Show all" reads as active when nothing is focused */
-#nm-all:checked ~ .nm-panel label[for="nm-all"].nm-reset { color: var(--color-amber); background: none; border: 0; }
-
-/* Unfocused rows step back */
-.neural:has(.nm-radio:not(#nm-all):checked) .nm-row { opacity: 0.5; }
-.neural:has(.nm-radio:not(#nm-all):checked) .nm-row:hover,
-#nm-ai:checked    ~ .nm-panel label[for="nm-ai"],
-#nm-prod:checked  ~ .nm-panel label[for="nm-prod"],
-#nm-dev:checked   ~ .nm-panel label[for="nm-dev"],
-#nm-front:checked ~ .nm-panel label[for="nm-front"],
-#nm-cad:checked   ~ .nm-panel label[for="nm-cad"] { opacity: 1; }
-
-/* =========================================================
-   RESPONSIVE
-========================================================= */
-@media (max-width: 900px) {
-  :root { --space-xl: 4.5rem; }
-
-  .hero-inner,
-  .overview-grid,
-  .feature,
-  .edu-grid { grid-template-columns: 1fr; }
-
-
-  .mission-grid { grid-template-columns: repeat(2, 1fr); }
-  .mission-card:nth-child(3) { border-left: 0; }
-  .mission-card:nth-child(n + 3) { border-top: 1px solid var(--color-border); }
-
-  .neural { grid-template-columns: 1fr; }
-  .nm-stage { min-height: 26rem; }
+  background: var(--text);
+  transition: transform var(--dur-fast) var(--ease-out), opacity var(--dur-fast) var(--ease-out);
 }
 
 @media (max-width: 768px) {
-  :root { --nav-height: 58px; }
-
   .nav-links {
     display: none;
     position: fixed;
     inset: var(--nav-height) 0 0 0;
-    background: color-mix(in srgb, var(--void) 97%, transparent);
+    z-index: 99;
     flex-direction: column;
     justify-content: center;
-    gap: 2.25rem;
-    z-index: 99;
+    gap: var(--space-7);
+    background: var(--scrim);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
   }
 
-  .nav-links a { font-size: 0.875rem; }
+  .nav-links a { font-size: 14px; }
   .nav-toggle-label { display: flex; }
   .nav-toggle:checked ~ .site-nav .nav-links { display: flex; }
   .nav-toggle:checked ~ .site-nav .nav-toggle-label span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
   .nav-toggle:checked ~ .site-nav .nav-toggle-label span:nth-child(2) { opacity: 0; }
   .nav-toggle:checked ~ .site-nav .nav-toggle-label span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
-
-  .stats { grid-template-columns: repeat(2, 1fr); }
-  .stat:nth-child(3) { border-left: 0; padding-left: 0; }
-  .stat:nth-child(n + 3) { border-top: 1px solid var(--color-border); }
-
-  .aff-grid { grid-template-columns: 1fr; }
-
-  .footer-inner { grid-template-columns: 1fr; justify-items: start; }
-  .footer-inner > :last-child { justify-self: start; }
-}
-
-@media (max-width: 520px) {
-  .neural { --r1: 92px; --r2: 46px; }
-  .nm-stage { min-height: 24rem; }
-  .nm-node--core .nm-label { width: 2.75rem; height: 2.75rem; font-size: 0.5rem; }
-  /* On phones skill names appear only for the selected cluster; the index lists them all */
-  .nm-node--leaf .nm-label { font-size: 0.625rem; --lbl: 0; }
-  /* Focused cluster swings left of the core so its labels have room */
-  .neural:has(#nm-front:checked) { --spin: -28deg; }
-  .neural:has(#nm-dev:checked)   { --spin: -100deg; }
-  .neural:has(#nm-prod:checked)  { --spin: -172deg; }
-  .neural:has(#nm-cad:checked)   { --spin: -244deg; }
-  .neural:has(#nm-ai:checked)    { --spin: -316deg; }
-  .nm-node--hub .nm-label { font-size: 0.5625rem; letter-spacing: 0.12em; }
-  .mission-grid { grid-template-columns: 1fr; }
-  .mission-card + .mission-card { border-left: 0; border-top: 1px solid var(--color-border); }
-  .cert-list a { grid-template-columns: 1fr auto; }
-  .cert-list a .mono { grid-column: 1; grid-row: 2; }
-  .cert-list a .arrow { grid-row: 1 / span 2; grid-column: 2; }
-  .panel-foot { flex-direction: column; gap: 0.25rem; }
 }
 
 /* =========================================================
    FLIGHT DECK — FOUNDATION
    Base, type, grid and section rhythm built on css/tokens.css.
 ========================================================= */
-html { scroll-behavior: auto; }
-
 body {
   font-family: var(--font-sans);
   font-size: 16px;
@@ -1831,7 +147,7 @@ h1, h2, h3, h4 {
 }
 
 /* One italic serif word per headline, same size as the heading */
-h1 em, h2 em, h3 em {
+h1 em, h2 em, h3 em, .promise em {
   font-family: var(--font-serif);
   font-style: italic;
   font-weight: 400;
@@ -1976,6 +292,7 @@ a:focus-visible, button:focus-visible, label:focus-visible { outline: 2px solid 
 
 @media (max-width: 768px) {
   .nav-tools { margin-left: auto; margin-right: var(--space-4); }
+  .nav-inner nav { margin-left: 0; }
 }
 
 /* Nav: AV mark in a 1px square, links pushed right */
@@ -2363,7 +680,923 @@ html.fd-locked { overflow: hidden; }
 }
 
 /* Promise line at the top of DECK_01 */
-.promise { margin: 0 0 var(--space-9); max-width: 18ch; }
+.promise { margin: 0 0 var(--space-9); max-width: 18ch; color: var(--ink); }
 .promise-word { display: inline-grid; vertical-align: bottom; overflow: hidden; }
 .promise-word span { grid-area: 1 / 1; }
-.promise-word span:not(:first-child) { visibility: hidden; }
+
+/* =========================================================
+   CARDS — panel, hairline, lift on hover
+========================================================= */
+.card {
+  position: relative;
+  padding: var(--space-6);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-0);
+  transition:
+    translate var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out);
+}
+
+.card:hover {
+  translate: 0 -4px;
+  border-color: color-mix(in srgb, var(--sun-ink) 55%, transparent);
+}
+
+/* Content leans toward the cursor (motion.js sets --px / --py) */
+.card > * {
+  transform: translate3d(var(--px, 0px), var(--py, 0px), 0);
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+  color: var(--muted);
+}
+
+/* Honest status: LIVE, PROTOTYPE, CONCEPT, TEARDOWN */
+.status-tag { display: inline-flex; align-items: center; gap: var(--space-2); white-space: nowrap; color: var(--muted); }
+.status-tag::before { content: ''; width: 6px; height: 6px; border-radius: var(--radius-pill); background: currentColor; }
+.status-tag--live { color: var(--go); }
+.status-tag--prototype { color: var(--sky); }
+
+.stack {
+  font: 400 14px/22px var(--font-mono);
+  color: var(--muted);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--line);
+}
+
+/* =========================================================
+   DECK_01 · OVERVIEW
+========================================================= */
+.promise { margin: 0 0 var(--space-9); max-width: 18ch; }
+
+.promise-word {
+  display: inline-grid;
+  vertical-align: bottom;
+  overflow: hidden;
+  padding-bottom: 0.08em;
+}
+
+.promise-word span {
+  grid-area: 1 / 1;
+  transform: translateY(105%);
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+
+.promise-word span.is-on,
+.promise-word:not(.is-cycling) span:first-child { transform: none; }
+.promise-word span.is-out { transform: translateY(-105%); }
+
+.stat-tiles {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-block: 1px solid var(--line);
+  margin-bottom: var(--space-9);
+}
+
+.stat-tile {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  padding: var(--space-6) var(--space-5);
+}
+
+.stat-tile + .stat-tile { border-left: 1px solid var(--line); }
+.stat-tile:first-child { padding-left: 0; }
+.stat-tile dt { color: var(--muted); }
+.stat-tile dd { color: var(--ink); font-size: clamp(44px, 6vw, 64px); }
+.stat-tile .plus { font-size: 0.45em; vertical-align: 0.9em; margin-left: 0.08em; color: var(--sun-ink); }
+
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--space-5);
+  align-items: start;
+}
+
+.overview-copy { grid-column: 1 / span 6; display: grid; gap: var(--space-4); }
+.overview-copy p { font: 400 16px/26px var(--font-sans); }
+.current-mission { grid-column: 8 / -1; display: grid; gap: var(--space-3); }
+.current-mission > .label-s { color: var(--muted); }
+
+.stages { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin-top: var(--space-3); }
+
+.chip {
+  font: 500 11px/14px var(--font-mono);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text);
+  border: 1px solid var(--line-strong);
+  padding: var(--space-2) var(--space-3);
+}
+
+.stages .chip + .chip { position: relative; margin-left: var(--space-5); }
+.stages .chip + .chip::before {
+  content: '→';
+  position: absolute;
+  left: calc(-1 * var(--space-5));
+  width: var(--space-5);
+  text-align: center;
+  color: var(--muted);
+  letter-spacing: 0;
+}
+
+.chip--sun { color: var(--sun-ink); border-color: color-mix(in srgb, var(--sun-ink) 60%, transparent); }
+
+/* One marquee of tools */
+.marquee {
+  margin-top: var(--space-9);
+  padding-block: var(--space-6);
+  border-block: 1px solid var(--line);
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, black 10%, black 90%, transparent);
+          mask-image: linear-gradient(90deg, transparent, black 10%, black 90%, transparent);
+}
+
+.marquee-track { display: flex; width: max-content; animation: marquee 60s linear infinite; }
+.marquee:hover .marquee-track { animation-play-state: paused; }
+.marquee-group { display: flex; align-items: center; flex-shrink: 0; }
+
+.marquee-group span {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-7);
+  padding-right: var(--space-7);
+  font: 700 30px/1.1 var(--font-display);
+  font-stretch: 115%;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.marquee-group span::after { content: ''; width: 6px; height: 6px; background: var(--sun); }
+
+@keyframes marquee { to { transform: translateX(-50%); } }
+
+/* =========================================================
+   DECK_03 · MISSION LOG
+========================================================= */
+.mission-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-5);
+}
+
+.mission-card { display: flex; flex-direction: column; }
+.mission-card .heading-2 { margin-bottom: var(--space-2); }
+.mission-sub { color: var(--muted); text-transform: uppercase; margin-bottom: var(--space-4); }
+.mission-summary { margin-bottom: var(--space-5); flex: 1; }
+.mission-links { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-5); margin-top: var(--space-5); }
+
+.mission-card--feature {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--space-7);
+  align-items: start;
+}
+
+.mission-body { display: flex; flex-direction: column; }
+
+.mission-visual {
+  align-self: stretch;
+  padding: var(--space-5);
+  background: var(--deck);
+  border: 1px solid var(--line);
+  color: var(--muted);
+}
+
+.visual-head { display: flex; justify-content: space-between; gap: var(--space-4); padding-bottom: var(--space-4); }
+
+/* ODYSSEY: delay propagation strip */
+.delay-note { color: var(--muted); margin: var(--space-6) 0 var(--space-5); }
+
+.corridor { position: relative; display: grid; grid-template-columns: repeat(5, 1fr); padding-bottom: var(--space-2); }
+.corridor::before {
+  content: '';
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  top: 22px;
+  height: 1px;
+  background: var(--line-strong);
+}
+
+.stop { position: relative; display: grid; justify-items: center; gap: var(--space-4); padding-top: 18px; }
+.stop i { position: relative; width: 9px; height: 9px; border-radius: var(--radius-pill); background: var(--ink); }
+.stop i::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--ring);
+  height: var(--ring);
+  translate: -50% -50%;
+  border-radius: var(--radius-pill);
+  border: 1px solid color-mix(in srgb, var(--sun-ink) 55%, transparent);
+  animation: ring-pulse 3.2s var(--ease-out) infinite;
+  animation-delay: var(--d);
+}
+
+.stop--late i { background: var(--sun); box-shadow: var(--glow-sun); }
+.stop--risk i::before { border-style: dashed; border-color: var(--line-strong); }
+.stop--clear i::before { display: none; }
+.stop span { font: 500 11px/14px var(--font-mono); letter-spacing: 0.18em; color: var(--muted); }
+
+@keyframes ring-pulse {
+  0%   { scale: 0.6; opacity: 0; }
+  30%  { opacity: 1; }
+  100% { scale: 1; opacity: 0.85; }
+}
+
+/* BrandGuard: pre-publication check list */
+.check-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-4);
+  padding-block: var(--space-3);
+  border-top: 1px solid var(--line);
+  font: 400 14px/22px var(--font-sans);
+  color: var(--ink);
+}
+
+.badge {
+  font: 500 11px/14px var(--font-mono);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid color-mix(in srgb, var(--sky) 45%, transparent);
+  color: var(--sky);
+  white-space: nowrap;
+}
+
+.badge--flag { border-color: color-mix(in srgb, var(--sun-ink) 70%, transparent); color: var(--sun-ink); }
+.badge--wait { border-color: var(--line-strong); color: var(--muted); }
+
+/* ReeSolve: case lifecycle */
+.lifecycle { margin-top: var(--space-4); }
+.reopen { margin-top: var(--space-5); padding-top: var(--space-4); border-top: 1px solid var(--line); color: var(--muted); }
+
+/* =========================================================
+   DECK_04 · LEARNING
+========================================================= */
+.degree {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--space-5);
+  align-items: end;
+  padding-bottom: var(--space-7);
+  margin-bottom: var(--space-7);
+  border-bottom: 1px solid var(--line);
+}
+
+.degree-copy { grid-column: 1 / span 5; display: grid; gap: var(--space-3); }
+.degree-copy .label-s { color: var(--muted); }
+
+.timeline {
+  grid-column: 6 / -1;
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 30px;
+  height: 1px;
+  background: var(--line-strong);
+}
+
+.timeline li { position: relative; display: grid; gap: var(--space-3); color: var(--muted); }
+.timeline i {
+  width: 9px;
+  height: 9px;
+  border-radius: var(--radius-pill);
+  position: relative;
+  background: var(--void);
+  border: 1px solid var(--steel);
+}
+.timeline .readout { font-size: 13px; }
+.timeline .is-now { color: var(--sun-ink); }
+.timeline .is-now i { background: var(--sun); border-color: var(--sun); box-shadow: var(--glow-sun); }
+
+.cert-list { border-top: 1px solid var(--line); }
+.cert-list li { border-bottom: 1px solid var(--line); }
+
+.cert-list a {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: var(--space-5);
+  align-items: center;
+  padding: var(--space-4) 0;
+}
+
+.cert-name { font: 500 15px/20px var(--font-sans); color: var(--ink); }
+.cert-list .label-s { color: var(--muted); }
+.cert-list .ext { color: var(--muted); transition: color var(--dur-fast) var(--ease-out), translate var(--dur-fast) var(--ease-out); }
+.cert-list a:hover .cert-name { color: var(--sky); }
+.cert-list a:hover .ext { color: var(--sky); translate: 2px -2px; }
+
+/* =========================================================
+   DECK_05 · AFFILIATIONS
+========================================================= */
+.aff-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5); }
+.aff-card { display: grid; gap: var(--space-3); align-content: start; }
+.aff-card .label-s { color: var(--muted); }
+
+/* =========================================================
+   DECK_06 · CONTACT + FOOTER
+========================================================= */
+.contact { border-top: 1px solid var(--line); background: var(--void); }
+.contact-sub { max-width: 36rem; margin-bottom: var(--space-6); }
+.contact-links { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+
+.site-footer { border-top: 1px solid var(--line); padding-block: var(--space-5); }
+
+.footer-inner {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: var(--space-4);
+  align-items: center;
+  color: var(--muted);
+}
+
+.footer-inner > :last-child { justify-self: end; color: var(--ink); }
+.back-to-top span { display: inline-block; transition: transform var(--dur-fast) var(--ease-out); }
+.back-to-top:hover span { transform: translateY(-3px); }
+
+/* =========================================================
+   RESPONSIVE — sections
+========================================================= */
+@media (max-width: 900px) {
+  .overview-copy, .current-mission { grid-column: 1 / -1; }
+  .mission-card--feature { grid-template-columns: 1fr; }
+  .degree-copy, .timeline { grid-column: 1 / -1; }
+}
+
+@media (max-width: 767px) {
+  .stat-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stat-tile { padding: var(--space-5) var(--space-4); }
+  .stat-tile:nth-child(odd) { padding-left: 0; border-left: 0; }
+  .stat-tile:nth-child(n + 3) { border-top: 1px solid var(--line); }
+  .mission-grid, .aff-grid { grid-template-columns: 1fr; }
+  .card { padding: var(--space-5); }
+  .marquee-group span { font-size: 22px; gap: var(--space-5); padding-right: var(--space-5); }
+  .cert-list a { grid-template-columns: minmax(0, 1fr) auto; row-gap: var(--space-1); }
+  .cert-list .label-s { grid-row: 2; }
+  .cert-list .ext { grid-row: 1 / span 2; grid-column: 2; }
+  .timeline .readout { font-size: 11px; }
+  .footer-inner { grid-template-columns: 1fr; justify-items: start; }
+  .footer-inner > :last-child { justify-self: start; }
+}
+
+/* =========================================================
+   DECK_02 · NEURAL MAP
+   Scene graph (unchanged): .nm-tilt (drag pitch/yaw) → .nm-spin
+   (idle drift) → .nm-hub (lon/lat) → .nm-hubpos (out to radius 1)
+   → .nm-arm (fan angle) → leaf node (out to radius 2).
+   Every label undoes the rotations above it so it faces you.
+   Cluster focus is CSS only, driven by the nm-cluster radios.
+========================================================= */
+@property --spin  { syntax: '<angle>'; inherits: true; initial-value: 0deg; }
+@property --yaw   { syntax: '<angle>'; inherits: true; initial-value: 0deg; }
+@property --tilt  { syntax: '<angle>'; inherits: true; initial-value: 0deg; }
+@property --fx    { syntax: '<angle>'; inherits: true; initial-value: -12deg; }
+@property --dim   { syntax: '<number>'; inherits: true; initial-value: 1; }
+@property --dot   { syntax: '<length>'; inherits: true; initial-value: 6px; }
+
+.neural {
+  --r1: clamp(96px, 15vw, 172px);   /* core → hub */
+  --r2: clamp(52px, 7.5vw, 92px);   /* hub → skill */
+  --pitch: calc(var(--tilt) + var(--fx));
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--space-5);
+  align-items: stretch;
+  animation: nm-spin 180s linear infinite;   /* idle drift: 2° per second */
+  transition: --spin 1.4s var(--ease-out), --fx 1.2s var(--ease-out);
+}
+
+@keyframes nm-spin {
+  from { --spin: 0deg; }
+  to   { --spin: 360deg; }
+}
+
+/* Pause the drift while exploring or dragging */
+.neural:has(.nm-stage:hover),
+.neural.is-dragging { animation-play-state: paused; }
+
+/* ── Stage: panel square with dot grid and orbit ellipses ── */
+.nm-stage {
+  grid-column: 1 / span 7;
+  order: -1;
+  position: relative;
+  min-height: 34rem;
+  perspective: 1100px;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+  background: var(--panel);
+  border: 1px solid var(--line);
+}
+
+.nm-stage::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(var(--faint) 1px, transparent 1.2px) 0 0 / 32px 32px;
+  opacity: 0.4;
+  -webkit-mask: radial-gradient(ellipse at center, black 30%, transparent 80%);
+          mask: radial-gradient(ellipse at center, black 30%, transparent 80%);
+  pointer-events: none;
+}
+
+.neural.is-dragging .nm-stage { cursor: grabbing; }
+
+.nm-readout,
+.nm-hint {
+  position: absolute;
+  left: var(--space-4);
+  z-index: 1;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.nm-readout { top: var(--space-4); }
+.nm-hint { bottom: var(--space-4); }
+
+.nm-tilt,
+.nm-spin,
+.nm-hub,
+.nm-hubpos,
+.nm-arm {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  transform-style: preserve-3d;
+}
+
+.nm-tilt {
+  left: 50%;
+  top: 50%;
+  transform: rotateX(var(--pitch)) rotateY(var(--yaw));
+}
+
+.nm-spin   { transform: rotateY(var(--spin)); }
+.nm-hub    { transform: rotateY(var(--lon)) rotateX(var(--lat)); }
+.nm-hubpos { transform: translateZ(var(--r1)); }
+.nm-arm    { transform: rotateZ(var(--a)) rotateX(var(--s)); }
+
+/* Faint orbit ellipses around the core */
+.nm-ring {
+  position: absolute;
+  left: calc(var(--r1) * -1.05);
+  top: calc(var(--r1) * -1.05);
+  width: calc(var(--r1) * 2.1);
+  height: calc(var(--r1) * 2.1);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  transform: rotateX(90deg);
+}
+
+.nm-ring--tilted { transform: rotateX(70deg) rotateY(28deg); }
+
+/* ── Links: hairlines on two crossed planes so they read from any angle ── */
+.nm-link {
+  --link: var(--line-strong);
+  position: absolute;
+  left: 0;
+  top: -0.5px;
+  width: var(--r1);
+  height: 1px;
+  transform-origin: 0 50%;
+  transform: rotateY(-90deg);
+  transform-style: preserve-3d;
+  background: color-mix(in srgb, var(--link) calc(var(--dim) * 100%), transparent);
+  transition: background var(--dur-base) var(--ease-out);
+}
+
+.nm-link--leaf { width: var(--r2); }
+
+.nm-link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: inherit;
+  transform: rotateX(90deg);
+}
+
+/* ── Nodes (0×0 anchors that face the camera) ── */
+.nm-node {
+  position: absolute;
+  left: 0;
+  top: 0;
+  /* depth cue from the node's current angle to the viewer */
+  --depth: calc(0.3 + 0.7 * (0.5 + 0.5 * cos(var(--lon, 0deg) + var(--spin) + var(--yaw))));
+  opacity: calc(max(var(--depth), 0.55) * var(--dim));
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+
+.nm-node--core {
+  opacity: 1;
+  transform: rotateY(calc(-1 * (var(--spin) + var(--yaw)))) rotateX(calc(-1 * var(--pitch)));
+}
+
+.nm-node--hub {
+  transform:
+    rotateX(calc(-1 * var(--lat))) rotateY(calc(-1 * var(--lon)))
+    rotateY(calc(-1 * (var(--spin) + var(--yaw)))) rotateX(calc(-1 * var(--pitch)));
+}
+
+.nm-node--leaf {
+  transform:
+    translateZ(var(--r2))
+    rotateX(calc(-1 * var(--s))) rotateZ(calc(-1 * var(--a)))
+    rotateX(calc(-1 * var(--lat))) rotateY(calc(-1 * var(--lon)))
+    rotateY(calc(-1 * (var(--spin) + var(--yaw)))) rotateX(calc(-1 * var(--pitch)));
+}
+
+.nm-label {
+  position: absolute;
+  left: 0;
+  top: 0;
+  translate: -50% -50%;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  white-space: nowrap;
+  transition: color var(--dur-base) var(--ease-out), scale var(--dur-base) var(--ease-out);
+}
+
+/* Core: champagne disc, glow, horizon-gradient ring */
+.nm-node--core .nm-label {
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border: 2px solid transparent;
+  border-radius: var(--radius-pill);
+  background:
+    linear-gradient(var(--sun), var(--sun)) padding-box,
+    linear-gradient(90deg, var(--curtain), var(--frost), var(--sun)) border-box;
+  box-shadow: var(--glow-sun);
+  font: 600 12px/16px var(--font-mono);
+  letter-spacing: 0.16em;
+  color: var(--on-sun);
+}
+
+.nm-node--core small { display: none; }
+
+/* Hubs: 14px sky rings with a label-s name beside them */
+.nm-node--hub .nm-label {
+  translate: -7px -50%;
+  font: 500 11px/14px var(--font-mono);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-shadow: 0 0 12px var(--panel), 0 0 2px var(--panel);
+}
+
+.nm-node--hub .nm-label::before {
+  content: '';
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--sky);
+  background: var(--panel);
+  transition: border-color var(--dur-base) var(--ease-out);
+}
+
+/* Leaves: 6px discs; names show for the focused or hovered cluster */
+.nm-node--leaf .nm-label {
+  translate: calc(var(--dot) / -2) -50%;
+  font: 400 13px/18px var(--font-sans);
+  color: transparent;
+  text-shadow: none;
+}
+
+.nm-node--leaf .nm-label::before {
+  content: '';
+  flex-shrink: 0;
+  width: var(--dot);
+  height: var(--dot);
+  border-radius: var(--radius-pill);
+  background: var(--steel);
+  transition: --dot var(--dur-base) var(--ease-out), background var(--dur-base) var(--ease-out);
+}
+
+.nm-node--leaf:hover .nm-label::before { background: var(--sun); }
+
+/* ── Hover a hub or an index row: preview that cluster ── */
+.nm-spin:has(.nm-hub:hover) .nm-hub:not(:hover) { --dim: 0.4; }
+
+.nm-hub:hover .nm-node--leaf .nm-label,
+.neural:has(label[for="nm-ai"]:hover)    .nm-hub--ai    .nm-node--leaf .nm-label,
+.neural:has(label[for="nm-prod"]:hover)  .nm-hub--prod  .nm-node--leaf .nm-label,
+.neural:has(label[for="nm-dev"]:hover)   .nm-hub--dev   .nm-node--leaf .nm-label,
+.neural:has(label[for="nm-front"]:hover) .nm-hub--front .nm-node--leaf .nm-label,
+.neural:has(label[for="nm-cad"]:hover)   .nm-hub--cad   .nm-node--leaf .nm-label {
+  color: var(--text);
+  text-shadow: 0 0 10px var(--panel), 0 0 2px var(--panel);
+}
+
+.neural:has(label[for="nm-ai"]:hover)    .nm-hub:not(.nm-hub--ai),
+.neural:has(label[for="nm-prod"]:hover)  .nm-hub:not(.nm-hub--prod),
+.neural:has(label[for="nm-dev"]:hover)   .nm-hub:not(.nm-hub--dev),
+.neural:has(label[for="nm-front"]:hover) .nm-hub:not(.nm-hub--front),
+.neural:has(label[for="nm-cad"]:hover)   .nm-hub:not(.nm-hub--cad) { --dim: 0.4; }
+
+/* ── Focus a cluster: rotate it to the front, dim the rest ── */
+.neural:has(.nm-radio:not(#nm-all):checked) { animation: none; }
+
+/* Each cluster turns ~35° off-centre so its hub isn't hidden behind the core */
+.neural:has(#nm-front:checked) { --spin: 35deg;   --fx: 4deg; }
+.neural:has(#nm-dev:checked)   { --spin: -37deg;  --fx: -22deg; }
+.neural:has(#nm-prod:checked)  { --spin: -109deg; --fx: 2deg; }
+.neural:has(#nm-cad:checked)   { --spin: -181deg; --fx: -24deg; }
+.neural:has(#nm-ai:checked)    { --spin: -253deg; --fx: 6deg; }
+
+/* Everything else fades to faint at 40% */
+.neural:has(#nm-front:checked) .nm-hub:not(.nm-hub--front),
+.neural:has(#nm-dev:checked)   .nm-hub:not(.nm-hub--dev),
+.neural:has(#nm-prod:checked)  .nm-hub:not(.nm-hub--prod),
+.neural:has(#nm-cad:checked)   .nm-hub:not(.nm-hub--cad),
+.neural:has(#nm-ai:checked)    .nm-hub:not(.nm-hub--ai) { --dim: 0.4; }
+
+.neural:has(.nm-radio:not(#nm-all):checked) .nm-node--leaf .nm-label::before { background: var(--faint); }
+
+/* The focused cluster: sun nodes grow to 8px, sun-ink links at 60%, names on */
+.neural:has(#nm-ai:checked)    .nm-hub--ai,
+.neural:has(#nm-prod:checked)  .nm-hub--prod,
+.neural:has(#nm-dev:checked)   .nm-hub--dev,
+.neural:has(#nm-front:checked) .nm-hub--front,
+.neural:has(#nm-cad:checked)   .nm-hub--cad {
+  --dot: 8px;
+}
+
+.neural:has(#nm-ai:checked)    .nm-hub--ai    .nm-node,
+.neural:has(#nm-prod:checked)  .nm-hub--prod  .nm-node,
+.neural:has(#nm-dev:checked)   .nm-hub--dev   .nm-node,
+.neural:has(#nm-front:checked) .nm-hub--front .nm-node,
+.neural:has(#nm-cad:checked)   .nm-hub--cad   .nm-node { opacity: 1; }
+
+.neural:has(#nm-ai:checked)    .nm-hub--ai    .nm-link,
+.neural:has(#nm-prod:checked)  .nm-hub--prod  .nm-link,
+.neural:has(#nm-dev:checked)   .nm-hub--dev   .nm-link,
+.neural:has(#nm-front:checked) .nm-hub--front .nm-link,
+.neural:has(#nm-cad:checked)   .nm-hub--cad   .nm-link {
+  --link: color-mix(in srgb, var(--sun-ink) 60%, transparent);
+}
+
+.neural:has(#nm-ai:checked)    .nm-hub--ai    .nm-node--leaf .nm-label::before,
+.neural:has(#nm-prod:checked)  .nm-hub--prod  .nm-node--leaf .nm-label::before,
+.neural:has(#nm-dev:checked)   .nm-hub--dev   .nm-node--leaf .nm-label::before,
+.neural:has(#nm-front:checked) .nm-hub--front .nm-node--leaf .nm-label::before,
+.neural:has(#nm-cad:checked)   .nm-hub--cad   .nm-node--leaf .nm-label::before { background: var(--sun); }
+
+.neural:has(#nm-ai:checked)    .nm-hub--ai    .nm-node--leaf .nm-label,
+.neural:has(#nm-prod:checked)  .nm-hub--prod  .nm-node--leaf .nm-label,
+.neural:has(#nm-dev:checked)   .nm-hub--dev   .nm-node--leaf .nm-label,
+.neural:has(#nm-front:checked) .nm-hub--front .nm-node--leaf .nm-label,
+.neural:has(#nm-cad:checked)   .nm-hub--cad   .nm-node--leaf .nm-label {
+  color: var(--ink);
+  text-shadow: 0 0 10px var(--panel), 0 0 2px var(--panel);
+}
+
+.neural:has(#nm-ai:checked)    .nm-hub--ai    .nm-node--hub .nm-label,
+.neural:has(#nm-prod:checked)  .nm-hub--prod  .nm-node--hub .nm-label,
+.neural:has(#nm-dev:checked)   .nm-hub--dev   .nm-node--hub .nm-label,
+.neural:has(#nm-front:checked) .nm-hub--front .nm-node--hub .nm-label,
+.neural:has(#nm-cad:checked)   .nm-hub--cad   .nm-node--hub .nm-label { color: var(--sun-ink); }
+
+.neural:has(#nm-ai:checked)    .nm-hub--ai    .nm-node--hub .nm-label::before,
+.neural:has(#nm-prod:checked)  .nm-hub--prod  .nm-node--hub .nm-label::before,
+.neural:has(#nm-dev:checked)   .nm-hub--dev   .nm-node--hub .nm-label::before,
+.neural:has(#nm-front:checked) .nm-hub--front .nm-node--hub .nm-label::before,
+.neural:has(#nm-cad:checked)   .nm-hub--cad   .nm-node--hub .nm-label::before { border-color: var(--sun-ink); }
+
+/* ── Tooltip on node hover ── */
+.nm-tip {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 3;
+  display: grid;
+  gap: 2px;
+  padding: var(--space-2) var(--space-3);
+  background: var(--raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--lift);
+  pointer-events: none;
+}
+
+.nm-tip[hidden] { display: none; }
+.nm-tip b { font: 500 15px/20px var(--font-sans); color: var(--ink); }
+.nm-tip span { color: var(--sun-ink); }
+
+/* ── Systems index ── */
+.nm-panel { grid-column: 8 / -1; display: flex; flex-direction: column; }
+
+.nm-index-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+}
+
+.nm-reset { cursor: pointer; color: var(--muted); transition: color var(--dur-fast) var(--ease-out); }
+.nm-reset:hover { color: var(--ink); }
+#nm-all:checked ~ .nm-panel .nm-reset { color: var(--sun-ink); }
+
+.nm-index { display: flex; flex-direction: column; }
+
+.nm-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) 28px;
+  gap: var(--space-3);
+  align-items: start;
+  padding: var(--space-4) 0 var(--space-4) var(--space-3);
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-out), opacity var(--dur-base) var(--ease-out);
+}
+
+/* 2px sun bar marks the focused row */
+.nm-row::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: var(--space-4);
+  bottom: var(--space-4);
+  width: 2px;
+  background: var(--sun);
+  transform: scaleY(0);
+  transition: transform var(--dur-base) var(--ease-out);
+}
+
+.nm-row:hover { background: color-mix(in srgb, var(--ink) 3%, transparent); }
+
+.nm-row-idx,
+.nm-row-count {
+  font: 500 12px/20px var(--font-mono);
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+
+.nm-row-count { text-align: right; }
+.nm-row-body { display: grid; gap: var(--space-1); }
+
+.nm-row-title {
+  font: 500 12px/20px var(--font-mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.nm-row-skills { font: 400 14px/22px var(--font-sans); color: var(--muted); }
+.nm-row:hover .nm-row-title { color: var(--sky); }
+
+#nm-ai:checked    ~ .nm-panel label[for="nm-ai"]::before,
+#nm-prod:checked  ~ .nm-panel label[for="nm-prod"]::before,
+#nm-dev:checked   ~ .nm-panel label[for="nm-dev"]::before,
+#nm-front:checked ~ .nm-panel label[for="nm-front"]::before,
+#nm-cad:checked   ~ .nm-panel label[for="nm-cad"]::before { transform: scaleY(1); }
+
+#nm-ai:checked    ~ .nm-panel label[for="nm-ai"] :is(.nm-row-title, .nm-row-idx),
+#nm-prod:checked  ~ .nm-panel label[for="nm-prod"] :is(.nm-row-title, .nm-row-idx),
+#nm-dev:checked   ~ .nm-panel label[for="nm-dev"] :is(.nm-row-title, .nm-row-idx),
+#nm-front:checked ~ .nm-panel label[for="nm-front"] :is(.nm-row-title, .nm-row-idx),
+#nm-cad:checked   ~ .nm-panel label[for="nm-cad"] :is(.nm-row-title, .nm-row-idx) { color: var(--sun-ink); }
+
+#nm-ai:checked    ~ .nm-panel label[for="nm-ai"] .nm-row-skills,
+#nm-prod:checked  ~ .nm-panel label[for="nm-prod"] .nm-row-skills,
+#nm-dev:checked   ~ .nm-panel label[for="nm-dev"] .nm-row-skills,
+#nm-front:checked ~ .nm-panel label[for="nm-front"] .nm-row-skills,
+#nm-cad:checked   ~ .nm-panel label[for="nm-cad"] .nm-row-skills { color: var(--text); }
+
+/* Unfocused rows step back */
+.neural:has(.nm-radio:not(#nm-all):checked) .nm-row { opacity: 0.5; }
+.neural:has(.nm-radio:not(#nm-all):checked) .nm-row:hover,
+#nm-ai:checked    ~ .nm-panel label[for="nm-ai"],
+#nm-prod:checked  ~ .nm-panel label[for="nm-prod"],
+#nm-dev:checked   ~ .nm-panel label[for="nm-dev"],
+#nm-front:checked ~ .nm-panel label[for="nm-front"],
+#nm-cad:checked   ~ .nm-panel label[for="nm-cad"] { opacity: 1; }
+
+/* Keyboard focus on the hidden radios shows on their labels */
+#nm-all:focus-visible   ~ .nm-panel label[for="nm-all"],
+#nm-front:focus-visible ~ .nm-panel label[for="nm-front"],
+#nm-dev:focus-visible   ~ .nm-panel label[for="nm-dev"],
+#nm-prod:focus-visible  ~ .nm-panel label[for="nm-prod"],
+#nm-cad:focus-visible   ~ .nm-panel label[for="nm-cad"],
+#nm-ai:focus-visible    ~ .nm-panel label[for="nm-ai"] {
+  outline: 2px solid var(--sky);
+  outline-offset: 2px;
+  box-shadow: var(--glow-sky);
+}
+
+@media (max-width: 900px) {
+  .nm-stage, .nm-panel { grid-column: 1 / -1; }
+  .nm-stage { min-height: 26rem; }
+}
+
+@media (max-width: 520px) {
+  .neural { --r1: 92px; --r2: 46px; }
+  .nm-stage { min-height: 24rem; }
+  .nm-node--core .nm-label { width: 48px; height: 48px; font-size: 10px; }
+  .nm-node--hub .nm-label { font-size: 10px; letter-spacing: 0.12em; }
+  .nm-readout { display: none; }
+  /* Focused cluster swings left of the core so its labels have room */
+  .neural:has(#nm-front:checked) { --spin: -28deg; }
+  .neural:has(#nm-dev:checked)   { --spin: -100deg; }
+  .neural:has(#nm-prod:checked)  { --spin: -172deg; }
+  .neural:has(#nm-cad:checked)   { --spin: -244deg; }
+  .neural:has(#nm-ai:checked)    { --spin: -316deg; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .neural { animation: none; }
+}
+
+/* =========================================================
+   CUSTOM CURSOR — dot, ring and glow (mouse/trackpad only)
+========================================================= */
+.cursor-dot,
+.cursor-ring,
+.cursor-glow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  display: none;
+  will-change: transform;
+}
+
+.has-cursor .cursor-dot,
+.has-cursor .cursor-ring,
+.has-cursor .cursor-glow { display: block; }
+
+.has-cursor body,
+.has-cursor a,
+.has-cursor label,
+.has-cursor button { cursor: none; }
+
+.cursor-dot {
+  z-index: 2001;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: var(--radius-pill);
+  background: var(--ink);
+  transition: opacity var(--dur-fast) var(--ease-out), scale var(--dur-base) var(--ease-out);
+}
+
+.cursor-ring {
+  z-index: 2000;
+  width: 36px;
+  height: 36px;
+  margin: -18px 0 0 -18px;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid color-mix(in srgb, var(--sky) 70%, transparent);
+  transition:
+    background var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out),
+    border-radius var(--dur-base) var(--ease-out),
+    opacity var(--dur-fast) var(--ease-out);
+}
+
+.cursor-glow {
+  z-index: -1;
+  width: 520px;
+  height: 520px;
+  margin: -260px 0 0 -260px;
+  border-radius: var(--radius-pill);
+  background: radial-gradient(circle, var(--sky-glow) 0%, transparent 60%);
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+
+.cursor-link .cursor-ring { background: var(--sky-glow); border-color: var(--sky); }
+.cursor-link .cursor-dot { scale: 0.4; }
+.cursor-down .cursor-dot { scale: 0.6; }
+
+.cursor-hidden .cursor-dot,
+.cursor-hidden .cursor-ring,
+.cursor-hidden .cursor-glow { opacity: 0; }
