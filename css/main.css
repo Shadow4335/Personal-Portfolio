@@ -2444,3 +2444,73 @@ a:focus-visible, button:focus-visible, label:focus-visible { outline: 2px solid 
   .section-head .section-heading,
   .section-head .lead { grid-column: 1 / -1; }
 }
+
+/* =========================================================
+   THEME — Night flight / Day flight
+========================================================= */
+.nav-tools { display: flex; align-items: center; gap: var(--space-3); margin-left: var(--space-6); }
+
+.theme-toggle {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  color: var(--muted);
+  background: none;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-0);
+  cursor: pointer;
+  transition: color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+}
+
+.theme-toggle:hover { color: var(--ink); border-color: var(--sky); }
+
+.theme-toggle svg {
+  grid-area: 1 / 1;
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: opacity var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out);
+}
+
+/* Shows the theme you would switch to */
+.theme-toggle .i-moon { opacity: 0; transform: rotate(-60deg) scale(0.6); }
+[data-theme="light"] .theme-toggle .i-sun { opacity: 0; transform: rotate(60deg) scale(0.6); }
+[data-theme="light"] .theme-toggle .i-moon { opacity: 1; transform: none; }
+
+/* Circular wipe from the toggle (View Transitions) */
+::view-transition-old(root),
+::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+
+::view-transition-new(root) {
+  animation: theme-wipe var(--dur-base) var(--ease-in-out);
+}
+
+@keyframes theme-wipe {
+  from { clip-path: circle(0 at var(--wipe-x, 100%) var(--wipe-y, 0)); }
+  to   { clip-path: circle(var(--wipe-r, 150vmax) at var(--wipe-x, 100%) var(--wipe-y, 0)); }
+}
+
+@media (max-width: 768px) {
+  .nav-tools { margin-left: auto; margin-right: var(--space-4); }
+}
+
+/* Nav: AV mark in a 1px square, links pushed right */
+.nav-inner nav { margin-left: auto; }
+.logo-mark {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--line-strong);
+  font: 500 11px/1 var(--font-mono);
+  letter-spacing: 0.04em;
+  color: var(--ink);
+}
+.logo-mark::before, .logo-mark::after { content: none; }
+.nav-links a::after { background: var(--sun); }
