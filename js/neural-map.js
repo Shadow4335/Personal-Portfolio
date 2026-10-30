@@ -39,6 +39,20 @@
   stage.addEventListener('pointerup', end);
   stage.addEventListener('pointercancel', end);
 
+  // Keyboard path: arrow keys rotate the map 15° per press
+  stage.addEventListener('keydown', function (e) {
+    var k = e.key;
+    if (k !== 'ArrowLeft' && k !== 'ArrowRight' && k !== 'ArrowUp' && k !== 'ArrowDown') return;
+    e.preventDefault();
+    settle = false;
+    vel = 0;
+    if (k === 'ArrowLeft') yaw -= 15;
+    if (k === 'ArrowRight') yaw += 15;
+    if (k === 'ArrowUp') tilt = Math.min(40, tilt + 15);
+    if (k === 'ArrowDown') tilt = Math.max(-40, tilt - 15);
+    apply();
+  });
+
   // Picking a cluster eases the drag offset back to zero so it centres
   map.addEventListener('change', function () { settle = true; vel = 0; });
 

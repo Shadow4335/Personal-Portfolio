@@ -10,10 +10,15 @@
 
   FD.ready = false;
 
+  // While the gate or checklist is up, the page behind it is inert
+  var behind = [].slice.call(document.querySelectorAll('.site-nav, main, .site-footer'));
+  function setInert(on) { behind.forEach(function (el) { el.inert = on; }); }
+
   function ready() {
     if (FD.ready) return;
     FD.ready = true;
     root.classList.remove('fd-locked', 'fd-gate', 'fd-intro');
+    setInert(false);
     document.dispatchEvent(new CustomEvent('fd:ready'));
   }
 
@@ -76,6 +81,7 @@
 
   if (root.classList.contains('fd-first') && gate && pre) {
     root.classList.add('fd-locked', 'fd-gate');
+    setInert(true);
     gate.addEventListener('click', function (e) {
       var b = e.target.closest('[data-sound]');
       if (b) choose(b.getAttribute('data-sound') === 'on');
