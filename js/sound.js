@@ -158,7 +158,7 @@
   var LEN = {
     tick: 0.05, nominal: 0.6, hover: 0.015, click: 0.06, arrival: 0.5,
     themeDay: 0.3, themeNight: 0.3, linkOut: 0.12, echoLock: 0.22,
-    echoRelease: 0.35, swell: 0.7, whoosh: 0.4, count: 0.012, pluck: 0.3, chord: 0.6, roll: 0.7
+    echoRelease: 0.35, swell: 0.7, whoosh: 0.4, count: 0.012, pluck: 0.3, chord: 0.6, roll: 0.7, shimmer: 1.2
   };
   var THROTTLE = { hover: 80, count: 60 };
   var lastPlayed = {};
@@ -174,6 +174,12 @@
     var f = NOTES[c] || NOTES.ai;
     pluck(f, 0, db(-20));
     pluck(f * 1.5, 0.06, db(-22));
+  };
+  cues.shimmer = function () {   // Neural Map boot: a soft rising shimmer
+    [0, 1, 2, 3, 4, 5].forEach(function (i) {
+      tone('sine', 880 * Math.pow(1.12246, i), 880 * Math.pow(1.12246, i), 0.22, db(-32), i * 0.18);
+    });
+    filteredNoise('highpass', 4000, 9000, 0.7, 1.2, db(-38));
   };
   cues.roll = function () {      // all five notes rolled quickly, low to high
     ['ai', 'prod', 'dev', 'front', 'cad'].forEach(function (c, i) { pluck(NOTES[c], i * 0.07, db(-24)); });
@@ -358,9 +364,8 @@
 
   // ── Neural Map: chord on cluster pick, roll on Show all ──
   function clusterOf(el) {
-    var hub = el.closest('.nm-hub');
-    var m = hub && hub.className.match(/nm-hub--(\w+)/);
-    return m ? m[1] : 'ai';
+    var host = el.closest('[data-cluster]');
+    return host ? host.getAttribute('data-cluster') : 'ai';
   }
 
   var map = document.querySelector('.neural');

@@ -294,180 +294,82 @@
             <input type="radio" name="nm-cluster" id="nm-front" class="nm-radio sr-only" />
             <input type="radio" name="nm-cluster" id="nm-cad" class="nm-radio sr-only" />
 
+            <div class="nm-stage" tabindex="0" role="img" aria-label="Neural map: 21 skills in five clusters around the ARNAV core. Drag or use the arrow keys to rotate.">
+              <i class="nm-br nm-br--tl" aria-hidden="true"></i><i class="nm-br nm-br--tr" aria-hidden="true"></i>
+              <i class="nm-br nm-br--bl" aria-hidden="true"></i><i class="nm-br nm-br--br" aria-hidden="true"></i>
+              <div class="nm-hud nm-hud--tl" aria-hidden="true">Neural map // <b>05</b> clusters · <b>21</b> nodes</div>
+              <div class="nm-hud nm-hud--tr" aria-hidden="true">Yaw <b class="nm-yaw">000°</b><span class="nm-tilt-ro"> &nbsp; Tilt <b class="nm-tiltv">+00°</b></span></div>
+              <div class="nm-hud nm-hud--bl" aria-hidden="true">Drag · hover · pick</div>
+              <div class="nm-hud nm-hud--br" aria-hidden="true">Focus <span class="nm-focus">All systems</span></div>
+              <div class="nm-tape" aria-hidden="true"><i></i><u></u></div>
+              <svg class="nm-svg" viewBox="0 0 640 580" aria-hidden="true">
+                <g class="nm-links"></g>
+                <g class="nm-pulses"></g>
+                <g class="nm-core">
+                  <circle class="nm-tick2" cx="284" cy="290" r="46" />
+                  <circle class="nm-tick1" cx="284" cy="290" r="34" />
+                  <circle class="nm-ping" cx="284" cy="290" r="14" />
+                  <circle class="nm-core-disc" cx="284" cy="290" r="14" />
+                  <text class="nm-corelbl" x="284" y="350">ARNAV<tspan dx="6">// CORE</tspan></text>
+                </g>
+                <g class="nm-nodes"></g>
+              </svg>
+              <div class="nm-tip" aria-hidden="true"><b></b><span></span></div>
+            </div>
+
             <div class="nm-panel">
-              <div class="nm-index-head">
-                <span class="label">Systems index</span>
-                <label for="nm-all" class="nm-reset label">Show all · 21</label>
+              <div class="nm-index-head label">
+                <span>Systems index</span>
+                <label for="nm-all" class="nm-reset">Show all · 21</label>
               </div>
               <div class="nm-index" role="group" aria-label="Focus a skill cluster">
-                <label for="nm-ai" class="nm-row">
+                <label for="nm-ai" class="nm-row" data-cluster="ai">
                   <span class="nm-row-idx">01</span>
                   <span class="nm-row-body">
                     <span class="nm-row-title">AI · Data</span>
-                    <span class="nm-row-skills">Data analysis · Data visualization · Data-driven decisions · Responsible AI · AI app building · AI-assisted development</span>
+                    <span class="nm-meter" aria-hidden="true"><i style="height: 6px"></i><i style="height: 11px"></i><i style="height: 7px"></i><i style="height: 12px"></i><i style="height: 8px"></i><i style="height: 13px"></i></span>
                   </span>
                   <span class="nm-row-count">06</span>
+                  <span class="nm-chips"><span class="nm-chip" data-s="Data analysis">Data analysis</span><span class="nm-chip" data-s="Data visualization">Data visualization</span><span class="nm-chip" data-s="Data-driven decisions">Data-driven decisions</span><span class="nm-chip" data-s="Responsible AI">Responsible AI</span><span class="nm-chip" data-s="AI app building">AI app building</span><span class="nm-chip" data-s="AI-assisted development">AI-assisted development</span></span>
                 </label>
-                <label for="nm-prod" class="nm-row">
+                <label for="nm-prod" class="nm-row" data-cluster="prod">
                   <span class="nm-row-idx">02</span>
                   <span class="nm-row-body">
                     <span class="nm-row-title">Product</span>
-                    <span class="nm-row-skills">Product teardowns · MVP scoping · Feature viability · ASCI guidelines · CCPA compliance</span>
+                    <span class="nm-meter" aria-hidden="true"><i style="height: 9px"></i><i style="height: 14px"></i><i style="height: 10px"></i><i style="height: 6px"></i><i style="height: 11px"></i><i class="off"></i></span>
                   </span>
                   <span class="nm-row-count">05</span>
+                  <span class="nm-chips"><span class="nm-chip" data-s="Product teardowns">Product teardowns</span><span class="nm-chip" data-s="MVP scoping">MVP scoping</span><span class="nm-chip" data-s="Feature viability">Feature viability</span><span class="nm-chip" data-s="ASCI guidelines">ASCI guidelines</span><span class="nm-chip" data-s="CCPA compliance">CCPA compliance</span></span>
                 </label>
-                <label for="nm-dev" class="nm-row">
+                <label for="nm-dev" class="nm-row" data-cluster="dev">
                   <span class="nm-row-idx">03</span>
                   <span class="nm-row-body">
                     <span class="nm-row-title">Development</span>
-                    <span class="nm-row-skills">Python · Git / GitHub · System architecture · GitHub Copilot · Antigravity</span>
+                    <span class="nm-meter" aria-hidden="true"><i style="height: 12px"></i><i style="height: 8px"></i><i style="height: 13px"></i><i style="height: 9px"></i><i style="height: 14px"></i><i class="off"></i></span>
                   </span>
                   <span class="nm-row-count">05</span>
+                  <span class="nm-chips"><span class="nm-chip" data-s="Python">Python</span><span class="nm-chip" data-s="Git / GitHub">Git / GitHub</span><span class="nm-chip" data-s="System architecture">System architecture</span><span class="nm-chip" data-s="GitHub Copilot">GitHub Copilot</span><span class="nm-chip" data-s="Antigravity">Antigravity</span></span>
                 </label>
-                <label for="nm-front" class="nm-row">
+                <label for="nm-front" class="nm-row" data-cluster="front">
                   <span class="nm-row-idx">04</span>
                   <span class="nm-row-body">
                     <span class="nm-row-title">Frontend</span>
-                    <span class="nm-row-skills">HTML5 · CSS3 · Google Stitch · Rapid prototyping</span>
+                    <span class="nm-meter" aria-hidden="true"><i style="height: 6px"></i><i style="height: 11px"></i><i style="height: 7px"></i><i style="height: 12px"></i><i class="off"></i><i class="off"></i></span>
                   </span>
                   <span class="nm-row-count">04</span>
+                  <span class="nm-chips"><span class="nm-chip" data-s="HTML5">HTML5</span><span class="nm-chip" data-s="CSS3">CSS3</span><span class="nm-chip" data-s="Google Stitch">Google Stitch</span><span class="nm-chip" data-s="Rapid prototyping">Rapid prototyping</span></span>
                 </label>
-                <label for="nm-cad" class="nm-row">
+                <label for="nm-cad" class="nm-row" data-cluster="cad">
                   <span class="nm-row-idx">05</span>
                   <span class="nm-row-body">
                     <span class="nm-row-title">Design · CAD</span>
-                    <span class="nm-row-skills">Onshape 3D CAD</span>
+                    <span class="nm-meter" aria-hidden="true"><i style="height: 9px"></i><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i></span>
                   </span>
                   <span class="nm-row-count">01</span>
+                  <span class="nm-chips"><span class="nm-chip" data-s="Onshape 3D CAD">Onshape 3D CAD</span></span>
                 </label>
               </div>
-            </div>
-
-            <div class="nm-stage" tabindex="0" role="img" aria-label="Neural map: 21 skills in five clusters around the ARNAV core. Drag or use the arrow keys to rotate.">
-              <span class="nm-readout label-s" aria-hidden="true">Neural map // 05 clusters · 21 nodes</span>
-              <span class="nm-hint label-s" aria-hidden="true">Drag to rotate · Hover a node · Pick a cluster</span>
-              <div class="nm-tip" aria-hidden="true" hidden><b></b><span class="label-s"></span></div>
-              <div class="nm-tilt" aria-hidden="true">
-                <div class="nm-spin">
-                  <i class="nm-ring"></i>
-                  <i class="nm-ring nm-ring--tilted"></i>
-                  <span class="nm-node nm-node--core"><span class="nm-label">ARNAV<small>// core</small></span></span>
-                  <div class="nm-hub nm-hub--ai" style="--lon: 288deg; --lat: -22deg">
-                    <i class="nm-link"></i>
-                    <div class="nm-hubpos">
-                      <span class="nm-node nm-node--hub"><span class="nm-label">AI · Data</span></span>
-                      <div class="nm-arm" style="--a: 20deg; --s: 58deg">
-                        <i class="nm-link nm-link--leaf"></i>
-                        <span class="nm-node nm-node--leaf"><span class="nm-label">Data analysis</span></span>
-                      </div>
-                      <div class="nm-arm" style="--a: 80deg; --s: 58deg">
-                        <i class="nm-link nm-link--leaf"></i>
-                        <span class="nm-node nm-node--leaf"><span class="nm-label">Data visualization</span></span>
-                      </div>
-                      <div class="nm-arm" style="--a: 140deg; --s: 58deg">
-                        <i class="nm-link nm-link--leaf"></i>
-                        <span class="nm-node nm-node--leaf"><span class="nm-label">Data-driven decisions</span></span>
-                      </div>
-                      <div class="nm-arm" style="--a: 200deg; --s: 58deg">
-                        <i class="nm-link nm-link--leaf"></i>
-                        <span class="nm-node nm-node--leaf"><span class="nm-label">Responsible AI</span></span>
-                      </div>
-                      <div class="nm-arm" style="--a: 260deg; --s: 58deg">
-                        <i class="nm-link nm-link--leaf"></i>
-                        <span class="nm-node nm-node--leaf"><span class="nm-label">AI app building</span></span>
-                      </div>
-                      <div class="nm-arm" style="--a: 320deg; --s: 58deg">
-                        <i class="nm-link nm-link--leaf"></i>
-                        <span class="nm-node nm-node--leaf"><span class="nm-label">AI-assisted development</span></span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="nm-hub nm-hub--prod" style="--lon: 144deg; --lat: -14deg">
-                    <i class="nm-link"></i>
-                    <div class="nm-hubpos">
-                      <span class="nm-node nm-node--hub"><span class="nm-label">Product</span></span>
-                      <div class="nm-arm" style="--a: 20deg; --s: 58deg">
-                        <i class="nm-link nm-link--leaf"></i>
-                        <span class="nm-node nm-node--leaf"><span class="nm-label">Product teardowns</span></span>
-                      </div>
-                      <div class="nm-arm" style="--a: 92deg; --s: 58deg">
-                        <i class="nm-link nm-link--leaf"></i>
-                        <span class="nm-node nm-node--leaf"><span class="nm-label">MVP scoping</span></span>
-                      </div>
-                      <div class="nm-arm" style="--a: 164deg; --s: 58deg">
-                        <i class="nm-link nm-link--leaf"></i>
-                        <span class="nm-node nm-node--leaf"><span class="nm-label">Feature viability</span></span>
-                      </div>
-                      <div class="nm-arm" style="--a: 236deg; --s: 58deg">
-                        <i class="nm-link nm-link--leaf"></i>
-                        <span class="nm-node nm-node--leaf"><span class="nm-label">ASCI guidelines</span></span>
-                      </div>
-                      <div class="nm-arm" style="--a: 308deg; --s: 58deg">
-                        <i class="nm-link nm-link--leaf"></i>
-                        <span class="nm-node nm-node--leaf"><span class="nm-label">CCPA compliance</span></span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="nm-hub nm-hub--dev" style="--lon: 72deg; --lat: 24deg">
-                    <i class="nm-link"></i>
-                    <div class="nm-hubpos">
-                      <span class="nm-node nm-node--hub"><span class="nm-label">Development</span></span>
-                      <div class="nm-arm" style="--a: 20deg; --s: 58deg">
-                        <i class="nm-link nm-link--leaf"></i>
-                        <span class="nm-node nm-node--leaf"><span class="nm-label">Python</span></span>
-                      </div>
-                      <div class="nm-arm" style="--a: 92deg; --s: 58deg">
-                        <i class="nm-link nm-link--leaf"></i>
-                        <span class="nm-node nm-node--leaf"><span class="nm-label">Git / GitHub</span></span>
-                      </div>
-                      <div class="nm-arm" style="--a: 164deg; --s: 58deg">
-                        <i class="nm-link nm-link--leaf"></i>
-                        <span class="nm-node nm-node--leaf"><span class="nm-label">System architecture</span></span>
-                      </div>
-                      <div class="nm-arm" style="--a: 236deg; --s: 58deg">
-                        <i class="nm-link nm-link--leaf"></i>
-                        <span class="nm-node nm-node--leaf"><span class="nm-label">GitHub Copilot</span></span>
-                      </div>
-                      <div class="nm-arm" style="--a: 308deg; --s: 58deg">
-                        <i class="nm-link nm-link--leaf"></i>
-                        <span class="nm-node nm-node--leaf"><span class="nm-label">Antigravity</span></span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="nm-hub nm-hub--front" style="--lon: 0deg; --lat: -18deg">
-                    <i class="nm-link"></i>
-                    <div class="nm-hubpos">
-                      <span class="nm-node nm-node--hub"><span class="nm-label">Frontend</span></span>
-                      <div class="nm-arm" style="--a: 20deg; --s: 58deg">
-                        <i class="nm-link nm-link--leaf"></i>
-                        <span class="nm-node nm-node--leaf"><span class="nm-label">HTML5</span></span>
-                      </div>
-                      <div class="nm-arm" style="--a: 110deg; --s: 58deg">
-                        <i class="nm-link nm-link--leaf"></i>
-                        <span class="nm-node nm-node--leaf"><span class="nm-label">CSS3</span></span>
-                      </div>
-                      <div class="nm-arm" style="--a: 200deg; --s: 58deg">
-                        <i class="nm-link nm-link--leaf"></i>
-                        <span class="nm-node nm-node--leaf"><span class="nm-label">Google Stitch</span></span>
-                      </div>
-                      <div class="nm-arm" style="--a: 290deg; --s: 58deg">
-                        <i class="nm-link nm-link--leaf"></i>
-                        <span class="nm-node nm-node--leaf"><span class="nm-label">Rapid prototyping</span></span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="nm-hub nm-hub--cad" style="--lon: 216deg; --lat: 28deg">
-                    <i class="nm-link"></i>
-                    <div class="nm-hubpos">
-                      <span class="nm-node nm-node--hub"><span class="nm-label">Design · CAD</span></span>
-                      <div class="nm-arm" style="--a: 20deg; --s: 0deg">
-                        <i class="nm-link nm-link--leaf"></i>
-                        <span class="nm-node nm-node--leaf"><span class="nm-label">Onshape 3D CAD</span></span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <p class="nm-sum">Hover a cluster to preview it. Pick one to focus.</p>
             </div>
           </div>
         </div>

@@ -1218,384 +1218,176 @@ html.fd-locked { overflow: hidden; }
 }
 
 /* =========================================================
-   DECK_02 · NEURAL MAP
-   Scene graph (unchanged): .nm-tilt (drag pitch/yaw) → .nm-spin
-   (idle drift) → .nm-hub (lon/lat) → .nm-hubpos (out to radius 1)
-   → .nm-arm (fan angle) → leaf node (out to radius 2).
-   Every label undoes the rotations above it so it faces you.
-   Cluster focus is CSS only, driven by the nm-cluster radios.
+   DECK_02 · NEURAL MAP v2 — SVG constellation (js/neural-map.js)
+   Radios (.nm-radio) are the source of truth for cluster focus.
 ========================================================= */
-@property --spin  { syntax: '<angle>'; inherits: true; initial-value: 0deg; }
-@property --yaw   { syntax: '<angle>'; inherits: true; initial-value: 0deg; }
-@property --tilt  { syntax: '<angle>'; inherits: true; initial-value: 0deg; }
-@property --fx    { syntax: '<angle>'; inherits: true; initial-value: -12deg; }
-@property --dim   { syntax: '<number>'; inherits: true; initial-value: 1; }
-@property --dot   { syntax: '<length>'; inherits: true; initial-value: 6px; }
-
 .neural {
-  --r1: clamp(96px, 15vw, 172px);   /* core → hub */
-  --r2: clamp(52px, 7.5vw, 92px);   /* hub → skill */
-  --pitch: calc(var(--tilt) + var(--fx));
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: var(--space-5);
-  align-items: stretch;
-  animation: nm-spin 180s linear infinite;   /* idle drift: 2° per second */
-  transition: --spin 1.4s var(--ease-out), --fx 1.2s var(--ease-out);
+  gap: var(--space-6);
+  align-items: start;
 }
 
-@keyframes nm-spin {
-  from { --spin: 0deg; }
-  to   { --spin: 360deg; }
-}
-
-/* Pause the drift while exploring or dragging */
-.neural:has(.nm-stage:hover),
-.neural.is-dragging { animation-play-state: paused; }
-
-/* ── Stage: panel square with dot grid and orbit ellipses ── */
+/* ── Stage: no box, four corner brackets, a royal glow behind the core ── */
 .nm-stage {
-  grid-column: 1 / span 7;
-  order: -1;
+  grid-column: 1 / span 8;
   position: relative;
-  min-height: 34rem;
-  perspective: 1100px;
-  overflow: hidden;
+  height: 580px;
   cursor: grab;
-  touch-action: pan-y;
+  touch-action: none;
   user-select: none;
-  background: var(--panel);
-  border: 1px solid var(--line);
-}
-
-.nm-stage::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(var(--faint) 1px, transparent 1.2px) 0 0 / 32px 32px;
-  opacity: 0.4;
-  -webkit-mask: radial-gradient(ellipse at center, black 30%, transparent 80%);
-          mask: radial-gradient(ellipse at center, black 30%, transparent 80%);
-  pointer-events: none;
+  background: radial-gradient(55% 60% at 44% 50%, color-mix(in srgb, var(--curtain) 22%, transparent), transparent 70%);
 }
 
 .neural.is-dragging .nm-stage { cursor: grabbing; }
+.nm-stage:focus-visible { outline: 2px solid var(--sky); outline-offset: 2px; box-shadow: var(--glow-sky); }
+.nm-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 
-.nm-readout,
-.nm-hint {
+.nm-br { position: absolute; width: 16px; height: 16px; border: 0 solid var(--line-strong); }
+.nm-br--tl { top: 0; left: 0; border-top-width: 1px; border-left-width: 1px; }
+.nm-br--tr { top: 0; right: 0; border-top-width: 1px; border-right-width: 1px; }
+.nm-br--bl { bottom: 0; left: 0; border-bottom-width: 1px; border-left-width: 1px; }
+.nm-br--br { bottom: 0; right: 0; border-bottom-width: 1px; border-right-width: 1px; }
+
+/* HUD readouts in the four corners */
+.nm-hud {
   position: absolute;
-  left: var(--space-4);
   z-index: 1;
-  color: var(--muted);
-  pointer-events: none;
-}
-
-.nm-readout { top: var(--space-4); }
-.nm-hint { bottom: var(--space-4); }
-
-.nm-tilt,
-.nm-spin,
-.nm-hub,
-.nm-hubpos,
-.nm-arm {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 0;
-  height: 0;
-  transform-style: preserve-3d;
-}
-
-.nm-tilt {
-  left: 50%;
-  top: 50%;
-  transform: rotateX(var(--pitch)) rotateY(var(--yaw));
-}
-
-.nm-spin   { transform: rotateY(var(--spin)); }
-.nm-hub    { transform: rotateY(var(--lon)) rotateX(var(--lat)); }
-.nm-hubpos { transform: translateZ(var(--r1)); }
-.nm-arm    { transform: rotateZ(var(--a)) rotateX(var(--s)); }
-
-/* Faint orbit ellipses around the core */
-.nm-ring {
-  position: absolute;
-  left: calc(var(--r1) * -1.05);
-  top: calc(var(--r1) * -1.05);
-  width: calc(var(--r1) * 2.1);
-  height: calc(var(--r1) * 2.1);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-pill);
-  transform: rotateX(90deg);
-}
-
-.nm-ring--tilted { transform: rotateX(70deg) rotateY(28deg); }
-
-/* ── Links: hairlines on two crossed planes so they read from any angle ── */
-.nm-link {
-  --link: var(--line-strong);
-  position: absolute;
-  left: 0;
-  top: -0.5px;
-  width: var(--r1);
-  height: 1px;
-  transform-origin: 0 50%;
-  transform: rotateY(-90deg);
-  transform-style: preserve-3d;
-  background: color-mix(in srgb, var(--link) calc(var(--dim) * 100%), transparent);
-  transition: background var(--dur-base) var(--ease-out);
-}
-
-.nm-link--leaf { width: var(--r2); }
-
-.nm-link::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: inherit;
-  transform: rotateX(90deg);
-}
-
-/* ── Nodes (0×0 anchors that face the camera) ── */
-.nm-node {
-  position: absolute;
-  left: 0;
-  top: 0;
-  /* depth cue from the node's current angle to the viewer */
-  --depth: calc(0.3 + 0.7 * (0.5 + 0.5 * cos(var(--lon, 0deg) + var(--spin) + var(--yaw))));
-  opacity: calc(max(var(--depth), 0.55) * var(--dim));
-  transition: opacity var(--dur-base) var(--ease-out);
-}
-
-.nm-node--core {
-  opacity: 1;
-  transform: rotateY(calc(-1 * (var(--spin) + var(--yaw)))) rotateX(calc(-1 * var(--pitch)));
-}
-
-.nm-node--hub {
-  transform:
-    rotateX(calc(-1 * var(--lat))) rotateY(calc(-1 * var(--lon)))
-    rotateY(calc(-1 * (var(--spin) + var(--yaw)))) rotateX(calc(-1 * var(--pitch)));
-}
-
-.nm-node--leaf {
-  transform:
-    translateZ(var(--r2))
-    rotateX(calc(-1 * var(--s))) rotateZ(calc(-1 * var(--a)))
-    rotateX(calc(-1 * var(--lat))) rotateY(calc(-1 * var(--lon)))
-    rotateY(calc(-1 * (var(--spin) + var(--yaw)))) rotateX(calc(-1 * var(--pitch)));
-}
-
-.nm-label {
-  position: absolute;
-  left: 0;
-  top: 0;
-  translate: -50% -50%;
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  white-space: nowrap;
-  transition: color var(--dur-base) var(--ease-out), scale var(--dur-base) var(--ease-out);
-}
-
-/* Core: champagne disc, glow, horizon-gradient ring */
-.nm-node--core .nm-label {
-  justify-content: center;
-  width: 64px;
-  height: 64px;
-  border: 2px solid transparent;
-  border-radius: var(--radius-pill);
-  background:
-    linear-gradient(var(--sun), var(--sun)) padding-box,
-    linear-gradient(90deg, var(--curtain), var(--frost), var(--sun)) border-box;
-  box-shadow: var(--glow-sun);
-  font: 600 12px/16px var(--font-mono);
-  letter-spacing: 0.16em;
-  color: var(--on-sun);
-}
-
-.nm-node--core small { display: none; }
-
-/* Hubs: 14px sky rings with a label-s name beside them */
-.nm-node--hub .nm-label {
-  translate: -7px -50%;
   font: 500 11px/14px var(--font-mono);
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--ink);
-  text-shadow: 0 0 12px var(--panel), 0 0 2px var(--panel);
+  color: var(--muted);
+  pointer-events: none;
+}
+.nm-hud b { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; }
+.nm-hud--tl { top: var(--space-4); left: var(--space-5); }
+.nm-hud--tr { top: var(--space-4); right: var(--space-5); text-align: right; }
+.nm-hud--bl { bottom: 56px; left: var(--space-5); }
+.nm-hud--br { bottom: 56px; right: var(--space-5); text-align: right; }
+.nm-focus { color: var(--sun-ink); }
+
+/* Heading tape: compass ticks that slide as the map spins */
+.nm-tape {
+  position: absolute;
+  left: var(--space-5);
+  right: var(--space-5);
+  bottom: var(--space-4);
+  height: 22px;
+  overflow: hidden;
+  pointer-events: none;
+  -webkit-mask: linear-gradient(90deg, transparent, black 18%, black 82%, transparent);
+          mask: linear-gradient(90deg, transparent, black 18%, black 82%, transparent);
+}
+.nm-tape i {
+  position: absolute;
+  inset: 0 -120px;
+  background:
+    repeating-linear-gradient(90deg, var(--line-strong) 0 1px, transparent 1px 12px) 0 14px / 100% 8px no-repeat,
+    repeating-linear-gradient(90deg, var(--muted) 0 1px, transparent 1px 72px) 0 10px / 100% 12px no-repeat;
+}
+.nm-tape u { position: absolute; left: 50%; top: 0; width: 1px; height: 22px; background: var(--sun); }
+
+/* ── SVG parts ── */
+.nm-lk { stroke: var(--line-strong); stroke-width: 1; fill: none; transition: stroke var(--dur-base) var(--ease-out); }
+.nm-lk--leaf { stroke: var(--line); }
+.nm-lk.is-on { stroke: var(--sun-ink); stroke-opacity: 0.7; }
+.nm-lk.is-pv { stroke: var(--sky); stroke-opacity: 0.55; }
+
+.nm-node { transition: opacity var(--dur-base) var(--ease-out); }
+.nm-leafdot { fill: var(--steel); cursor: pointer; }
+.nm-node.is-on .nm-leafdot { fill: var(--sun); }
+.nm-node.is-pv .nm-leafdot { fill: var(--sky); }
+.nm-node--leaf.hover .nm-leafdot { fill: var(--sun); }
+
+.nm-hubring { fill: var(--void); stroke: var(--sky); stroke-width: 1.5; }
+.nm-node.is-on .nm-hubring { stroke: var(--sun-ink); stroke-width: 2; }
+.nm-hubnum { font: 500 8px var(--font-mono); fill: var(--sky); text-anchor: middle; dominant-baseline: central; }
+.nm-node.is-on .nm-hubnum { fill: var(--sun-ink); }
+
+.nm-lbl {
+  font: 500 10px var(--font-mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  fill: var(--muted);
+  paint-order: stroke;
+  stroke: var(--void);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+.nm-node--hub .nm-lbl { fill: var(--text); }
+.nm-node.is-on .nm-lbl { fill: var(--ink); }
+.nm-node--hub.is-on .nm-lbl { fill: var(--sun-ink); }
+.nm-node--leaf .nm-lbl { opacity: 0; transition: opacity var(--dur-fast) var(--ease-out); }
+.nm-node--leaf.show .nm-lbl,
+.nm-node--leaf.hover .nm-lbl { opacity: 1; }
+
+.nm-pulse { fill: var(--frost); }
+
+/* Core: a 28px champagne disc, two counter-rotating rings, a ping every 4s */
+.nm-core-disc { fill: var(--sun); filter: drop-shadow(0 0 16px color-mix(in srgb, var(--sun) 55%, transparent)); }
+.nm-tick1, .nm-tick2, .nm-ping { fill: none; transform-origin: center; transform-box: fill-box; }
+.nm-tick1 { stroke: var(--line-strong); stroke-width: 1; stroke-dasharray: 1 5; animation: nm-spin 40s linear infinite; }
+.nm-tick2 { stroke: var(--sun-ink); stroke-opacity: 0.45; stroke-width: 1; stroke-dasharray: 14 6 2 6; animation: nm-spin 26s linear infinite reverse; }
+.nm-ping { stroke: var(--sun); stroke-width: 1; animation: nm-ping 4s var(--ease-out) infinite; }
+.nm-corelbl { font: 600 10px var(--font-mono); letter-spacing: 0.2em; fill: var(--ink); text-anchor: middle; }
+.nm-corelbl tspan { fill: var(--muted); font-weight: 500; }
+
+@keyframes nm-spin { to { transform: rotate(360deg); } }
+@keyframes nm-ping {
+  0%       { transform: scale(1); opacity: 0.7; }
+  70%, 100% { transform: scale(3.2); opacity: 0; }
 }
 
-.nm-node--hub .nm-label::before {
-  content: '';
-  flex-shrink: 0;
-  width: 14px;
-  height: 14px;
-  border-radius: var(--radius-pill);
-  border: 1.5px solid var(--sky);
-  background: var(--panel);
-  transition: border-color var(--dur-base) var(--ease-out);
-}
-
-/* Leaves: 6px discs; names show for the focused or hovered cluster */
-.nm-node--leaf .nm-label {
-  translate: calc(var(--dot) / -2) -50%;
-  font: 400 13px/18px var(--font-sans);
-  color: transparent;
-  text-shadow: none;
-}
-
-.nm-node--leaf .nm-label::before {
-  content: '';
-  flex-shrink: 0;
-  width: var(--dot);
-  height: var(--dot);
-  border-radius: var(--radius-pill);
-  background: var(--steel);
-  transition: --dot var(--dur-base) var(--ease-out), background var(--dur-base) var(--ease-out);
-}
-
-.nm-node--leaf:hover .nm-label::before { background: var(--sun); }
-
-/* ── Hover a hub or an index row: preview that cluster ── */
-.nm-spin:has(.nm-hub:hover) .nm-hub:not(:hover) { --dim: 0.4; }
-
-.nm-hub:hover .nm-node--leaf .nm-label,
-.neural:has(label[for="nm-ai"]:hover)    .nm-hub--ai    .nm-node--leaf .nm-label,
-.neural:has(label[for="nm-prod"]:hover)  .nm-hub--prod  .nm-node--leaf .nm-label,
-.neural:has(label[for="nm-dev"]:hover)   .nm-hub--dev   .nm-node--leaf .nm-label,
-.neural:has(label[for="nm-front"]:hover) .nm-hub--front .nm-node--leaf .nm-label,
-.neural:has(label[for="nm-cad"]:hover)   .nm-hub--cad   .nm-node--leaf .nm-label {
-  color: var(--text);
-  text-shadow: 0 0 10px var(--panel), 0 0 2px var(--panel);
-}
-
-.neural:has(label[for="nm-ai"]:hover)    .nm-hub:not(.nm-hub--ai),
-.neural:has(label[for="nm-prod"]:hover)  .nm-hub:not(.nm-hub--prod),
-.neural:has(label[for="nm-dev"]:hover)   .nm-hub:not(.nm-hub--dev),
-.neural:has(label[for="nm-front"]:hover) .nm-hub:not(.nm-hub--front),
-.neural:has(label[for="nm-cad"]:hover)   .nm-hub:not(.nm-hub--cad) { --dim: 0.4; }
-
-/* ── Focus a cluster: rotate it to the front, dim the rest ── */
-.neural:has(.nm-radio:not(#nm-all):checked) { animation: none; }
-
-/* Each cluster turns ~35° off-centre so its hub isn't hidden behind the core */
-.neural:has(#nm-front:checked) { --spin: 35deg;   --fx: 4deg; }
-.neural:has(#nm-dev:checked)   { --spin: -37deg;  --fx: -22deg; }
-.neural:has(#nm-prod:checked)  { --spin: -109deg; --fx: 2deg; }
-.neural:has(#nm-cad:checked)   { --spin: -181deg; --fx: -24deg; }
-.neural:has(#nm-ai:checked)    { --spin: -253deg; --fx: 6deg; }
-
-/* Everything else fades to faint at 40% */
-.neural:has(#nm-front:checked) .nm-hub:not(.nm-hub--front),
-.neural:has(#nm-dev:checked)   .nm-hub:not(.nm-hub--dev),
-.neural:has(#nm-prod:checked)  .nm-hub:not(.nm-hub--prod),
-.neural:has(#nm-cad:checked)   .nm-hub:not(.nm-hub--cad),
-.neural:has(#nm-ai:checked)    .nm-hub:not(.nm-hub--ai) { --dim: 0.4; }
-
-.neural:has(.nm-radio:not(#nm-all):checked) .nm-node--leaf .nm-label::before { background: var(--faint); }
-
-/* The focused cluster: sun nodes grow to 8px, sun-ink links at 60%, names on */
-.neural:has(#nm-ai:checked)    .nm-hub--ai,
-.neural:has(#nm-prod:checked)  .nm-hub--prod,
-.neural:has(#nm-dev:checked)   .nm-hub--dev,
-.neural:has(#nm-front:checked) .nm-hub--front,
-.neural:has(#nm-cad:checked)   .nm-hub--cad {
-  --dot: 8px;
-}
-
-.neural:has(#nm-ai:checked)    .nm-hub--ai    .nm-node,
-.neural:has(#nm-prod:checked)  .nm-hub--prod  .nm-node,
-.neural:has(#nm-dev:checked)   .nm-hub--dev   .nm-node,
-.neural:has(#nm-front:checked) .nm-hub--front .nm-node,
-.neural:has(#nm-cad:checked)   .nm-hub--cad   .nm-node { opacity: 1; }
-
-.neural:has(#nm-ai:checked)    .nm-hub--ai    .nm-link,
-.neural:has(#nm-prod:checked)  .nm-hub--prod  .nm-link,
-.neural:has(#nm-dev:checked)   .nm-hub--dev   .nm-link,
-.neural:has(#nm-front:checked) .nm-hub--front .nm-link,
-.neural:has(#nm-cad:checked)   .nm-hub--cad   .nm-link {
-  --link: color-mix(in srgb, var(--sun-ink) 60%, transparent);
-}
-
-.neural:has(#nm-ai:checked)    .nm-hub--ai    .nm-node--leaf .nm-label::before,
-.neural:has(#nm-prod:checked)  .nm-hub--prod  .nm-node--leaf .nm-label::before,
-.neural:has(#nm-dev:checked)   .nm-hub--dev   .nm-node--leaf .nm-label::before,
-.neural:has(#nm-front:checked) .nm-hub--front .nm-node--leaf .nm-label::before,
-.neural:has(#nm-cad:checked)   .nm-hub--cad   .nm-node--leaf .nm-label::before { background: var(--sun); }
-
-.neural:has(#nm-ai:checked)    .nm-hub--ai    .nm-node--leaf .nm-label,
-.neural:has(#nm-prod:checked)  .nm-hub--prod  .nm-node--leaf .nm-label,
-.neural:has(#nm-dev:checked)   .nm-hub--dev   .nm-node--leaf .nm-label,
-.neural:has(#nm-front:checked) .nm-hub--front .nm-node--leaf .nm-label,
-.neural:has(#nm-cad:checked)   .nm-hub--cad   .nm-node--leaf .nm-label {
-  color: var(--ink);
-  text-shadow: 0 0 10px var(--panel), 0 0 2px var(--panel);
-}
-
-.neural:has(#nm-ai:checked)    .nm-hub--ai    .nm-node--hub .nm-label,
-.neural:has(#nm-prod:checked)  .nm-hub--prod  .nm-node--hub .nm-label,
-.neural:has(#nm-dev:checked)   .nm-hub--dev   .nm-node--hub .nm-label,
-.neural:has(#nm-front:checked) .nm-hub--front .nm-node--hub .nm-label,
-.neural:has(#nm-cad:checked)   .nm-hub--cad   .nm-node--hub .nm-label { color: var(--sun-ink); }
-
-.neural:has(#nm-ai:checked)    .nm-hub--ai    .nm-node--hub .nm-label::before,
-.neural:has(#nm-prod:checked)  .nm-hub--prod  .nm-node--hub .nm-label::before,
-.neural:has(#nm-dev:checked)   .nm-hub--dev   .nm-node--hub .nm-label::before,
-.neural:has(#nm-front:checked) .nm-hub--front .nm-node--hub .nm-label::before,
-.neural:has(#nm-cad:checked)   .nm-hub--cad   .nm-node--hub .nm-label::before { border-color: var(--sun-ink); }
-
-/* ── Tooltip on node hover ── */
+/* Tooltip */
 .nm-tip {
   position: absolute;
-  left: 0;
-  top: 0;
   z-index: 3;
-  display: grid;
-  gap: 2px;
   padding: var(--space-2) var(--space-3);
   background: var(--raised);
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
   box-shadow: var(--lift);
+  transform: translate(-50%, calc(-100% - 14px));
+  opacity: 0;
   pointer-events: none;
+  transition: opacity var(--dur-fast) var(--ease-out);
 }
-
-.nm-tip[hidden] { display: none; }
-.nm-tip b { font: 500 15px/20px var(--font-sans); color: var(--ink); }
-.nm-tip span { color: var(--sun-ink); }
+.nm-tip.is-on { opacity: 1; }
+.nm-tip b { display: block; font: 500 15px/20px var(--font-sans); color: var(--ink); white-space: nowrap; }
+.nm-tip span { font: 500 10px/14px var(--font-mono); letter-spacing: 0.18em; text-transform: uppercase; color: var(--sun-ink); }
 
 /* ── Systems index ── */
-.nm-panel { grid-column: 8 / -1; display: flex; flex-direction: column; }
+.nm-panel { grid-column: 9 / -1; }
 
 .nm-index-head {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: center;
   padding-bottom: var(--space-3);
   border-bottom: 1px solid var(--line);
   color: var(--muted);
 }
 
-.nm-reset { cursor: pointer; color: var(--muted); transition: color var(--dur-fast) var(--ease-out); }
+.nm-reset { cursor: pointer; color: var(--muted); }
 .nm-reset:hover { color: var(--ink); }
 #nm-all:checked ~ .nm-panel .nm-reset { color: var(--sun-ink); }
-
-.nm-index { display: flex; flex-direction: column; }
 
 .nm-row {
   position: relative;
   display: grid;
-  grid-template-columns: 40px minmax(0, 1fr) 28px;
+  grid-template-columns: 32px minmax(0, 1fr) auto;
   gap: var(--space-3);
-  align-items: start;
   padding: var(--space-4) 0 var(--space-4) var(--space-3);
   border-bottom: 1px solid var(--line);
   cursor: pointer;
-  transition: background var(--dur-fast) var(--ease-out), opacity var(--dur-base) var(--ease-out);
+  transition: background var(--dur-base) var(--ease-out);
 }
 
-/* 2px sun bar marks the focused row */
+.nm-row:hover,
+.nm-row.is-pv { background: linear-gradient(90deg, color-mix(in srgb, var(--sky) 6%, transparent), transparent 70%); }
+
+/* Selected row: a 2px horizon-gradient bar on the left */
 .nm-row::before {
   content: '';
   position: absolute;
@@ -1603,68 +1395,53 @@ html.fd-locked { overflow: hidden; }
   top: var(--space-4);
   bottom: var(--space-4);
   width: 2px;
-  background: var(--sun);
+  background: linear-gradient(180deg, var(--curtain), var(--frost), var(--sun));
   transform: scaleY(0);
+  transform-origin: top;
   transition: transform var(--dur-base) var(--ease-out);
 }
+.nm-row.is-on::before { transform: scaleY(1); }
 
-.nm-row:hover { background: color-mix(in srgb, var(--ink) 3%, transparent); }
+.nm-row-idx, .nm-row-count { font: 500 12px/20px var(--font-mono); letter-spacing: 0.1em; color: var(--muted); }
+.nm-row-title { display: block; font: 500 12px/20px var(--font-mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink); }
+.nm-row.is-on :is(.nm-row-title, .nm-row-idx) { color: var(--sun-ink); }
 
-.nm-row-idx,
-.nm-row-count {
-  font: 500 12px/20px var(--font-mono);
-  letter-spacing: 0.1em;
-  color: var(--muted);
+.nm-meter { display: flex; gap: 2px; align-items: flex-end; height: 14px; margin-top: 3px; }
+.nm-meter i { display: block; width: 3px; background: var(--faint); }
+.nm-meter i.off { height: 2px; opacity: 0.4; }
+.nm-row.is-on .nm-meter i:not(.off),
+.nm-row.is-pv .nm-meter i:not(.off) { background: linear-gradient(180deg, var(--frost), var(--sky)); }
+
+.nm-chips {
+  grid-column: 2 / 4;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 450ms var(--ease-out), margin 450ms var(--ease-out);
 }
+.nm-row.is-on .nm-chips { max-height: 140px; margin-top: var(--space-2); }
 
-.nm-row-count { text-align: right; }
-.nm-row-body { display: grid; gap: var(--space-1); }
-
-.nm-row-title {
-  font: 500 12px/20px var(--font-mono);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--ink);
-  transition: color var(--dur-fast) var(--ease-out);
+.nm-chip {
+  padding: 3px 8px;
+  font: 400 13px/18px var(--font-sans);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  transition: border-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
 }
+.nm-chip.is-hot { border-color: var(--sun-ink); color: var(--ink); }
 
-.nm-row-skills { font: 400 14px/22px var(--font-sans); color: var(--muted); }
-.nm-row:hover .nm-row-title { color: var(--sky); }
+.nm-sum { padding-top: var(--space-4); font: 400 14px/22px var(--font-sans); color: var(--muted); }
 
-#nm-ai:checked    ~ .nm-panel label[for="nm-ai"]::before,
-#nm-prod:checked  ~ .nm-panel label[for="nm-prod"]::before,
-#nm-dev:checked   ~ .nm-panel label[for="nm-dev"]::before,
-#nm-front:checked ~ .nm-panel label[for="nm-front"]::before,
-#nm-cad:checked   ~ .nm-panel label[for="nm-cad"]::before { transform: scaleY(1); }
-
-#nm-ai:checked    ~ .nm-panel label[for="nm-ai"] :is(.nm-row-title, .nm-row-idx),
-#nm-prod:checked  ~ .nm-panel label[for="nm-prod"] :is(.nm-row-title, .nm-row-idx),
-#nm-dev:checked   ~ .nm-panel label[for="nm-dev"] :is(.nm-row-title, .nm-row-idx),
-#nm-front:checked ~ .nm-panel label[for="nm-front"] :is(.nm-row-title, .nm-row-idx),
-#nm-cad:checked   ~ .nm-panel label[for="nm-cad"] :is(.nm-row-title, .nm-row-idx) { color: var(--sun-ink); }
-
-#nm-ai:checked    ~ .nm-panel label[for="nm-ai"] .nm-row-skills,
-#nm-prod:checked  ~ .nm-panel label[for="nm-prod"] .nm-row-skills,
-#nm-dev:checked   ~ .nm-panel label[for="nm-dev"] .nm-row-skills,
-#nm-front:checked ~ .nm-panel label[for="nm-front"] .nm-row-skills,
-#nm-cad:checked   ~ .nm-panel label[for="nm-cad"] .nm-row-skills { color: var(--text); }
-
-/* Unfocused rows step back */
-.neural:has(.nm-radio:not(#nm-all):checked) .nm-row { opacity: 0.5; }
-.neural:has(.nm-radio:not(#nm-all):checked) .nm-row:hover,
-#nm-ai:checked    ~ .nm-panel label[for="nm-ai"],
-#nm-prod:checked  ~ .nm-panel label[for="nm-prod"],
-#nm-dev:checked   ~ .nm-panel label[for="nm-dev"],
-#nm-front:checked ~ .nm-panel label[for="nm-front"],
-#nm-cad:checked   ~ .nm-panel label[for="nm-cad"] { opacity: 1; }
-
-/* Keyboard focus on the hidden radios shows on their labels */
+/* Keyboard focus on the hidden radios shows on their rows */
 #nm-all:focus-visible   ~ .nm-panel label[for="nm-all"],
-#nm-front:focus-visible ~ .nm-panel label[for="nm-front"],
-#nm-dev:focus-visible   ~ .nm-panel label[for="nm-dev"],
+#nm-ai:focus-visible    ~ .nm-panel label[for="nm-ai"],
 #nm-prod:focus-visible  ~ .nm-panel label[for="nm-prod"],
-#nm-cad:focus-visible   ~ .nm-panel label[for="nm-cad"],
-#nm-ai:focus-visible    ~ .nm-panel label[for="nm-ai"] {
+#nm-dev:focus-visible   ~ .nm-panel label[for="nm-dev"],
+#nm-front:focus-visible ~ .nm-panel label[for="nm-front"],
+#nm-cad:focus-visible   ~ .nm-panel label[for="nm-cad"] {
   outline: 2px solid var(--sky);
   outline-offset: 2px;
   box-shadow: var(--glow-sky);
@@ -1672,29 +1449,21 @@ html.fd-locked { overflow: hidden; }
 
 @media (max-width: 900px) {
   .nm-stage, .nm-panel { grid-column: 1 / -1; }
-  .nm-stage { min-height: 26rem; }
+  .nm-stage { height: 420px; }
+  .nm-tilt-ro { display: none; }
+  .nm-hud--bl, .nm-hud--br { bottom: 48px; }
+  /* Phones: labels stay visible for the focused cluster only */
+  .neural.has-focus .nm-node--hub:not(.is-on) .nm-lbl { opacity: 0; }
 }
 
 @media (max-width: 520px) {
-  .neural { --r1: 92px; --r2: 46px; }
-  .nm-stage { min-height: 24rem; }
-  .nm-node--core .nm-label { width: 48px; height: 48px; font-size: 10px; }
-  .nm-node--hub .nm-label { font-size: 10px; letter-spacing: 0.12em; }
-  .nm-readout { display: none; }
-  /* Focused cluster swings left of the core so its labels have room */
-  .neural:has(#nm-front:checked) { --spin: -28deg; }
-  .neural:has(#nm-dev:checked)   { --spin: -100deg; }
-  .neural:has(#nm-prod:checked)  { --spin: -172deg; }
-  .neural:has(#nm-cad:checked)   { --spin: -244deg; }
-  .neural:has(#nm-ai:checked)    { --spin: -316deg; }
-}
-
-@media (max-width: 400px) {
-  .neural { --r1: 76px; --r2: 40px; }
+  .nm-hud--bl { display: none; }
+  .nm-hud { font-size: 10px; letter-spacing: 0.14em; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .neural { animation: none; }
+  .nm-tick1, .nm-tick2, .nm-ping { animation: none; }
+  .nm-chips { transition: none; }
 }
 
 /* =========================================================
@@ -1832,9 +1601,6 @@ html.lenis, html.lenis body { height: auto; }
 .cursor-drag .cursor-ring { border-color: var(--sun-ink); background: var(--panel); }
 .cursor-drag .cursor-ring::after { content: 'DRAG'; left: 50%; translate: -50% -50%; opacity: 1; font-size: 7px; letter-spacing: 0.12em; }
 .cursor-drag .cursor-dot { scale: 0; }
-
-/* Arrow keys rotate the focused Neural Map stage */
-.nm-stage:focus-visible { outline: 2px solid var(--sky); outline-offset: 2px; box-shadow: var(--glow-sky); }
 
 /* =========================================================
    GRADIENT PILL — the nav call to action
