@@ -158,7 +158,7 @@
   var LEN = {
     tick: 0.05, nominal: 0.6, hover: 0.015, click: 0.06, arrival: 0.5,
     themeDay: 0.3, themeNight: 0.3, linkOut: 0.12, echoLock: 0.22,
-    echoRelease: 0.35, swell: 0.7, whoosh: 0.4, count: 0.012, pluck: 0.3, chord: 0.6, roll: 0.7, shimmer: 1.2
+    echoRelease: 0.35, swell: 0.7, whoosh: 0.4, count: 0.012, pluck: 0.3, chord: 0.6, roll: 0.7, shimmer: 1.2, tear: 0.15
   };
   var THROTTLE = { hover: 80, count: 60 };
   var lastPlayed = {};
@@ -180,6 +180,10 @@
       tone('sine', 880 * Math.pow(1.12246, i), 880 * Math.pow(1.12246, i), 0.22, db(-32), i * 0.18);
     });
     filteredNoise('highpass', 4000, 9000, 0.7, 1.2, db(-38));
+  };
+  cues.tear = function () {      // boarding pass: a short paper tear
+    filteredNoise('highpass', 2200, 5200, 0.9, 0.09, db(-20));
+    filteredNoise('bandpass', 1400, 3800, 1.4, 0.07, db(-24), 0.06);
   };
   cues.roll = function () {      // all five notes rolled quickly, low to high
     ['ai', 'prod', 'dev', 'front', 'cad'].forEach(function (c, i) { pluck(NOTES[c], i * 0.07, db(-24)); });
@@ -355,7 +359,8 @@
 
   document.addEventListener('click', function (e) {
     var a = e.target.closest && e.target.closest('a[target="_blank"], a[href^="mailto:"]');
-    if (a) S.play('linkOut');
+    if (!a) return;
+    S.play(a.classList.contains('pass-go') ? 'tear' : 'linkOut');
   });
 
   document.addEventListener('fd:arrival', function () { S.play('arrival'); });

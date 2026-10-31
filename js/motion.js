@@ -1,6 +1,7 @@
 (function () {
   // Motion layer: smooth scroll, reveals, counters, scroll progress, card
-  // parallax and the promise-word cycle. Everything rides FD.ticker.
+  // parallax and the v2 scenes (statements, signal bars, date block, boarding
+  // pass) on one shared scroll + reveal helper. Everything rides FD.ticker.
   var FD = window.FD = window.FD || {};
   var root = document.documentElement;
   var reduce = FD.reduceMotion.matches;
@@ -31,7 +32,7 @@
   });
 
   // ── Headings split into lines that rise from a mask ──
-  var headings = [].slice.call(document.querySelectorAll('.section-heading, .contact-heading'));
+  var headings = [].slice.call(document.querySelectorAll('.section-heading'));
 
   function splitWords(el) {
     var words = [];
@@ -98,43 +99,24 @@
   });
 
   // ── Entrances at 80% of the viewport ──
-  var targets = [].slice.call(document.querySelectorAll('.reveal, .section-heading, .contact-heading, .stat-tiles'));
+  var revealers = new WeakMap();
   var io = new IntersectionObserver(function (entries) {
     entries.forEach(function (e) {
       if (!e.isIntersecting) return;
       var el = e.target;
       el.classList.add('is-in');
       io.unobserve(el);
-      if (el.classList.contains('stat-tiles')) countUp(el);
-      if (el.classList.contains('section-heading') || el.classList.contains('contact-heading')) {
-        document.dispatchEvent(new CustomEvent('fd:arrival'));
-      }
+      if (el.classList.contains('section-heading')) document.dispatchEvent(new CustomEvent('fd:arrival'));
+      if (revealers.has(el)) revealers.get(el)();
     });
   }, { rootMargin: '0px 0px -20% 0px' });
-  targets.forEach(function (el) { io.observe(el); });
+  [].slice.call(document.querySelectorAll('.reveal, .section-heading')).forEach(function (el) { io.observe(el); });
 
-  // ── StatTile counters: 00 → value over dur-cinematic, ease-out ──
-  function pad(n) { return n < 10 ? '0' + n : String(n); }
-  function countUp(group) {
-    var counts = [].slice.call(group.querySelectorAll('.count'));
-    if (reduce) return;
-    var start = null;
-    counts.forEach(function (c) { c._to = +c.getAttribute('data-to'); c._shown = 0; c.textContent = '00'; });
-    function step(now) {
-      if (start === null) start = now;
-      var t = Math.min(1, (now - start) / 1400), e = 1 - Math.pow(1 - t, 3);
-      counts.forEach(function (c) {
-        var v = Math.round(c._to * e);
-        if (v !== c._shown) {
-          c._shown = v;
-          c.textContent = pad(v);
-          document.dispatchEvent(new CustomEvent('fd:count'));
-        }
-      });
-      if (t >= 1) FD.ticker.remove(step);
-    }
-    FD.ticker.add(step);
-  }
+  // Run fn once when el reaches 80% of the viewport
+  FD.reveal = function (el, fn) {
+    if (fn) revealers.set(el, fn);
+    io.observe(el);
+  };
 
   // ── Card content parallaxes up to 6px toward the cursor ──
   if (!reduce && FD.finePointer.matches) {
@@ -153,20 +135,106 @@
     }, { passive: true });
   }
 
-  // ── Promise word cycles every 2.5s with a line mask ──
-  var promise = document.querySelector('.promise-word');
-  if (promise && !reduce) {
-    var words = [].slice.call(promise.children), idx = 0;
-    promise.classList.add('is-cycling');
-    words[0].classList.add('is-on');
-    setInterval(function () {
-      var prev = words[idx];
-      idx = (idx + 1) % words.length;
-      prev.classList.remove('is-on');
-      prev.classList.add('is-out');
-      words[idx].classList.remove('is-out');
-      words[idx].classList.add('is-on');
-      setTimeout(function () { prev.classList.remove('is-out'); }, 720);
-    }, 2500);
+  // ── Shared scroll helper: scroll-linked, damped progress for a scene ──
+  // mode 'pin': 0 → 1 across the element's pinned scroll range
+  // mode 'enter': 0 → 1 as the element rises through the lower 60% of the view
+  var scenes = [];
+  function clamp(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
+  function ease(t) { return 1 - Math.pow(1 - t, 3); }
+  FD.ease = ease;
+  FD.clamp = clamp;
+
+  function measureScenes() {
+    scenes.forEach(function (sc) {
+      var r = sc.el.getBoundingClientRect();
+      sc.top = r.top + scrollY;
+      sc.h = sc.el.offsetHeight;
+    });
   }
+
+  FD.scene = function (el, mode, render) {
+    var sc = { el: el, mode: mode, render: render, top: 0, h: 0, cur: reduce ? 1 : 0, drawn: -1 };
+    scenes.push(sc);
+    measureScenes();
+    render(sc.cur);
+    return sc;
+  };
+
+  FD.ticker.add(function () {
+    var vh = innerHeight, y = scrollY;
+    for (var i = 0; i < scenes.length; i++) {
+      var sc = scenes[i];
+      if (y + vh < sc.top - vh || y > sc.top + sc.h + vh) continue;   // far away: skip
+      var p = reduce ? 1 : sc.mode === 'pin'
+        ? clamp((y - sc.top) / Math.max(1, sc.h - vh))
+        : clamp((y + vh - sc.top) / (vh * 0.6));
+      sc.cur += (p - sc.cur) * (reduce ? 1 : 0.12);
+      if (Math.abs(sc.cur - sc.drawn) < 0.0005) continue;
+      sc.drawn = sc.cur;
+      sc.render(sc.cur);
+    }
+  });
+
+  addEventListener('resize', measureScenes);
+  addEventListener('load', measureScenes);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(measureScenes);
+
+  // ── StatementScene: lines develop through slits, then the glow rises ──
+  [].slice.call(document.querySelectorAll('.statement')).forEach(function (st) {
+    var lines = [].slice.call(st.querySelectorAll('.st-ln'));
+    var glow = st.querySelector('.st-glow'), hz = st.querySelector('.st-horizon'), swelled = false;
+    FD.scene(st, 'pin', function (p) {
+      lines.forEach(function (l, i) { l.style.setProperty('--s', (ease(clamp((p - i * 0.14) / 0.42)) * 100).toFixed(2) + '%'); });
+      var g = ease(clamp((p - 0.25) / 0.5));
+      glow.style.opacity = g;
+      glow.style.transform = 'translateX(-50%) translateY(' + (-g * 14).toFixed(2) + '%)';
+      hz.style.opacity = g * 0.8;
+      if (!swelled && g > 0.5) { swelled = true; if (FD.sound) FD.sound.play('swell'); }
+      if (swelled && g < 0.1) swelled = false;
+    });
+  });
+
+  // ── Display headlines (Contact) use the same slit reveal ──
+  [].slice.call(document.querySelectorAll('.contact-heading')).forEach(function (h) {
+    var lines = [].slice.call(h.querySelectorAll('.slit'));
+    FD.scene(h, 'enter', function (p) {
+      lines.forEach(function (l, i) { l.style.setProperty('--s', (ease(clamp((p - i * 0.14) / 0.6)) * 100).toFixed(2) + '%'); });
+    });
+    FD.reveal(h, function () { document.dispatchEvent(new CustomEvent('fd:arrival')); });
+  });
+
+  // ── SignalBars: one bar per skill, rising 45ms apart; the numeral counts up ──
+  var sbHost = document.querySelector('.sb-bars');
+  if (sbHost) {
+    var SKILLS = ['Onshape 3D CAD', 'HTML5', 'Google Stitch', 'CSS3', 'Rapid prototyping', 'Git / GitHub', 'Antigravity',
+      'GitHub Copilot', 'Data visualization', 'Data analysis', 'Python', 'AI app building', 'System architecture',
+      'Data-driven decisions', 'MVP scoping', 'Product teardowns', 'Responsible AI', 'AI-assisted development',
+      'Feature viability', 'ASCI guidelines', 'CCPA compliance'];
+    SKILLS.forEach(function (name, i) {
+      var x = (i - 10) / 5.2, h = 26 + 74 * Math.exp(-x * x) + ((i * 7) % 5) - 2;
+      var d = document.createElement('div');
+      d.className = 'sb-bar';
+      d.style.setProperty('--h', h.toFixed(1) + '%');
+      d.style.setProperty('--i', i);
+      d.innerHTML = '<i></i><b>' + name + '</b>';
+      sbHost.appendChild(d);
+    });
+    var sb = sbHost.closest('.signal-bars'), count = sb.querySelector('.sb-count');
+    FD.reveal(sb, function () {
+      if (reduce) return;
+      count.textContent = '00';
+      var start = null, shown = 0;
+      function step(now) {
+        if (start === null) start = now;
+        var t = Math.min(1, (now - start) / 1400), v = Math.round(21 * ease(t));
+        if (v !== shown) { shown = v; count.textContent = v < 10 ? '0' + v : String(v); document.dispatchEvent(new CustomEvent('fd:count')); }
+        if (t >= 1) FD.ticker.remove(step);
+      }
+      FD.ticker.add(step);
+    });
+  }
+
+  // ── DateBlock: the outlined year draws in, the solid year slides up ──
+  var dblock = document.querySelector('.dateblock');
+  if (dblock) FD.reveal(dblock);
 })();
