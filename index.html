@@ -24,6 +24,15 @@
       try { sound = localStorage.getItem('fd-sound'); } catch (e) {}
       root.classList.add(sound === 'on' || sound === 'off' ? 'fd-returning' : 'fd-first');
       if (sound === 'on') root.classList.add('sound-on');
+
+      // Intro: full on the first visit ever, a Quick cut in a new session,
+      // none within the same session. If storage fails, show the Quick cut.
+      var okL = true, okS = true, seen = null, inSession = false, mode;
+      try { seen = localStorage.getItem('fd-intro-seen'); } catch (e) { okL = false; }
+      try { inSession = sessionStorage.getItem('fd-session') === '1'; } catch (e) { okS = false; }
+      mode = !okL || !okS ? 'quick' : inSession ? 'none' : seen ? 'quick' : 'full';
+      root.setAttribute('data-intro', mode);
+      if (mode !== 'none') root.classList.add('fd-intro', 'fd-locked');
     })();
   </script>
 
@@ -59,21 +68,50 @@
     </div>
   </div>
 
-  <!-- Pre-flight check: about 2.4s, any key or click skips -->
-  <div class="preflight">
-    <div class="preflight-bar label-s" aria-hidden="true">
-      <span>Arnav Verma // Flight Deck</span>
-      <span>Pre-flight check</span>
-    </div>
-    <ol class="preflight-log readout" aria-hidden="true">
-      <li>INITIATING ORBITAL TELEMETRY…</li>
-      <li>[ <b>OK</b> ] NAVIGATION SENSORS ALIGNED</li>
-      <li>[ <b>OK</b> ] FORECAST MODELS ONLINE</li>
-      <li>[ <b>OK</b> ] COMPLIANCE LINK: ASCI · CCPA</li>
-      <li>[ <b>OK</b> ] PRODUCT PAYLOAD SECURED</li>
-      <li>[ <b>OK</b> ] FLIGHT SYSTEMS NOMINAL</li>
-    </ol>
+  <!-- Intro v2: pre-flight checklist, tagline, name, lift (js/intro.js) -->
+  <div class="preflight" role="status">
+    <span class="sr-only">Loading portfolio</span>
     <button type="button" class="preflight-skip label-s">Skip intro →</button>
+    <div class="pf-curtains curtains" aria-hidden="true"></div>
+    <div class="pf-dots" aria-hidden="true"></div>
+    <div class="pf-topline" aria-hidden="true"><i></i></div>
+    <div class="pf-hdr label-s" aria-hidden="true"><span>Arnav Verma // Flight Deck</span><span>Pre-flight check &nbsp;<b class="pf-pct">000%</b></span></div>
+
+    <div class="pf-main" aria-hidden="true">
+      <div>
+        <div class="pf-log"></div>
+        <div class="pf-term"><span class="pf-pr">›</span><span class="pf-tt"></span><i class="pf-caret"></i></div>
+        <div class="pf-eta"><i></i>Departed ETA: on time</div>
+      </div>
+      <div class="pf-panel">
+        <div class="pf-ph"><span>ISS // Tracker</span><span>Incl 51.6°</span></div>
+        <svg viewBox="0 0 360 250">
+          <ellipse class="pf-o1" cx="180" cy="125" rx="110" ry="44" transform="rotate(-18 180 125)" />
+          <ellipse class="pf-o2" cx="180" cy="125" rx="158" ry="70" transform="rotate(22 180 125)" />
+          <circle class="pf-coreg" cx="180" cy="125" r="24" />
+          <circle class="pf-core" cx="180" cy="125" r="9" />
+          <g class="pf-trail"></g>
+          <circle class="pf-sat" r="3" />
+          <circle class="pf-iss" r="4.5" />
+          <text class="pf-tl">ISS</text>
+        </svg>
+        <div class="pf-ro"><div><span>Lat</span><b class="pf-lat">+00.000°</b></div><div><span>Lon</span><b class="pf-lon">000.000°</b></div></div>
+      </div>
+    </div>
+
+    <div class="pf-stmt" aria-hidden="true">
+      <div class="label-s pf-eb">DECK_00 // Signal</div>
+      <div class="pf-l1 slit grad-statement">Building software that is</div>
+      <div class="pf-wd"><span class="grad-gold">Impactful.</span><span class="grad-gold">User-centric.</span><span class="grad-gold">Scalable.</span></div>
+    </div>
+
+    <div class="pf-fin" aria-hidden="true">
+      <div class="pf-okk label-s"><i></i>Flight systems nominal</div>
+      <div class="pf-nm">arnav verma</div>
+      <div class="pf-go label-s">Cleared for launch ↑</div>
+    </div>
+
+    <div class="pf-ftr label-s" aria-hidden="true">Newton School of Technology × Rishihood University · Class of 2030</div>
   </div>
 
   <!-- Shown only if the browser refuses to start audio -->

@@ -135,6 +135,21 @@
     echoRelease: function () {     // airy filtered whoosh, falling, 350ms, −22 dB
       filteredNoise('bandpass', 1800, 420, 1.2, 0.35, db(-22));
     },
+    swell: function () {           // intro act 2: low sub, rising, 700ms, −20 dB
+      var t = ctx.currentTime, o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = 'sine';
+      o.frequency.setValueAtTime(70, t);
+      o.frequency.exponentialRampToValueAtTime(110, t + 0.7);
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(db(-20), t + 0.3);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.7);
+      o.connect(g).connect(master);
+      o.start(t);
+      o.stop(t + 0.72);
+    },
+    whoosh: function () {          // intro lift: falling filtered noise, 400ms, −22 dB
+      filteredNoise('bandpass', 1600, 260, 1.1, 0.4, db(-22));
+    },
     count: function () {           // counter digit tick
       tone('sine', 2200, 2200, 0.012, db(-30));
     }
@@ -143,7 +158,7 @@
   var LEN = {
     tick: 0.05, nominal: 0.6, hover: 0.015, click: 0.06, arrival: 0.5,
     themeDay: 0.3, themeNight: 0.3, linkOut: 0.12, echoLock: 0.22,
-    echoRelease: 0.35, count: 0.012, pluck: 0.3, chord: 0.6, roll: 0.7
+    echoRelease: 0.35, swell: 0.7, whoosh: 0.4, count: 0.012, pluck: 0.3, chord: 0.6, roll: 0.7
   };
   var THROTTLE = { hover: 80, count: 60 };
   var lastPlayed = {};
