@@ -429,9 +429,12 @@ html.fd-locked { overflow: hidden; }
 .gate.is-leaving { transform: translateY(-100%); opacity: 0; }
 .gate[hidden], .preflight[hidden] { display: none !important; }
 
+/* Anchored from the top, not centred, so a web-font swap can't shift it */
 .gate-inner {
   position: relative;
   z-index: 1;
+  align-self: start;
+  margin-top: max(var(--space-8), 26svh);
   width: min(720px, 100% - 32px);
   display: grid;
   gap: var(--space-5);
@@ -1672,8 +1675,9 @@ html.lenis, html.lenis body { height: auto; }
   transition: opacity var(--dur-fast) var(--ease-out);
 }
 .sb-bar:hover b { opacity: 1; }
-.sb-bar:first-child b { left: 0; transform: none; }
-.sb-bar:last-child b { left: auto; right: 0; transform: none; }
+/* Tags near the edges open inward so they never widen the page */
+.sb-bar:nth-child(-n + 5) b { left: 0; transform: none; }
+.sb-bar:nth-last-child(-n + 5) b { left: auto; right: 0; transform: none; }
 
 .sb-line {
   height: 2px;
@@ -1910,12 +1914,22 @@ html.lenis, html.lenis body { height: auto; }
 .pass-serial { margin-left: auto; font: 500 10px/14px var(--font-mono); letter-spacing: 0.2em; color: #5c5a55; }
 .pass a:focus-visible { outline: 2px solid var(--sky); outline-offset: 2px; box-shadow: var(--glow-sky); }
 
-@media (max-width: 760px) {
+@media (max-width: 900px) {
   .bp-grid { grid-template-columns: 1fr; }
+  .pass { max-width: 520px; }
+}
+
+@media (max-width: 760px) {
   .pass, .pass:hover { rotate: 0deg; }
   .contact-heading { font-size: 42px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .pass, .pass:hover { rotate: 0deg; translate: none; transition: none; }
+}
+
+/* Phones: reserve the gate's line boxes so web fonts can't push the buttons */
+@media (max-width: 767px) {
+  .gate-title { min-height: 2lh; }
+  .gate-inner > .lead { min-height: 4lh; }
 }

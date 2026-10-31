@@ -11,7 +11,7 @@
   FD.ready = false;
 
   // While the gate or intro is up, the page behind it is inert
-  var behind = [].slice.call(document.querySelectorAll('.site-nav, main, .site-footer'));
+  var behind = [].slice.call(document.querySelectorAll('.skip-link, .site-nav, main, .site-footer'));
   function setInert(on) { behind.forEach(function (el) { el.inert = on; }); }
 
   function ready() {
@@ -159,7 +159,7 @@
   }
 
   // ── The clock ──
-  var t = 0, CUES = [], running = false;
+  var t = 0, CUES = [], running = false, skipFocused = false;
 
   function tick(now, dt) {
     var prev = t;
@@ -167,6 +167,8 @@
     CUES.forEach(function (c) { if (prev < c.t && t >= c.t) FD.sound.play(c.f); });
     if (t >= T.lift) ready();                 // interactive at the start of the lift
     render(t);
+    // Skip is the first focusable control: focus it as soon as it appears
+    if (!skipFocused && t >= 600 && t < T.lift) { skipFocused = true; el.skip.focus({ preventScroll: true }); }
     if (t >= T.end) finish();
   }
 
@@ -226,7 +228,6 @@
     addEventListener('pointerdown', onPointer, true);
     render(0);
     FD.ticker.add(tick);
-    setTimeout(function () { if (running) el.skip.focus({ preventScroll: true }); }, 600);
   }
 
   // ── Gate ──
