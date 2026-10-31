@@ -1688,3 +1688,49 @@ html.lenis, html.lenis body { height: auto; }
 
 /* Arrow keys rotate the focused Neural Map stage */
 .nm-stage:focus-visible { outline: 2px solid var(--sky); outline-offset: 2px; box-shadow: var(--glow-sky); }
+
+/* =========================================================
+   GRADIENT PILL — the nav call to action
+   Rest: solid ink. Hover: the horizon gradient sweeps in from the left.
+========================================================= */
+.nav-pill {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 36px;
+  padding: 0 var(--space-5);
+  border-radius: var(--radius-pill);
+  background: var(--ink);
+  color: var(--void);
+  font: 500 15px/20px var(--font-sans);
+  white-space: nowrap;
+  transition: color 550ms var(--ease-out), scale var(--dur-fast) var(--ease-out);
+}
+
+.nav-pill::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(90deg, var(--curtain), var(--frost) 50%, var(--sun));
+  transform: translateX(-101%);
+  transition: transform 550ms var(--ease-out);
+}
+
+.nav-pill:hover { color: var(--on-sun); }
+.nav-pill:hover::before { transform: none; }
+.nav-pill:active { scale: 0.97; }
+.nav-pill:focus-visible { outline: 0; box-shadow: var(--glow-sky); }
+
+@media (max-width: 480px) {
+  .nav-logo-name { display: none; }
+  .nav-pill { height: 32px; padding: 0 var(--space-4); font-size: 14px; }
+  .nav-tools { gap: var(--space-2); margin-right: var(--space-3); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-pill::before { transition: none; }
+}
