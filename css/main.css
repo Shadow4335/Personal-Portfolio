@@ -974,19 +974,6 @@ html.fd-locked { overflow: hidden; }
 
 .mission-card { display: flex; flex-direction: column; }
 
-/* Small cards read as one horizontal row: meta + title | summary | stack */
-.mission-card:not(.mission-card--feature) {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr) minmax(0, 0.8fr);
-  column-gap: var(--space-7);
-  align-items: center;
-}
-.mission-card:not(.mission-card--feature) .card-top { grid-column: 1; grid-row: 1; }
-.mission-card:not(.mission-card--feature) .heading-2 { grid-column: 1; grid-row: 2; margin: 0; }
-.mission-card:not(.mission-card--feature) .mission-summary { grid-column: 2; grid-row: 1 / span 2; margin: 0; }
-.mission-card:not(.mission-card--feature) .stack { grid-column: 3; grid-row: 1 / span 2; margin: 0; }
-.mission-card:not(.mission-card--feature) .card-top { margin-bottom: var(--space-2); justify-content: flex-start; gap: var(--space-4); }
-
 /* Stacking deck: each card pins, the next slides over it */
 @media (min-width: 901px) and (min-height: 700px) {
   .mission-grid { gap: 28svh; padding-bottom: var(--space-7); }
@@ -1009,6 +996,7 @@ html.fd-locked { overflow: hidden; }
   grid-column: 1 / -1;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  min-height: 400px;
   gap: var(--space-7);
   align-items: start;
 }
@@ -1154,8 +1142,6 @@ html.fd-locked { overflow: hidden; }
 @media (max-width: 900px) {
   .overview-copy, .current-mission { grid-column: 1 / -1; }
   .mission-card--feature { grid-template-columns: 1fr; }
-  .mission-card:not(.mission-card--feature) { grid-template-columns: 1fr; row-gap: var(--space-3); }
-  .mission-card:not(.mission-card--feature) > * { grid-column: 1 !important; grid-row: auto !important; }
 }
 
 @media (max-width: 767px) {
