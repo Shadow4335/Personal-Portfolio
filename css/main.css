@@ -968,11 +968,38 @@ html.fd-locked { overflow: hidden; }
 ========================================================= */
 .mission-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-5);
 }
 
 .mission-card { display: flex; flex-direction: column; }
+
+/* Small cards read as one horizontal row: meta + title | summary | stack */
+.mission-card:not(.mission-card--feature) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr) minmax(0, 0.8fr);
+  column-gap: var(--space-7);
+  align-items: center;
+}
+.mission-card:not(.mission-card--feature) .card-top { grid-column: 1; grid-row: 1; }
+.mission-card:not(.mission-card--feature) .heading-2 { grid-column: 1; grid-row: 2; margin: 0; }
+.mission-card:not(.mission-card--feature) .mission-summary { grid-column: 2; grid-row: 1 / span 2; margin: 0; }
+.mission-card:not(.mission-card--feature) .stack { grid-column: 3; grid-row: 1 / span 2; margin: 0; }
+.mission-card:not(.mission-card--feature) .card-top { margin-bottom: var(--space-2); justify-content: flex-start; gap: var(--space-4); }
+
+/* Stacking deck: each card pins, the next slides over it */
+@media (min-width: 901px) and (min-height: 700px) {
+  .mission-grid { gap: 28svh; padding-bottom: var(--space-7); }
+  .mission-card {
+    position: sticky;
+    top: calc(var(--nav-height) + var(--space-5) + var(--n, 0) * 18px);
+    box-shadow: 0 -24px 48px -16px rgb(0 0 0 / 0.55);
+  }
+  .mission-card:nth-child(1) { --n: 0; } .mission-card:nth-child(2) { --n: 1; }
+  .mission-card:nth-child(3) { --n: 2; } .mission-card:nth-child(4) { --n: 3; }
+  .mission-card:nth-child(5) { --n: 4; } .mission-card:nth-child(6) { --n: 5; }
+  .mission-card:nth-child(7) { --n: 6; }
+}
 .mission-card .heading-2 { margin-bottom: var(--space-2); }
 .mission-sub { color: var(--muted); text-transform: uppercase; margin-bottom: var(--space-4); }
 .mission-summary { margin-bottom: var(--space-5); flex: 1; }
@@ -1127,6 +1154,8 @@ html.fd-locked { overflow: hidden; }
 @media (max-width: 900px) {
   .overview-copy, .current-mission { grid-column: 1 / -1; }
   .mission-card--feature { grid-template-columns: 1fr; }
+  .mission-card:not(.mission-card--feature) { grid-template-columns: 1fr; row-gap: var(--space-3); }
+  .mission-card:not(.mission-card--feature) > * { grid-column: 1 !important; grid-row: auto !important; }
 }
 
 @media (max-width: 767px) {
