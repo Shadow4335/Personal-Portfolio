@@ -94,9 +94,11 @@
     ry += (my - ry) * ease(0.22);
     size += (target - size) * ease(0.15);
 
-    var t = 'translate3d(' + rx.toFixed(2) + 'px,' + ry.toFixed(2) + 'px,0)';
-    dot.style.transform = t;
-    ring.style.transform = t + ' scale(' + size.toFixed(3) + ')';
-    glow.style.transform = t;
+    // `translate` (not transform) so the CSS `scale` on the dot can't scale its position
+    var t = rx.toFixed(2) + 'px ' + ry.toFixed(2) + 'px';
+    dot.style.translate = t;
+    ring.style.translate = t;
+    ring.style.transform = 'scale(' + size.toFixed(3) + ')';
+    glow.style.translate = t;
   });
 })();
