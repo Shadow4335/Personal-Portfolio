@@ -9,7 +9,7 @@
   var ring = document.querySelector('.cursor-ring');
   var glow = document.querySelector('.cursor-glow');
   var LINKS = 'a, button, label, .btn, .nm-node';
-  var CARDS = '.card';
+  var CARDS = '.card:not(.mission-card)';
   var DRAG = '.nm-stage';
 
   var mx = innerWidth / 2, my = innerHeight / 2; // pointer
