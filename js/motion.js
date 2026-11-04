@@ -10,11 +10,31 @@
 
   // ── Smooth scroll (Lenis, lerp 0.1). Off for reduced motion. ──
   if (!reduce && window.Lenis) {
-    var lenis = FD.lenis = new Lenis({ lerp: 0.1, autoRaf: false, anchors: true });
+    var lenis = FD.lenis = new Lenis({ lerp: 0.1, autoRaf: false });
     FD.ticker.add(function (now) { lenis.raf(now); });
     function lock() { root.classList.contains('fd-locked') ? lenis.stop() : lenis.start(); }
     lock();
     document.addEventListener('fd:ready', lock);
+
+    // Nav, CTA, scroll cue and back-to-top glide with a timed ease instead of jumping
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest && e.target.closest('a[href^="#"]');
+      if (!a || e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
+      var id = a.getAttribute('href').slice(1);
+      if (!id || id === 'main') return;
+      var target = id === 'hero' ? 0 : document.getElementById(id);
+      if (target === null) return;
+      e.preventDefault();
+      lenis.scrollTo(target, {
+        offset: id === 'hero' ? 0 : -(parseFloat(getComputedStyle(root).getPropertyValue('--nav-height')) || 64),
+        duration: id === 'hero' ? 1.6 : 1.3,
+        easing: function (t) { return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; },
+        lock: false
+      });
+      if (history.pushState) history.pushState(null, '', '#' + id);
+    });
+  } else if (!reduce) {
+    root.style.scrollBehavior = 'smooth';  // fallback if Lenis fails to load
   }
 
   // ── Scroll progress: the 2px horizon line ──
