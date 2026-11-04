@@ -13,7 +13,7 @@
   var DRAG = '.nm-stage';
 
   var mx = innerWidth / 2, my = innerHeight / 2; // pointer
-  var rx = mx, ry = my, gx = mx, gy = my;        // eased followers
+  var rx = mx, ry = my;                          // shared eased follower
   var size = 1, down = false;                    // eased ring scale
   var hovered = null, card = null, btn = null, btnBox = null;
   var dirty = false;
@@ -89,14 +89,14 @@
                : root.classList.contains('cursor-drag') ? 1.5 : 1;
     if (down) target *= 0.8;
 
-    rx += (mx - rx) * ease(0.2);
-    ry += (my - ry) * ease(0.2);
-    gx += (mx - gx) * ease(0.07);
-    gy += (my - gy) * ease(0.07);
+    // One eased position drives dot, ring and glow together
+    rx += (mx - rx) * ease(0.22);
+    ry += (my - ry) * ease(0.22);
     size += (target - size) * ease(0.15);
 
-    dot.style.transform = 'translate(' + mx + 'px,' + my + 'px)';
-    ring.style.transform = 'translate(' + rx + 'px,' + ry + 'px) scale(' + size + ')';
-    glow.style.transform = 'translate(' + gx + 'px,' + gy + 'px)';
+    var t = 'translate3d(' + rx.toFixed(2) + 'px,' + ry.toFixed(2) + 'px,0)';
+    dot.style.transform = t;
+    ring.style.transform = t + ' scale(' + size.toFixed(3) + ')';
+    glow.style.transform = t;
   });
 })();
