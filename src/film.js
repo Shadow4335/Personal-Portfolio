@@ -2,8 +2,28 @@
 // intro.js owns the clock, the sound cues and the HTML overlay; this file only paints.
 
 export const T = { depart: 0, launch: 2.6, orbit: 7.6, light: 10.4, hit: 11.8, iris: 12.4, end: 13.6 };
-export const IGN = 4.6, LIFT = 5.0, SEP = 7.3; // ignition, liftoff, stage separation
-export const COUNT = [[2.9, '3'], [3.5, '2'], [4.1, '1']];
+// Launch events in film seconds. The 3D launch, the HUD, the callouts and the sound all key off these.
+export const IGN = 4.6, LIFT = 5.0, CUTOFF = 6.85, SEP = 7.2, S2 = 7.45; // ignition, liftoff, first-stage cutoff, staging, second-stage ignition
+export const COUNT = [[3.5, '3'], [4.0, '2'], [4.5, '1']];
+
+// Film time → mission elapsed time (s). The countdown runs at 2×, the ascent as a time-lapse,
+// so the clock, the telemetry and the callouts agree with what's on screen.
+const MET_KEYS = [[0, -15], [2.6, -5], [3.5, -3], [4.0, -2], [4.5, -1], [LIFT, 0], [5.55, 12], [6.2, 83], [CUTOFF, 161], [SEP, 162], [S2, 165], [8.1, 190], [9.05, 560], [10.4, 700], [13.6, 760]];
+// Saturn V ascent, Apollo-era figures: [MET s, altitude km, velocity km/h]
+const ASCENT = [[0, 0, 0], [12, 0.13, 150], [30, 1.9, 900], [60, 7.5, 1600], [83, 13.4, 1950], [120, 30, 4300], [161, 67, 9900], [165, 70, 9950], [190, 90, 10600]];
+function table(rows, x, col = 1) {
+  if (x <= rows[0][0]) return rows[0][col];
+  for (let i = 1; i < rows.length; i++) {
+    if (x <= rows[i][0]) { const [x0] = rows[i - 1], [x1] = rows[i]; return rows[i - 1][col] + ((rows[i][col] - rows[i - 1][col]) * (x - x0)) / (x1 - x0); }
+  }
+  return rows[rows.length - 1][col];
+}
+export const met = (t) => table(MET_KEYS, t);
+export const telemetry = (s) => ({ km: table(ASCENT, s, 1), kmh: table(ASCENT, s, 2) });
+export function clock(s) {
+  const a = Math.abs(Math.round(s)), p = (n) => String(n).padStart(2, '0');
+  return `T${s < -0.5 ? '−' : '+'}${p(Math.floor(a / 3600))}:${p(Math.floor((a % 3600) / 60))}:${p(a % 60)}`;
+}
 
 const BONE = '236,230,218';
 const ICE = '169,203,236';
@@ -35,7 +55,7 @@ const ORION = [['meissa', 'betelgeuse'], ['meissa', 'bellatrix'], ['betelgeuse',
   ['alnitak', 'alnilam'], ['alnilam', 'mintaka'], ['alnitak', 'saiph'], ['mintaka', 'rigel']];
 const POINTERS = [['alnitak', 'sirius'], ['mintaka', 'aldebaran']]; // the belt points both ways
 
-export const CALLOUTS = [[5.0, 'LIFTOFF'], [6.0, 'MAX-Q'], [6.9, 'MECO'], [7.3, 'STAGE SEPARATION']];
+export const CALLOUTS = [[LIFT, 'LIFTOFF'], [5.55, 'TOWER CLEARED'], [6.2, 'MAX-Q'], [CUTOFF, 'ENGINE CUTOFF'], [SEP, 'STAGING'], [S2, 'SECOND STAGE IGNITION']];
 const BLIPS = [[0.13, 205, 'AV26'], [0.62, 40], [0.78, 118], [0.45, 300], [0.86, 255], [0.33, 150]];
 export const SWEEP_PERIOD = 2.4;
 
@@ -394,7 +414,7 @@ export function createFilm(canvas, { lowPower = false } = {}) {
     ctx.translate(Math.sin(t * 91) * shake, Math.sin(t * 73 + 2) * shake);
     clouds(t, [[1.9, 0.22, 0.1], [3.1, 0.18, -0.2]]);
     pad(t, gy, s);
-    const flame = seg(t, IGN, IGN + 0.25) * (1 - seg(t, 6.9, 7.0)); // MECO at 6.9 s
+    const flame = seg(t, IGN, IGN + 0.25) * (1 - seg(t, CUTOFF, CUTOFF + 0.1));
     if (t < SEP) rocket(p, t, 'all', flame);
     else { // the spent first stage falls away, tumbling
       const k = t - SEP;
@@ -409,14 +429,15 @@ export function createFilm(canvas, { lowPower = false } = {}) {
   function launchHud(t) {
     for (const [at, n] of COUNT) {
       const k = seg(t, at, at + 0.06) * (1 - seg(t, at + 0.45, at + 0.58));
-      if (k > 0) {
-        text('T−', cx - (narrow ? 44 : 70), h * 0.22, narrow ? 14 : 18, `rgba(${SIG},${k})`, 'right', 700);
-        text(n, cx, h * 0.22, Math.min(w, h) * 0.17, `rgba(${BONE},${k})`, 'center', 800, DISPLAY);
+      if (k > 0) { // beside the rocket, not over it
+        const x = narrow ? cx : w * 0.2, y = narrow ? h * 0.13 : h * 0.48;
+        text('T−', x - (narrow ? 40 : 64), y, narrow ? 14 : 18, `rgba(${SIG},${k})`, 'right', 700);
+        text(n, x, y, Math.min(w, h) * (narrow ? 0.14 : 0.2), `rgba(${BONE},${k})`, 'center', 800, DISPLAY);
       }
     }
     const tel = seg(t, LIFT, LIFT + 0.4) * (1 - seg(t, 7.4, 7.9));
     if (tel > 0) {
-      const v = 7800 * seg(t, LIFT, 7.6) ** 1.6, km = 80 * seg(t, LIFT, 7.6) ** 2;
+      const { km, kmh: v } = telemetry(met(t)); // real ascent figures at the mission time on the clock
       ctx.save(); ctx.globalAlpha = tel;
       const tw = narrow ? 46 : 64, edge = narrow ? 12 : w * 0.12;
       if (!narrow) {
