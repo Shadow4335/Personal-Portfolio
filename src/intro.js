@@ -1,5 +1,5 @@
 import { gsap } from 'gsap';
-import { createFilm, T, SWEEP_PERIOD, IGN, SEP, COUNT, CALLOUTS } from './film.js';
+import { createFilm, T, SWEEP_PERIOD, IGN, LIFT, CUTOFF, SEP, S2, COUNT, CALLOUTS, met, clock } from './film.js';
 
 const CHAPTERS = ['01 — Go for launch', '02 — Liftoff', '03 — Orbit', '04 — First light'];
 const LINES = [
@@ -63,7 +63,7 @@ export function runIntro({ sound, sceneReady, reduced }) {
         } else drop3d(); // free the GPU once the launch is over
       }
       film.draw(t, iris.r, has3D);
-      timeEl.textContent = `AV26 · T+${t.toFixed(1).padStart(4, '0')}`;
+      timeEl.textContent = `AV26 · ${clock(met(t))}`; // mission clock, in step with the countdown and callouts
       progress.style.transform = `scaleX(${(t / T.end).toFixed(4)})`;
       const c = t < T.launch ? 0 : t < T.orbit ? 1 : t < T.light ? 2 : 3;
       if (c !== chapter) {
@@ -107,8 +107,10 @@ export function runIntro({ sound, sceneReady, reduced }) {
         .call(() => sound.music.cue('depart'), null, 0)
         .call(() => { has3D = !!launch3d; }, null, 2.1) // decided once, before the pad appears
         .call(() => { sound.music.cue('climb'); caption.textContent = ''; }, null, T.launch)
-        .call(() => { sound.beep(0); sound.liftoff(); sound.music.setIntensity(0.55, 0.6); }, null, IGN)
+        .call(() => { sound.beep(0); sound.liftoff(CUTOFF - IGN); sound.music.setIntensity(0.5, 0.6); }, null, IGN) // roar runs until engine cutoff
+        .call(() => sound.boom(), null, LIFT)
         .call(() => sound.stageSep(), null, SEP)
+        .call(() => sound.vacBurn(0.9), null, S2)
         .call(() => { sound.music.cue('orbit'); sound.music.setIntensity(1, 1.5); sound.whoosh(); }, null, T.orbit)
         .call(() => sound.sparkle(), null, 9.35)
         .call(() => { caption.textContent = ''; }, null, T.light)
