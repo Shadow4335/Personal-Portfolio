@@ -77,6 +77,7 @@ function noiseBuf(kind) {
     const w = Math.random() * 2 - 1;
     if (kind === 'pink') { b0 = 0.99765 * b0 + w * 0.099046; b1 = 0.963 * b1 + w * 0.2965164; b2 = 0.57 * b2 + w * 1.0526913; d[i] = (b0 + b1 + b2 + w * 0.1848) * 0.25; }
     else if (kind === 'brown') { last = (last + 0.02 * w) / 1.02; d[i] = last * 3.5; }
+    else if (kind === 'crackle') d[i] = Math.random() < 0.0015 ? w : 0;
     else d[i] = w;
   }
   return (bufs[kind] = b);
@@ -342,27 +343,30 @@ export const sound = {
       tone('triangle', 740, 740, 0.35, db(-26), 0.16);
     });
   },
-  spool(sec = 3) { // jet engine winding up: rising roar plus a turbine whine
+  beep(i) { // countdown: 3, 2, 1 short; 0 = ignition, longer and higher
+    if (i === 0) fx(0.45, () => tone('sine', 1480, 1480, 0.42, db(-15), 0, [reverb]));
+    else fx(0.15, () => tone('sine', 988, 988, 0.13, db(-15)));
+  },
+  liftoff() { // ignition and climb-out: a mid-heavy roar (so laptops carry it), crackle, a thump
     try {
       if (!ready()) return;
-      const t = ctx.currentTime, end = t + sec, tail = 1.5;
-      const roar = noise('pink', 'bandpass', 500, 1800, 0.8, sec + tail, db(-14), 0, 0.5);
-      roar.g.gain.cancelScheduledValues(t);
-      roar.g.gain.setValueAtTime(0.0001, t);
-      roar.g.gain.exponentialRampToValueAtTime(db(-14), end);
-      roar.g.gain.exponentialRampToValueAtTime(0.0001, end + tail);
-      noise('brown', 'lowpass', 180, 420, 0.7, sec + tail, db(-12), 0, 0.6);
-      const o = ctx.createOscillator(), f = ctx.createBiquadFilter(), g = ctx.createGain();
-      o.type = 'sawtooth';
-      o.frequency.setValueAtTime(380, t);
-      o.frequency.exponentialRampToValueAtTime(1650, end);
-      f.type = 'lowpass'; f.frequency.value = 3200;
-      g.gain.setValueAtTime(0.0001, t);
-      g.gain.exponentialRampToValueAtTime(db(-27), end);
-      g.gain.exponentialRampToValueAtTime(0.0001, end + tail);
-      o.connect(f).connect(g).connect(sfx);
-      o.start(t); o.stop(end + tail + 0.1);
+      const t = ctx.currentTime, D = 4.4;
+      const roar = noise('brown', 'lowpass', 260, 1300, 0.7, D, db(-8), 0, 0.08);
+      roar.f.frequency.setValueAtTime(260, t);
+      roar.f.frequency.exponentialRampToValueAtTime(1300, t + 0.9);
+      roar.f.frequency.exponentialRampToValueAtTime(380, t + D);
+      noise('pink', 'bandpass', 700, 1800, 0.9, D * 0.85, db(-15), 0, 0.12);
+      noise('crackle', 'bandpass', 1600, 1100, 1.2, D * 0.8, db(-10), 0.25, 0.1);
+      tone('sine', 120, 48, 0.8, db(-9));
+      tone('triangle', 240, 90, 0.5, db(-16));
     } catch { /* ignore */ }
+  },
+  stageSep() { // pyro bolts: a hard knock, a hiss of thrusters
+    fx(1.0, () => {
+      tone('sine', 190, 60, 0.28, db(-11));
+      noise('white', 'bandpass', 1300, 600, 1.1, 0.25, db(-15), 0, 0.03, [reverb]);
+      noise('white', 'highpass', 4200, 3000, 0.7, 0.8, db(-26), 0.15, 0.2);
+    });
   },
   whoosh() {
     fx(1.2, () => {

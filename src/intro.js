@@ -1,17 +1,16 @@
 import { gsap } from 'gsap';
-import { createFilm, T, SWEEP_PERIOD } from './film.js';
+import { createFilm, T, SWEEP_PERIOD, IGN, SEP, COUNT, CALLOUTS } from './film.js';
 
-const CHAPTERS = ['01 — Departure', '02 — Climb', '03 — Orbit', '04 — First light'];
+const CHAPTERS = ['01 — Go for launch', '02 — Liftoff', '03 — Orbit', '04 — First light'];
 const LINES = [
-  [0.35, 1.4, 'TWR › AV26, wind two-eight-zero at six, runway two-eight, cleared for takeoff.', true],
-  [2.0, 1.0, 'AV26 › Cleared for takeoff, runway two-eight. Rolling.', true],
-  [6.6, 1.1, 'Above 100 km the sky stays black, even at noon.'],
-  [8.2, 1.2, 'Orion. Follow the belt down and you hit Sirius, the brightest star in the night sky.'],
+  [0.3, 1.0, 'RANGE › AV26, weather is go, range is green. You are go for launch.', true],
+  [1.5, 0.7, 'AV26 › Copy, go for launch.', true],
+  [8.1, 1.1, 'Above 100 km the sky stays black, even at noon.'],
+  [9.4, 1.0, 'Orion. Follow the belt down and you hit Sirius, the brightest star in the night sky.'],
 ];
-const CALLOUTS = [3.6, 3.95, 4.7, 5.4];
 const PING_BEARINGS = [40, 205, 300]; // radar blips the sweep crosses before the radar fades
 
-// Sound gate, then a 12-second film (film.js paints it), then a telescope-aperture iris onto the site.
+// Sound gate, then a 13-second film (film.js paints it), then a telescope-aperture iris onto the site.
 // Resolves when the site should start revealing; `quick` means no film was shown.
 export function runIntro({ sound, sceneReady, reduced }) {
   const gate = document.querySelector('.gate');
@@ -49,7 +48,7 @@ export function runIntro({ sound, sceneReady, reduced }) {
       film.draw(t, iris.r);
       timeEl.textContent = `AV26 · T+${t.toFixed(1).padStart(4, '0')}`;
       progress.style.transform = `scaleX(${(t / T.end).toFixed(4)})`;
-      const c = t < T.climb ? 0 : t < T.orbit ? 1 : t < T.light ? 2 : 3;
+      const c = t < T.launch ? 0 : t < T.orbit ? 1 : t < T.light ? 2 : 3;
       if (c !== chapter) {
         chapter = c;
         chapterEl.textContent = CHAPTERS[c];
@@ -88,9 +87,11 @@ export function runIntro({ sound, sceneReady, reduced }) {
         .to(card, { autoAlpha: 0, y: -24, duration: 0.5, ease: 'power2.in' }, 0)
         .to([hud, skipBtn], { autoAlpha: 1, duration: 0.6 }, 0.2)
         .call(() => sound.music.cue('depart'), null, 0)
-        .call(() => { sound.music.cue('climb'); sound.spool(3); }, null, T.climb)
-        .call(() => { sound.music.cue('orbit'); sound.whoosh(); }, null, T.orbit)
-        .call(() => sound.sparkle(), null, 8.15)
+        .call(() => { sound.music.cue('climb'); caption.textContent = ''; }, null, T.launch)
+        .call(() => { sound.beep(0); sound.liftoff(); sound.music.setIntensity(0.55, 0.6); }, null, IGN)
+        .call(() => sound.stageSep(), null, SEP)
+        .call(() => { sound.music.cue('orbit'); sound.music.setIntensity(1, 1.5); sound.whoosh(); }, null, T.orbit)
+        .call(() => sound.sparkle(), null, 9.35)
         .call(() => { caption.textContent = ''; }, null, T.light)
         .call(() => { sound.music.cue('reveal'); sound.hit(); }, null, T.hit)
         .to(hud, { autoAlpha: 0, duration: 0.5 }, T.iris - 0.3)
@@ -99,7 +100,8 @@ export function runIntro({ sound, sceneReady, reduced }) {
         .to(iris, { r: irisMax(), duration: T.end - T.iris, ease: 'power3.inOut', onUpdate: setIris }, T.iris)
         .call(reveal, null, T.iris + 0.4);
       PING_BEARINGS.forEach((b) => tl.call(() => sound.radarPing(), null, (b / 360) * SWEEP_PERIOD));
-      CALLOUTS.forEach((at) => tl.call(() => sound.callout(), null, at));
+      COUNT.forEach(([at, n]) => tl.call(() => sound.beep(Number(n)), null, at));
+      CALLOUTS.forEach(([at]) => tl.call(() => sound.callout(), null, at));
       LINES.forEach(([at, dur, text, radio]) => tl.call(() => { tl.add(type(text, dur, radio), at); }, null, at));
       // the 3D sky climbs into its hero framing behind the film, ready for the iris
       const p = { v: 0 };

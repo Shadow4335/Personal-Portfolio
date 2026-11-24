@@ -10,6 +10,8 @@ import { runIntro } from './intro.js';
 import { startIss } from './iss.js';
 import { initSkills } from './skills.js';
 import { skyLine } from './sky.js';
+import { initFx } from './fx.js';
+import { initMotion } from './motion.js';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 const root = document.documentElement;
@@ -153,7 +155,9 @@ const altitude = (j) => {
   return Math.exp(Math.log(ALTS[i]) + (Math.log(ALTS[i + 1]) - Math.log(ALTS[i])) * f);
 };
 const smooth = (x) => x * x * (3 - 2 * x);
-const altVal = $('.alt-val'), altFill = $('.alt-fill'), altStops = $$('.alt-stops li');
+const altVal = $('.alt-val'), altFill = $('.alt-fill'), altStops = $$('.alt-stops li'), altShip = $('.alt-ship'), altRail = $('.alt-rail');
+let railH = altRail.offsetHeight;
+addEventListener('resize', () => { railH = altRail.offsetHeight; });
 const navLinks = $$('.nav-links a');
 const dotLabel = $('.dot-label');
 let stage = -1, lastAlt = '';
@@ -168,6 +172,7 @@ gsap.ticker.add(() => {
   const txt = Math.round(altitude(j)).toLocaleString('en-US');
   if (txt !== lastAlt) { altVal.textContent = txt; lastAlt = txt; }
   altFill.style.transform = `scaleY(${(j / 5).toFixed(4)})`;
+  altShip.style.transform = `translate(-50%, ${(-(j / 5) * railH).toFixed(1)}px)`; // the little rocket climbs as you scroll
 
   const s = Math.round(j);
   if (s !== stage) {
@@ -233,13 +238,11 @@ for (const ev of ['pointerup', 'click', 'touchend']) addEventListener(ev, () => 
 addEventListener('keydown', () => sound.unlock());
 
 let hoverEl = null;
-const reticle = $('.reticle');
 document.addEventListener('pointerover', (e) => {
   if (e.pointerType !== 'mouse') return;
   const el = e.target.closest('a, button');
   if (el !== hoverEl) {
     hoverEl = el;
-    reticle.classList.toggle('is-hot', !!el);
     if (el && launched) sound.hover();
   }
 });
@@ -270,17 +273,10 @@ $('.copy')?.addEventListener('click', async (e) => {
   }
 });
 
-/* ── Cursor reticle + scene parallax ────────────────────── */
-if (finePointer) {
-  const xTo = gsap.quickTo(reticle, 'x', { duration: 0.35, ease: 'power3' });
-  const yTo = gsap.quickTo(reticle, 'y', { duration: 0.35, ease: 'power3' });
-  addEventListener('pointermove', (e) => {
-    xTo(e.clientX); yTo(e.clientY);
-    reticle.classList.add('is-on');
-    scene?.setPointer((e.clientX / innerWidth) * 2 - 1, (e.clientY / innerHeight) * 2 - 1);
-  }, { passive: true });
-  document.documentElement.addEventListener('mouseleave', () => reticle.classList.remove('is-on'));
-}
+/* ── Cursor, comet trail, shooting stars, scroll motion ─── */
+initFx({ reduced, fine: finePointer });
+initMotion({ lenis, reduced, fine: finePointer });
+if (finePointer) addEventListener('pointermove', (e) => scene?.setPointer((e.clientX / innerWidth) * 2 - 1, (e.clientY / innerHeight) * 2 - 1), { passive: true });
 
 /* ── Live data ──────────────────────────────────────────── */
 startIss((lat, lon) => { issPos = [lat, lon]; scene?.setIss(lat, lon); });
