@@ -6,11 +6,13 @@ My personal site. Scrolling is a climb: it starts on the launch pad and ends 6 b
 
 ## What's in it
 
-- **Opening film.** A sound gate, then twelve seconds in four chapters: an ATC radar and tower clearance, a cockpit flight display through V1 and rotate, a climb past the Kármán line into a star chart with Orion, and the stars flying together into my name before a telescope-aperture iris opens onto the site. Skippable (Esc), and same-session revisits skip it.
+- **Opening film.** A sound gate, then thirteen seconds in four chapters: range control on radar giving the go, a countdown and rocket launch (vapour, ignition, smoke, liftoff, max-Q, stage separation) with live telemetry tapes, the climb past the Kármán line into a star chart with Orion, and the stars flying together into my name before a telescope-aperture iris opens onto the site. Skippable (Esc), and same-session revisits skip it.
 - **3D scene** in three.js with procedural shaders: Earth built from Natural Earth coastlines, clouds, city lights and atmosphere, a cratered Moon, a starfield with a Milky Way band, and the Pale Blue Dot at the end. The camera is driven by scroll.
 - **Live ISS position** from [wheretheiss.at](https://wheretheiss.at), shown in the About section and as a marker on the globe.
-- **Music and sound** made entirely with the Web Audio API (no audio files): a generative score that follows the film's chapters and then settles into a quiet background, plus radar pings, radio squelch, cockpit callouts, engine spool and Apollo-style Quindar tones on outgoing links. Toggle with the button or the `M` key.
+- **Music and sound** made entirely with the Web Audio API (no audio files): a generative score that follows the film's chapters and then settles into a quiet background, plus radar pings, radio squelch, countdown beeps, the launch roar, stage separation, callout chimes and Apollo-style Quindar tones on outgoing links. Toggle with the button or the `M` key.
 - **Mission-patch project cards** in a pinned 3D carousel, a skills star chart, a flight-log timeline, and tonight's Moon phase over Faridabad in the footer.
+- **A page that feels alive:** a custom cursor (a dot plus an orbiting ring) that leaves a short comet trail, the odd shooting star, a small rocket that climbs the altimeter as you scroll, the hero name splitting apart like separating stages, About text lighting up word by word, a ticker band that speeds up and leans with your scroll, tilting cards and magnetic buttons.
+- **Crew badge with a photo slot.** To add your photo, save it as `public/arnav.jpg` (portrait, about 4:5) and uncomment the `<img>` line inside `.crew-frame` in `index.html`. The astronaut placeholder hides itself.
 - Works without WebGL (flat sky fallback) and without JavaScript (all content is plain HTML). Respects `prefers-reduced-motion`.
 
 ## Stack

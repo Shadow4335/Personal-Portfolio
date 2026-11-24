@@ -131,7 +131,8 @@ main, .foot { position: relative; z-index: 2; }
 }
 .brand-mark { width: 32px; height: 32px; fill: none; stroke: var(--bone); stroke-width: 1.4; }
 .brand-mark .brand-sat { fill: var(--signal); stroke: none; }
-.brand:hover .brand-mark { animation: spin 6s linear infinite; }
+.brand-mark { animation: spin 24s linear infinite; }
+.brand:hover .brand-mark { animation-duration: 4s; }
 .nav-links { display: flex; gap: clamp(16px, 2.4vw, 36px); }
 .nav-links a {
   position: relative; text-decoration: none; color: var(--dim);
@@ -183,6 +184,13 @@ main, .foot { position: relative; z-index: 2; }
   background: linear-gradient(to top, var(--signal), var(--bone));
   transform-origin: bottom; transform: scaleY(0);
 }
+/* a little rocket rides the rail as you scroll, engine flickering */
+.alt-ship { position: absolute; left: 0; bottom: -6px; width: 12px; transform: translate(-50%, 0); will-change: transform; }
+.alt-ship svg { width: 12px; height: 26px; display: block; overflow: visible; }
+.as-body { fill: var(--bone); }
+.as-fin { fill: var(--signal); }
+.as-flame { fill: #ffb069; transform-origin: 8px 26px; animation: flame 0.12s steps(2) infinite alternate; filter: drop-shadow(0 0 4px rgba(255, 140, 60, 0.9)); }
+@keyframes flame { from { transform: scaleY(0.7); opacity: 0.8; } to { transform: scaleY(1.15); opacity: 1; } }
 .alt-stops {
   display: flex; flex-direction: column-reverse; justify-content: space-between;
   font-family: var(--f-mono); font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--faint);
@@ -232,12 +240,16 @@ main, .foot { position: relative; z-index: 2; }
 @keyframes ping { 0% { box-shadow: 0 0 0 0 rgba(84, 227, 142, 0.55); } 80%, 100% { box-shadow: 0 0 0 10px rgba(84, 227, 142, 0); } }
 .hero-cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 34px; }
 .scroll-cue {
-  position: absolute; left: 50%; bottom: 28px; transform: translateX(-50%);
-  display: flex; flex-direction: column; align-items: center; gap: 12px;
-  color: var(--dim); text-decoration: none;
+  position: absolute; left: 50%; bottom: 26px; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  color: var(--bone); text-decoration: none;
 }
-.scroll-cue i { width: 1px; height: 44px; background: linear-gradient(var(--bone), transparent); animation: cue 2.4s var(--ease) infinite; transform-origin: top; }
-@keyframes cue { 0% { transform: scaleY(0); } 50% { transform: scaleY(1); transform-origin: top; } 51% { transform-origin: bottom; } 100% { transform: scaleY(0); transform-origin: bottom; } }
+.cue-sub { color: var(--dim); font-size: 0.62rem; }
+/* a mouse whose wheel keeps rolling down: the invitation to scroll */
+.cue-mouse { position: relative; width: 22px; height: 34px; border: 1.5px solid var(--bone); border-radius: 12px; margin-bottom: 4px; }
+.cue-mouse i { position: absolute; left: 50%; top: 6px; width: 3px; height: 7px; margin-left: -1.5px; border-radius: 2px; background: var(--signal); animation: wheel 1.6s var(--ease) infinite; }
+@keyframes wheel { 0% { transform: translateY(0); opacity: 1; } 70% { transform: translateY(11px); opacity: 0; } 100% { transform: translateY(0); opacity: 0; } }
+.scroll-cue:hover .cue-mouse { border-color: var(--signal); }
 
 /* ── About ──────────────────────────────────────────────── */
 .about .wrap { max-width: 1320px; }
@@ -262,6 +274,49 @@ main, .foot { position: relative; z-index: 2; }
 .iss-grid dd { font-family: var(--f-mono); font-size: clamp(0.95rem, 1.2vw, 1.15rem); color: var(--bone); font-variant-numeric: tabular-nums; margin-top: 4px; }
 .iss-note { font-size: 0.9rem; color: var(--dim); }
 .iss-sun { color: var(--bone); }
+
+/* crew badge (About). The photo, once added, sits in the same frame as the placeholder. */
+.crew { display: grid; grid-template-columns: 132px 1fr; gap: 22px; align-items: center; margin: 0; }
+.crew-frame {
+  position: relative; aspect-ratio: 4 / 5; border-radius: 14px; overflow: hidden;
+  background: radial-gradient(circle at 50% 35%, #1a2338, #070910 70%); border: 1px solid var(--line-2);
+}
+.crew-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: grayscale(0.2) contrast(1.05); }
+.crew-photo ~ .crew-placeholder { display: none; }
+.crew-placeholder { position: absolute; inset: 0; width: 100%; height: 100%; }
+.cp-helmet { fill: #d9d3c7; }
+.cp-visor { fill: #0b1220; stroke: #ff8a3d; stroke-width: 1.2; }
+.cp-glint { fill: none; stroke: rgba(169, 203, 236, 0.8); stroke-width: 3; stroke-linecap: round; }
+.cp-suit { fill: #cfc9bd; }
+.cp-patch { fill: var(--signal); }
+.crew-scan { position: absolute; left: 0; right: 0; height: 30%; top: -30%; background: linear-gradient(transparent, rgba(169, 203, 236, 0.16), transparent); animation: scan 3.6s linear infinite; pointer-events: none; }
+@keyframes scan { to { top: 100%; } }
+.crew-corner { position: absolute; width: 12px; height: 12px; border-color: var(--bone); border-style: solid; opacity: 0.7; }
+.crew-corner.tl { left: 6px; top: 6px; border-width: 1px 0 0 1px; }
+.crew-corner.tr { right: 6px; top: 6px; border-width: 1px 1px 0 0; }
+.crew-corner.bl { left: 6px; bottom: 6px; border-width: 0 0 1px 1px; }
+.crew-corner.br { right: 6px; bottom: 6px; border-width: 0 1px 1px 0; }
+.crew-meta { display: grid; grid-template-columns: auto 1fr; gap: 8px 16px; align-items: baseline; }
+.crew-meta span { color: var(--faint); }
+.crew-meta b { color: var(--bone); font-weight: 500; }
+.crew-status { display: inline-flex; align-items: center; gap: 8px; }
+.crew-status i { width: 7px; height: 7px; border-radius: 50%; background: #54e38e; animation: ping 2.2s infinite; }
+
+/* hover glare on tilting cards */
+[data-tilt], .flights li > * { position: relative; }
+[data-tilt]::after, .flights li > *::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity 0.4s;
+  background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), rgba(236, 230, 218, 0.1), transparent 45%);
+}
+[data-tilt]:hover::after, .flights li > *:hover::after { opacity: 1; }
+
+/* ticker band between sections */
+.band { position: relative; z-index: 2; overflow: hidden; padding: 26px 0; border-block: 1px solid var(--line); background: rgba(3, 4, 9, 0.55); }
+.band-row { display: flex; width: max-content; will-change: transform; }
+.band-row span { white-space: nowrap; font-weight: 800; font-stretch: 125%; text-transform: uppercase; font-size: clamp(1.6rem, 4vw, 3.4rem); line-height: 1.15; color: var(--bone); padding-right: 0.4em; }
+.band-row i { font-style: normal; color: var(--signal); padding: 0 0.3em; }
+.band-row--alt span { color: transparent; -webkit-text-stroke: 1px rgba(236, 230, 218, 0.45); }
+.band-row--alt i { -webkit-text-stroke: 0; color: var(--ice); }
 
 /* ── Work / Missions ────────────────────────────────────── */
 .work { padding-bottom: 80px; }
@@ -398,23 +453,32 @@ main, .foot { position: relative; z-index: 2; }
   opacity: 0; pointer-events: none; transition: opacity 0.3s, transform 0.4s var(--ease);
 }
 .toast.is-on { opacity: 1; transform: translate(-50%, 0); }
-.reticle { display: none; }
-@media (hover: hover) and (pointer: fine) {
-  .reticle {
-    display: block; position: fixed; left: 0; top: 0; z-index: 200; pointer-events: none;
-    width: 34px; height: 34px; margin: -17px 0 0 -17px; opacity: 0;
-    transition: opacity 0.3s;
-  }
-  .reticle.is-on { opacity: 1; }
-  .reticle i {
-    position: absolute; inset: 0; border: 1px solid rgba(236, 230, 218, 0.5); border-radius: 50%;
-    transition: transform 0.35s var(--ease), border-color 0.3s;
-  }
-  .reticle i::before, .reticle i::after { content: ""; position: absolute; background: rgba(236, 230, 218, 0.6); }
-  .reticle i::before { left: 50%; top: -5px; bottom: -5px; width: 1px; transform: translateX(-50%); clip-path: polygon(0 0, 100% 0, 100% 9px, 0 9px, 0 calc(100% - 9px), 100% calc(100% - 9px), 100% 100%, 0 100%); }
-  .reticle i::after { top: 50%; left: -5px; right: -5px; height: 1px; transform: translateY(-50%); clip-path: polygon(0 0, 9px 0, 9px 100%, 0 100%, 0 0, calc(100% - 9px) 0, 100% 0, 100% 100%, calc(100% - 9px) 100%); }
-  .reticle.is-hot i { transform: scale(1.5) rotate(45deg); border-color: var(--signal); }
+/* ── Cursor + living sky layer (src/fx.js) ─────────────── */
+.fx { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 45; pointer-events: none; }
+.cursor { display: none; }
+.has-cursor, .has-cursor a, .has-cursor button, .has-cursor label { cursor: none; }
+.has-cursor .cursor { display: block; position: fixed; left: 0; top: 0; z-index: 300; pointer-events: none; opacity: 0; transition: opacity 0.3s; }
+.has-cursor .cursor.is-on { opacity: 1; }
+.c-dot, .c-ring { position: fixed; left: 0; top: 0; will-change: transform; }
+/* the dot is the true pointer position; the ring trails it */
+.c-dot::before { content: ""; position: absolute; width: 6px; height: 6px; margin: -3px 0 0 -3px; border-radius: 50%; background: var(--bone); box-shadow: 0 0 10px rgba(236, 230, 218, 0.8); transition: transform 0.25s var(--ease), background 0.25s; }
+.c-ring::before {
+  content: ""; position: absolute; width: 36px; height: 36px; margin: -18px 0 0 -18px; border-radius: 50%;
+  border: 1px solid rgba(236, 230, 218, 0.45);
+  background: conic-gradient(from 0deg, transparent 0 85%, rgba(255, 90, 31, 0.9) 85% 88%, transparent 88% 100%);
+  -webkit-mask: radial-gradient(circle, transparent 16px, #000 17px); mask: radial-gradient(circle, transparent 16px, #000 17px);
+  animation: spin 3s linear infinite;
+  transition: width 0.35s var(--ease), height 0.35s var(--ease), margin 0.35s var(--ease), border-color 0.3s;
 }
+.cursor.is-hot .c-ring::before { width: 64px; height: 64px; margin: -32px 0 0 -32px; border-color: var(--signal); -webkit-mask: radial-gradient(circle, transparent 30px, #000 31px); mask: radial-gradient(circle, transparent 30px, #000 31px); }
+.cursor.is-hot .c-dot::before { transform: scale(0.6); background: var(--signal); }
+.cursor.is-down .c-ring::before { width: 28px; height: 28px; margin: -14px 0 0 -14px; }
+.c-label {
+  position: absolute; left: 38px; top: -8px; white-space: nowrap; opacity: 0; transform: translateX(-6px);
+  font-family: var(--f-mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--bone);
+  transition: opacity 0.25s, transform 0.35s var(--ease);
+}
+.cursor.has-label .c-label { opacity: 1; transform: none; }
 
 /* ── Opening: sound gate + film ─────────────────────────── */
 .gate {
