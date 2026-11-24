@@ -62,42 +62,39 @@
   <div class="space-fallback" aria-hidden="true"></div>
   <div class="grain" aria-hidden="true"></div>
 
-  <!-- ── LAUNCH GATE ─────────────────────────────────────── -->
-  <div class="gate" role="dialog" aria-modal="true" aria-labelledby="gate-hook">
-    <div class="gate-engine" aria-hidden="true"></div>
-    <div class="gate-top mono">
-      <span>AV-26 · Ascent</span>
-      <span class="gate-clock" aria-hidden="true">T&minus;00:00:<b>10</b></span>
+  <!-- ── OPENING: sound gate, then the film (src/intro.js + src/film.js) ── -->
+  <div class="gate" role="dialog" aria-modal="true" aria-labelledby="gate-title" aria-describedby="gate-desc">
+    <canvas class="film" aria-hidden="true"></canvas>
+
+    <div class="gate-card">
+      <svg class="gate-mark" viewBox="0 0 120 120" aria-hidden="true">
+        <circle class="gm-ring" cx="60" cy="60" r="56" />
+        <circle cx="60" cy="60" r="30" />
+        <g class="gm-spin"><g transform="rotate(-24 60 60)">
+          <ellipse cx="60" cy="60" rx="50" ry="17" />
+          <circle class="gm-sat" cx="110" cy="60" r="4" />
+        </g></g>
+      </svg>
+      <p class="gate-eyebrow mono">Arnav Verma · Flight AV26</p>
+      <p id="gate-title" class="gate-title">This one&rsquo;s better with sound.</p>
+      <p id="gate-desc" class="gate-desc">Twelve seconds from the runway to the stars, then the portfolio. You can skip it any time.</p>
+      <div class="gate-actions">
+        <button type="button" class="btn btn-solid" data-enter="sound">Enter with sound</button>
+        <button type="button" class="btn btn-line" data-enter="silent">Enter silently</button>
+      </div>
+      <p class="gate-hint mono"><span class="kbd-hint"><kbd>Enter</kbd> sound · <kbd>Esc</kbd> silent · </span>headphones help</p>
     </div>
 
-    <ul class="gate-checks mono" aria-hidden="true">
-      <li><span>Guidance</span><i></i><b>Go</b></li>
-      <li><span>Telemetry</span><i></i><b>Go</b></li>
-      <li><span>Weather</span><i></i><b>Go</b></li>
-      <li><span>Range</span><i></i><b>Go</b></li>
-    </ul>
-
-    <div class="gate-center">
-      <p id="gate-hook" class="gate-hook">
-        <span class="gl">Every portfolio starts on the ground.</span>
-        <span class="gl gl-accent">This one leaves.</span>
-      </p>
-      <p class="gate-count" aria-live="assertive"></p>
-
-      <button type="button" class="ignite" disabled aria-describedby="ignite-hint">
-        <svg viewBox="0 0 120 120" aria-hidden="true">
-          <circle class="ig-track" cx="60" cy="60" r="54" />
-          <circle class="ig-fill" cx="60" cy="60" r="54" pathLength="1" />
-        </svg>
-        <span class="ig-label">Hold<br />to launch</span>
-      </button>
-      <p id="ignite-hint" class="gate-hint mono">Press and hold<span class="kbd-hint"> · or hold <kbd>Space</kbd></span></p>
+    <div class="film-hud" aria-hidden="true">
+      <div class="hud-top mono">
+        <span class="hud-chapter">01 — Departure</span>
+        <span class="hud-bars"><i></i><i></i><i></i><i></i></span>
+        <span class="hud-time">AV26 · T+00.0</span>
+      </div>
+      <p class="hud-caption mono"></p>
+      <i class="hud-progress"></i>
     </div>
-
-    <div class="gate-bottom mono">
-      <button type="button" class="gate-sound" aria-pressed="true">Sound <b>On</b></button>
-      <button type="button" class="gate-skip">Skip launch &rarr;</button>
-    </div>
+    <button type="button" class="film-skip mono">Skip intro &rarr;</button>
   </div>
 
   <!-- ── NAV ─────────────────────────────────────────────── -->

@@ -1,133 +1,147 @@
 import { gsap } from 'gsap';
+import { createFilm, T, SWEEP_PERIOD } from './film.js';
 
-// Launch gate: boot checklist, then press-and-hold to launch (a tap auto-completes).
-// Resolves when the gate is gone. `sceneReady` resolves to the scene or null.
+const CHAPTERS = ['01 — Departure', '02 — Climb', '03 — Orbit', '04 — First light'];
+const LINES = [
+  [0.35, 1.4, 'TWR › AV26, wind two-eight-zero at six, runway two-eight, cleared for takeoff.', true],
+  [2.0, 1.0, 'AV26 › Cleared for takeoff, runway two-eight. Rolling.', true],
+  [6.6, 1.1, 'Above 100 km the sky stays black, even at noon.'],
+  [8.2, 1.2, 'Orion. Follow the belt down and you hit Sirius, the brightest star in the night sky.'],
+];
+const CALLOUTS = [3.6, 3.95, 4.7, 5.4];
+const PING_BEARINGS = [40, 205, 300]; // radar blips the sweep crosses before the radar fades
+
+// Sound gate, then a 12-second film (film.js paints it), then a telescope-aperture iris onto the site.
+// Resolves when the site should start revealing; `quick` means no film was shown.
 export function runIntro({ sound, sceneReady, reduced }) {
   const gate = document.querySelector('.gate');
-  const done = (quick) => ({ quick });
-
   let returning = false;
   try { returning = sessionStorage.getItem('av-launched') === '1'; } catch {}
   if (!gate || returning) {
     if (gate) gate.hidden = true;
-    // don't hold the page for the 3D: it eases in whenever it's ready
-    sceneReady.then((scene) => {
-      if (scene) gsap.fromTo({ p: 0.55 }, { p: 0.55 }, { p: 1, duration: reduced ? 0.01 : 1.8, ease: 'power3.out', onUpdate() { scene.setIntro(this.targets()[0].p); } });
+    sceneReady.then((s) => {
+      if (s) gsap.fromTo({ p: 0.55 }, { p: 0.55 }, { p: 1, duration: reduced ? 0.01 : 1.8, ease: 'power3.out', onUpdate() { s.setIntro(this.targets()[0].p); } });
     });
-    return Promise.resolve(done(true));
+    return Promise.resolve({ quick: true });
   }
 
-  const btn = gate.querySelector('.ignite');
-  const clock = gate.querySelector('.gate-clock b');
-  const count = gate.querySelector('.gate-count');
-  const soundBtn = gate.querySelector('.gate-sound');
-  const skipBtn = gate.querySelector('.gate-skip');
-  const checks = [...gate.querySelectorAll('.gate-checks li')];
-  const HOLD_MS = reduced ? 900 : 1700;
+  const $ = (s) => gate.querySelector(s);
+  const canvas = $('.film'), card = $('.gate-card'), hud = $('.film-hud'), skipBtn = $('.film-skip');
+  const chapterEl = $('.hud-chapter'), bars = [...gate.querySelectorAll('.hud-bars i')], timeEl = $('.hud-time');
+  const caption = $('.hud-caption'), progress = $('.hud-progress');
+  const lowPower = !matchMedia('(hover: hover) and (pointer: fine)').matches || (navigator.hardwareConcurrency || 8) <= 4;
+  const film = createFilm(canvas, { lowPower });
 
-  let scene = null, hold = 0, holding = false, auto = false, pressedAt = 0, digit = 4, rumble = null, launched = false, last = 0, raf = 0;
+  let scene = null, started = false, revealed = false, idle = 0, tl = null;
+  sceneReady.then((s) => { scene = s; if (s) s.setIntro(revealed ? 1 : 0); });
 
-  const setSoundUi = () => {
-    soundBtn.setAttribute('aria-pressed', String(sound.enabled));
-    soundBtn.querySelector('b').textContent = sound.enabled ? 'On' : 'Off';
-  };
-  setSoundUi();
-  soundBtn.addEventListener('click', () => { sound.setEnabled(!sound.enabled); sound.unlock(); setSoundUi(); sound.click(); });
-
-  // Boot: clock counts T-10 → T-4 while the checks come up, then holds for the visitor.
-  const boot = new Promise((res) => {
-    let t = 10, i = 0;
-    const id = setInterval(() => {
-      t -= 1; clock.textContent = String(t).padStart(2, '0');
-      if (checks[i]) checks[i++].classList.add('is-on');
-      if (t <= 4) { clearInterval(id); res(); }
-    }, reduced ? 60 : 210);
-  });
-  const timeout = new Promise((res) => setTimeout(res, 7000)); // never trap a visitor behind a slow GPU
-  Promise.all([boot, Promise.race([sceneReady.then((s) => { scene = s; }), timeout])]).then(() => {
-    clock.textContent = '04 · Hold';
-    btn.disabled = false;
-    btn.focus({ preventScroll: true });
-  });
-  // a scene that arrives after launch (slow GPU, 7 s cap hit) must skip straight to the launched view
-  sceneReady.then((s) => { scene = s; if (s) { s.setIntro(launched ? 1 : 0); s.setShake(0); } });
+  const loop = (now) => { film.drawGate(now / 1000); idle = requestAnimationFrame(loop); };
+  idle = requestAnimationFrame(loop);
+  $('[data-enter="sound"]').focus({ preventScroll: true });
 
   return new Promise((resolve) => {
-    const press = () => {
-      if (btn.disabled || launched || holding) return;
-      sound.unlock();
-      holding = true; auto = false; pressedAt = performance.now();
-      rumble = rumble || sound.rumble();
-      gate.classList.add('is-holding');
-      if (!reduced) gate.classList.add('is-shaking');
-      if (!raf) { last = performance.now(); raf = requestAnimationFrame(tick); }
-    };
-    const release = () => {
-      if (!holding || auto) return;
-      if (performance.now() - pressedAt < 260) { auto = true; return; } // a tap launches too
-      holding = false;
-      sound.abort();
-    };
-    const tick = (now) => {
-      const dt = Math.min(64, now - last); last = now;
-      hold = Math.max(0, Math.min(1, hold + (holding ? dt / HOLD_MS : -dt / 380)));
-      gate.style.setProperty('--hold', hold.toFixed(3));
-      rumble && rumble.set(hold);
-      scene && scene.setShake(reduced ? 0 : hold * 0.55);
-      const d = hold >= 1 ? 0 : 3 - Math.min(2, Math.floor(hold * 3));
-      if (holding && d !== digit) { digit = d; if (d > 0) { count.textContent = d; sound.beep(d); clock.textContent = '0' + d; } }
-      raf = 0;
-      if (hold >= 1) return launch(false);
-      if (!holding && hold === 0) {
-        gate.classList.remove('is-holding', 'is-shaking'); digit = 4; count.textContent = ''; clock.textContent = '04 · Hold';
-        rumble && rumble.stop(150); rumble = null;
-        return;
+    let chapter = -1;
+    const irisMax = () => Math.hypot(innerWidth, innerHeight) / 2 + 40;
+    const iris = { r: 0 };
+    const setIris = () => gate.style.setProperty('--iris', `${iris.r.toFixed(1)}px`);
+
+    const frame = (t) => {
+      film.draw(t, iris.r);
+      timeEl.textContent = `AV26 · T+${t.toFixed(1).padStart(4, '0')}`;
+      progress.style.transform = `scaleX(${(t / T.end).toFixed(4)})`;
+      const c = t < T.climb ? 0 : t < T.orbit ? 1 : t < T.light ? 2 : 3;
+      if (c !== chapter) {
+        chapter = c;
+        chapterEl.textContent = CHAPTERS[c];
+        bars.forEach((b, i) => b.classList.toggle('is-on', i <= c));
       }
-      raf = requestAnimationFrame(tick);
     };
 
-    const launch = (skipped) => {
-      if (launched) return;
-      launched = true; holding = false;
+    const reveal = () => {
+      if (revealed) return;
+      revealed = true;
+      resolve({ quick: false });
+    };
+
+    const finish = () => {
+      gate.hidden = true;
+      film.dispose();
+      document.removeEventListener('keydown', onKey);
+    };
+
+    // typed radio/caption lines, ticking like a teleprinter
+    const type = (text, dur, radio) => {
+      if (radio) { sound.squelch(); sound.quindar(); }
+      const o = { n: 0 };
+      let last = 0;
+      return gsap.to(o, {
+        n: text.length, duration: dur, ease: 'none',
+        onUpdate() { const n = o.n | 0; if (n !== last) { last = n; caption.textContent = text.slice(0, n); sound.typeTick(); } },
+      });
+    };
+
+    const play = () => {
+      gate.classList.add('is-playing');
+      const clock = { t: 0 };
+      tl = gsap.timeline({ onComplete: finish });
+      tl.to(clock, { t: T.end, duration: T.end, ease: 'none', onUpdate: () => frame(clock.t) }, 0)
+        .to(card, { autoAlpha: 0, y: -24, duration: 0.5, ease: 'power2.in' }, 0)
+        .to([hud, skipBtn], { autoAlpha: 1, duration: 0.6 }, 0.2)
+        .call(() => sound.music.cue('depart'), null, 0)
+        .call(() => { sound.music.cue('climb'); sound.spool(3); }, null, T.climb)
+        .call(() => { sound.music.cue('orbit'); sound.whoosh(); }, null, T.orbit)
+        .call(() => sound.sparkle(), null, 8.15)
+        .call(() => { caption.textContent = ''; }, null, T.light)
+        .call(() => { sound.music.cue('reveal'); sound.hit(); }, null, T.hit)
+        .to(hud, { autoAlpha: 0, duration: 0.5 }, T.iris - 0.3)
+        .to(skipBtn, { autoAlpha: 0, duration: 0.3 }, T.iris - 0.3)
+        .call(() => { sound.shutter(); sound.whoosh(); sound.music.setIntensity(0.35, 4); gate.classList.add('is-iris'); }, null, T.iris)
+        .to(iris, { r: irisMax(), duration: T.end - T.iris, ease: 'power3.inOut', onUpdate: setIris }, T.iris)
+        .call(reveal, null, T.iris + 0.4);
+      PING_BEARINGS.forEach((b) => tl.call(() => sound.radarPing(), null, (b / 360) * SWEEP_PERIOD));
+      CALLOUTS.forEach((at) => tl.call(() => sound.callout(), null, at));
+      LINES.forEach(([at, dur, text, radio]) => tl.call(() => { tl.add(type(text, dur, radio), at); }, null, at));
+      // the 3D sky climbs into its hero framing behind the film, ready for the iris
+      const p = { v: 0 };
+      tl.to(p, { v: 1, duration: 2.6, ease: 'power2.inOut', onUpdate: () => scene && scene.setIntro(p.v) }, T.iris - 1.2);
+    };
+
+    const skip = () => {
+      if (!tl || revealed) return;
+      tl.kill();
+      sound.music.cue('reveal');
+      sound.music.setIntensity(0.35, 3);
+      sound.shutter();
+      gate.classList.add('is-iris');
+      gsap.to([hud, skipBtn], { autoAlpha: 0, duration: 0.3 });
+      if (scene) gsap.fromTo({ v: 0.5 }, { v: 0.5 }, { v: 1, duration: 1.2, ease: 'power2.out', onUpdate() { scene.setIntro(this.targets()[0].v); } });
+      gsap.to(iris, { r: irisMax(), duration: 0.9, ease: 'power3.inOut', onUpdate: () => { setIris(); film.draw(T.end, iris.r); }, onComplete: finish });
+      setTimeout(reveal, 250);
+    };
+
+    const enter = (withSound) => {
+      if (started) return;
+      started = true;
+      cancelAnimationFrame(idle);
       try { sessionStorage.setItem('av-launched', '1'); } catch {}
-      clock.textContent = '00 · Liftoff';
-      count.textContent = '';
-      if (!skipped) { sound.beep(0); sound.liftoff(); }
-      rumble && rumble.stop(skipped ? 150 : 900); rumble = null;
-      gate.classList.remove('is-holding');
-
-      const shake = { a: skipped ? 0 : 0.9 };
-      const tl = gsap.timeline();
-      if (scene) {
-        const p = { v: 0 };
-        tl.to(p, { v: 1, duration: skipped || reduced ? 1.4 : 3, ease: 'power2.inOut', onUpdate: () => scene.setIntro(p.v) }, 0);
-        if (!reduced) tl.to(shake, { a: 0, duration: 2.4, ease: 'power2.out', onUpdate: () => scene.setShake(shake.a) }, 0);
+      sound.setEnabled(withSound);
+      if (withSound) { sound.unlock(); sound.music.start(1); }
+      if (reduced) {
+        if (scene) scene.setIntro(1);
+        if (withSound) sound.music.setIntensity(0.35, 3);
+        gsap.to(gate, { autoAlpha: 0, duration: 0.5, onComplete: finish });
+        return reveal();
       }
-      tl.to(gate, { '--hold': skipped ? 0 : 1, duration: 0.15 }, 0)
-        .to(gate.querySelectorAll('.gate-center, .gate-checks'), { y: reduced ? 0 : '45vh', opacity: 0, duration: 1.1, ease: 'power3.in' }, 0.05)
-        .to(gate.querySelectorAll('.gate-top, .gate-bottom'), { opacity: 0, duration: 0.5 }, 0.1)
-        .to(gate, { opacity: 0, duration: 1.1, ease: 'power2.inOut' }, 0.6)
-        .call(() => gate.classList.remove('is-shaking'), null, 1.1)
-        .call(() => resolve(done(skipped)), null, skipped ? 0.3 : 1.3)
-        .call(() => { gate.hidden = true; }, null, 1.7); // gone as soon as it's faded, so it can't swallow taps
+      play();
     };
 
-    btn.addEventListener('pointerdown', (e) => { e.preventDefault(); btn.setPointerCapture?.(e.pointerId); press(); });
-    btn.addEventListener('pointerup', release);
-    btn.addEventListener('pointercancel', release);
-    btn.addEventListener('contextmenu', (e) => e.preventDefault());
-    // Keyboard: hold Space or Enter. Escape skips.
-    const onKey = (e) => {
-      if (launched) return document.removeEventListener('keydown', onKey), document.removeEventListener('keyup', onKey);
-      if (e.key === 'Escape') { sound.unlock(); return launch(true); }
-      if (e.key !== ' ' && e.key !== 'Enter') return;
-      if (e.target.closest('.gate-bottom')) return; // let those buttons work normally
-      e.preventDefault();
-      if (e.type === 'keydown' && !e.repeat) press();
-      if (e.type === 'keyup') release();
-    };
+    function onKey(e) {
+      if (e.key === 'Escape') return started ? skip() : enter(false);
+      if (e.key === 'Enter' && !started && !e.target.closest('button')) enter(true);
+    }
     document.addEventListener('keydown', onKey);
-    document.addEventListener('keyup', onKey);
-    skipBtn.addEventListener('click', () => { sound.unlock(); launch(true); });
+    $('[data-enter="sound"]').addEventListener('click', () => enter(true));
+    $('[data-enter="silent"]').addEventListener('click', () => enter(false));
+    skipBtn.addEventListener('click', skip);
   });
 }
