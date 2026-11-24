@@ -228,9 +228,9 @@ addEventListener('keydown', (e) => {
   toggleSound();
 });
 addEventListener('pointerdown', () => sound.unlock(), { passive: true });
-addEventListener('pointerup', () => sound.unlock(), { passive: true }); // touch only counts as a user gesture on lift
+// touch only counts as a user gesture on lift, so listen to every event that can unlock audio
+for (const ev of ['pointerup', 'click', 'touchend']) addEventListener(ev, () => sound.unlock(), { passive: true });
 addEventListener('keydown', () => sound.unlock());
-document.addEventListener('visibilitychange', () => { if (launched && sound.enabled) sound.ambient(!document.hidden); });
 
 let hoverEl = null;
 const reticle = $('.reticle');
