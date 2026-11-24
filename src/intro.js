@@ -31,6 +31,17 @@ export function runIntro({ sound, sceneReady, reduced }) {
   const lowPower = !matchMedia('(hover: hover) and (pointer: fine)').matches || (navigator.hardwareConcurrency || 8) <= 4;
   const film = createFilm(canvas, { lowPower });
 
+  // the real 3D launch loads and compiles while the visitor reads the gate; if WebGL can't, the 2D rocket stands in
+  const canvas3d = $('.launch3d');
+  let launch3d = null, has3D = false;
+  if (!reduced && canvas3d) {
+    import('./launch3d.js')
+      .then((m) => m.createLaunch3D(canvas3d, { lowPower }))
+      .then((api) => { launch3d = api; })
+      .catch((err) => console.warn('3D launch unavailable, using the 2D one.', err));
+  }
+  const drop3d = () => { if (launch3d) { launch3d.dispose(); launch3d = null; } has3D = false; canvas3d?.remove(); };
+
   let scene = null, started = false, revealed = false, idle = 0, tl = null;
   sceneReady.then((s) => { scene = s; if (s) s.setIntro(revealed ? 1 : 0); });
 
@@ -45,7 +56,13 @@ export function runIntro({ sound, sceneReady, reduced }) {
     const setIris = () => gate.style.setProperty('--iris', `${iris.r.toFixed(1)}px`);
 
     const frame = (t) => {
-      film.draw(t, iris.r);
+      if (has3D) {
+        if (t < 8.2) {
+          launch3d.render(Math.max(t, 2.2));
+          canvas3d.style.opacity = Math.min(1, Math.max(0, (t - 2.3) / 0.6)) * (1 - Math.min(1, Math.max(0, (t - 7.5) / 0.6)));
+        } else drop3d(); // free the GPU once the launch is over
+      }
+      film.draw(t, iris.r, has3D);
       timeEl.textContent = `AV26 · T+${t.toFixed(1).padStart(4, '0')}`;
       progress.style.transform = `scaleX(${(t / T.end).toFixed(4)})`;
       const c = t < T.launch ? 0 : t < T.orbit ? 1 : t < T.light ? 2 : 3;
@@ -65,6 +82,7 @@ export function runIntro({ sound, sceneReady, reduced }) {
     const finish = () => {
       gate.hidden = true;
       film.dispose();
+      drop3d();
       document.removeEventListener('keydown', onKey);
     };
 
@@ -87,6 +105,7 @@ export function runIntro({ sound, sceneReady, reduced }) {
         .to(card, { autoAlpha: 0, y: -24, duration: 0.5, ease: 'power2.in' }, 0)
         .to([hud, skipBtn], { autoAlpha: 1, duration: 0.6 }, 0.2)
         .call(() => sound.music.cue('depart'), null, 0)
+        .call(() => { has3D = !!launch3d; }, null, 2.1) // decided once, before the pad appears
         .call(() => { sound.music.cue('climb'); caption.textContent = ''; }, null, T.launch)
         .call(() => { sound.beep(0); sound.liftoff(); sound.music.setIntensity(0.55, 0.6); }, null, IGN)
         .call(() => sound.stageSep(), null, SEP)
@@ -111,6 +130,7 @@ export function runIntro({ sound, sceneReady, reduced }) {
     const skip = () => {
       if (!tl || revealed) return;
       tl.kill();
+      drop3d();
       sound.music.cue('reveal');
       sound.music.setIntensity(0.35, 3);
       sound.shutter();
