@@ -380,7 +380,13 @@ export function createFilm(canvas, { lowPower = false } = {}) {
     }
   }
 
-  function launch(t, a) {
+  function launch(t, a, has3D) {
+    if (!has3D) launchScene(t, a); // with WebGL the real 3D rocket (launch3d.js) shows instead
+    launchHud(t);
+  }
+
+  // the 2D fallback rocket, pad and smoke
+  function launchScene(t, a) {
     const p = rocketPos(t), gy = baseY() + camPx(t), s = s0();
     const shake = s * 0.07 * seg(t, IGN, IGN + 0.3) * (1 - seg(t, LIFT + 0.5, LIFT + 1.8));
     ctx.save();
@@ -397,7 +403,10 @@ export function createFilm(canvas, { lowPower = false } = {}) {
     smokeAndVapour(t, gy, s, p);
     clouds(t, [[1.2, 0.3, 0.35]]); // one layer passes in front
     ctx.restore();
-    // countdown, telemetry and callouts don't shake
+  }
+
+  // countdown, telemetry and callouts, drawn over either rocket
+  function launchHud(t) {
     for (const [at, n] of COUNT) {
       const k = seg(t, at, at + 0.06) * (1 - seg(t, at + 0.45, at + 0.58));
       if (k > 0) {
@@ -429,10 +438,22 @@ export function createFilm(canvas, { lowPower = false } = {}) {
   }
 
   // after separation the second stage keeps burning toward orbit, shrinking into the stars
-  function upperStage(t) {
+  function upperStage(t, has3D) {
     if (t < SEP) return;
     const a = 1 - seg(t, 9.6, 10.3);
     if (a <= 0) return;
+    if (has3D) {
+      // the 3D view has handed over: the stage is now a far-off light burning toward orbit
+      const k = inOut(seg(t, T.orbit, 10.2)), x = lerp(cx + w * 0.04, cx + w * (narrow ? 0.22 : 0.3), k), y = lerp(h * 0.42, h * 0.16, k);
+      const fade = a * seg(t, T.orbit - 0.1, T.orbit + 0.4);
+      if (fade <= 0) return;
+      const g = ctx.createRadialGradient(x, y, 0, x, y, 14);
+      g.addColorStop(0, `rgba(220,232,255,${fade})`); g.addColorStop(1, 'rgba(170,195,255,0)');
+      ctx.fillStyle = g; ctx.fillRect(x - 14, y - 14, 28, 28);
+      ctx.strokeStyle = `rgba(169,203,236,${0.35 * fade})`; ctx.lineWidth = 1.2;
+      ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x - (narrow ? 30 : 60), y + (narrow ? 26 : 50)); ctx.stroke();
+      return;
+    }
     let p = rocketPos(Math.min(t, T.orbit));
     if (t > T.orbit) {
       const k = inOut(seg(t, T.orbit, 10.2)), q = p;
@@ -605,15 +626,17 @@ export function createFilm(canvas, { lowPower = false } = {}) {
       stars(now, 0.5);
       chart(now, 0.7, true);
     },
-    draw(t, irisR = 0) {
+    // has3D: the WebGL launch layer is showing chapter two underneath this canvas
+    draw(t, irisR = 0, has3D = false) {
       ctx.clearRect(0, 0, w, h);
       const L = seg(t, 2.3, 2.9) * (1 - seg(t, 7.5, 8.1)); // the launch scene is on screen
-      if (L > 0) skyFill(t, L);
-      stars(t, t < T.launch ? 0.3 * (1 - seg(t, 2.2, 2.7)) : t < T.orbit ? lerp(0.2, 1, seg(t, 5.6, 7.4)) : 1 - seg(t, T.light, T.light + 1) * 0.5);
+      if (L > 0 && !has3D) skyFill(t, L);
+      const launchStars = has3D ? seg(t, 7.5, 8.1) : lerp(0.2, 1, seg(t, 5.6, 7.4)); // the 3D sky has its own stars
+      stars(t, t < T.launch ? 0.3 * (1 - seg(t, 2.2, 2.7)) : t < T.orbit ? launchStars : 1 - seg(t, T.light, T.light + 1) * 0.5);
       radar(t, 1 - seg(t, 2.3, 2.8));
-      if (L > 0) launch(t, L);
+      if (L > 0) launch(t, L, has3D);
       limb(t);
-      upperStage(t);
+      upperStage(t, has3D);
       chart(t, seg(t, 8.4, 9.2) * (1 - seg(t, T.light, T.light + 0.7)), false);
       banners(t);
       nameStars(t);
