@@ -4,6 +4,8 @@ import { getIss } from './api/iss.js';
 export default defineConfig({
   build: {
     target: 'es2020',
+    // keep every font a real file: the CSP (font-src 'self') blocks inlined data: fonts
+    assetsInlineLimit: 0,
   },
   plugins: [
     {
