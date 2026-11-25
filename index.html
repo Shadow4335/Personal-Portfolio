@@ -64,7 +64,6 @@
 
   <!-- ── OPENING: sound gate, then the film (src/intro.js + src/film.js) ── -->
   <div class="gate" role="dialog" aria-modal="true" aria-labelledby="gate-title" aria-describedby="gate-desc">
-    <canvas class="launch3d" aria-hidden="true"></canvas>
     <canvas class="film" aria-hidden="true"></canvas>
 
     <div class="gate-card">
@@ -78,7 +77,7 @@
       </svg>
       <p class="gate-eyebrow mono">Arnav Verma · Flight AV26</p>
       <p id="gate-title" class="gate-title">This one&rsquo;s better with sound.</p>
-      <p id="gate-desc" class="gate-desc">Thirteen seconds from the launch pad to the stars, then the portfolio. You can skip it any time.</p>
+      <p id="gate-desc" class="gate-desc">Twelve seconds from a terminal prompt to the stars, then the portfolio. You can skip it any time.</p>
       <div class="gate-actions">
         <button type="button" class="btn btn-solid" data-enter="sound">Enter with sound</button>
         <button type="button" class="btn btn-line" data-enter="silent">Enter silently</button>
@@ -88,9 +87,9 @@
 
     <div class="film-hud" aria-hidden="true">
       <div class="hud-top mono">
-        <span class="hud-chapter">01 — Departure</span>
+        <span class="hud-chapter">01 — Boot</span>
         <span class="hud-bars"><i></i><i></i><i></i><i></i></span>
-        <span class="hud-time">AV26 · T+00.0</span>
+        <span class="hud-time">AV26 · ALT 0 M</span>
       </div>
       <p class="hud-caption mono"></p>
       <i class="hud-progress"></i>
@@ -556,7 +555,7 @@
   <footer class="foot">
     <div class="wrap foot-in mono">
       <p class="foot-sky js-only"><span class="foot-time">Faridabad</span> · <span class="foot-moon">Moon</span></p>
-      <p>Designed and built by Arnav Verma, 2026. The stars are procedural; the ISS is real. Saturn V model: <a href="https://science.nasa.gov/3d-resources/saturn-v/" target="_blank" rel="noopener">NASA 3D Resources</a>.</p>
+      <p>Designed and built by Arnav Verma, 2026. The stars are procedural; the ISS is real.</p>
       <a href="#top" class="to-top">Return to orbit ↑</a>
     </div>
   </footer>

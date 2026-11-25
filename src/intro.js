@@ -1,16 +1,15 @@
 import { gsap } from 'gsap';
-import { createFilm, T, SWEEP_PERIOD, IGN, LIFT, CUTOFF, SEP, S2, COUNT, CALLOUTS, met, clock } from './film.js';
+import { createFilm, T, PROMPT, TYPE_AT, BOOT, SPOOL, CALLOUTS, altKm, fmtAlt } from './film.js';
 
-const CHAPTERS = ['01 — Go for launch', '02 — Liftoff', '03 — Orbit', '04 — First light'];
+const CHAPTERS = ['01 — Boot', '02 — Takeoff', '03 — Climb', '04 — First light'];
 const LINES = [
-  [0.3, 1.0, 'RANGE › AV26, weather is go, range is green. You are go for launch.', true],
-  [1.5, 0.7, 'AV26 › Copy, go for launch.', true],
-  [8.1, 1.1, 'Above 100 km the sky stays black, even at noon.'],
-  [9.4, 1.0, 'Orion. Follow the belt down and you hit Sirius, the brightest star in the night sky.'],
+  [2.85, 0.9, 'TOWER › AV26, runway 26, wind 260 at 8, cleared for takeoff.', true],
+  [3.85, 0.6, 'AV26 › Cleared for takeoff, AV26.', true],
+  [6.2, 0.9, 'Airliners cruise around 11 km. We keep climbing.'],
+  [7.55, 0.9, 'Above 100 km the sky stays black, even at noon.'],
 ];
-const PING_BEARINGS = [40, 205, 300]; // radar blips the sweep crosses before the radar fades
 
-// Sound gate, then a 13-second film (film.js paints it), then a telescope-aperture iris onto the site.
+// Sound gate, then a 12-second film (film.js paints it), then a telescope-aperture iris onto the site.
 // Resolves when the site should start revealing; `quick` means no film was shown.
 export function runIntro({ sound, sceneReady, reduced }) {
   const gate = document.querySelector('.gate');
@@ -31,17 +30,6 @@ export function runIntro({ sound, sceneReady, reduced }) {
   const lowPower = !matchMedia('(hover: hover) and (pointer: fine)').matches || (navigator.hardwareConcurrency || 8) <= 4;
   const film = createFilm(canvas, { lowPower });
 
-  // the real 3D launch loads and compiles while the visitor reads the gate; if WebGL can't, the 2D rocket stands in
-  const canvas3d = $('.launch3d');
-  let launch3d = null, has3D = false;
-  if (!reduced && canvas3d) {
-    import('./launch3d.js')
-      .then((m) => m.createLaunch3D(canvas3d, { lowPower }))
-      .then((api) => { launch3d = api; })
-      .catch((err) => console.warn('3D launch unavailable, using the 2D one.', err));
-  }
-  const drop3d = () => { if (launch3d) { launch3d.dispose(); launch3d = null; } has3D = false; canvas3d?.remove(); };
-
   let scene = null, started = false, revealed = false, idle = 0, tl = null;
   sceneReady.then((s) => { scene = s; if (s) s.setIntro(revealed ? 1 : 0); });
 
@@ -56,16 +44,10 @@ export function runIntro({ sound, sceneReady, reduced }) {
     const setIris = () => gate.style.setProperty('--iris', `${iris.r.toFixed(1)}px`);
 
     const frame = (t) => {
-      if (has3D) {
-        if (t < 8.2) {
-          launch3d.render(Math.max(t, 2.2));
-          canvas3d.style.opacity = Math.min(1, Math.max(0, (t - 2.3) / 0.6)) * (1 - Math.min(1, Math.max(0, (t - 7.5) / 0.6)));
-        } else drop3d(); // free the GPU once the launch is over
-      }
-      film.draw(t, iris.r, has3D);
-      timeEl.textContent = `AV26 · ${clock(met(t))}`; // mission clock, in step with the countdown and callouts
+      film.draw(t, iris.r);
+      timeEl.textContent = `AV26 · ALT ${fmtAlt(altKm(t))}`; // same altitude the HUD ladder shows
       progress.style.transform = `scaleX(${(t / T.end).toFixed(4)})`;
-      const c = t < T.launch ? 0 : t < T.orbit ? 1 : t < T.light ? 2 : 3;
+      const c = t < T.roll ? 0 : t < T.rotate ? 1 : t < T.light ? 2 : 3;
       if (c !== chapter) {
         chapter = c;
         chapterEl.textContent = CHAPTERS[c];
@@ -82,7 +64,6 @@ export function runIntro({ sound, sceneReady, reduced }) {
     const finish = () => {
       gate.hidden = true;
       film.dispose();
-      drop3d();
       document.removeEventListener('keydown', onKey);
     };
 
@@ -105,14 +86,10 @@ export function runIntro({ sound, sceneReady, reduced }) {
         .to(card, { autoAlpha: 0, y: -24, duration: 0.5, ease: 'power2.in' }, 0)
         .to([hud, skipBtn], { autoAlpha: 1, duration: 0.6 }, 0.2)
         .call(() => sound.music.cue('depart'), null, 0)
-        .call(() => { has3D = !!launch3d; }, null, 2.1) // decided once, before the pad appears
-        .call(() => { sound.music.cue('climb'); caption.textContent = ''; }, null, T.launch)
-        .call(() => { sound.beep(0); sound.liftoff(CUTOFF - IGN); sound.music.setIntensity(0.5, 0.6); }, null, IGN) // roar runs until engine cutoff
-        .call(() => sound.boom(), null, LIFT)
-        .call(() => sound.stageSep(), null, SEP)
-        .call(() => sound.vacBurn(0.9), null, S2)
-        .call(() => { sound.music.cue('orbit'); sound.music.setIntensity(1, 1.5); sound.whoosh(); }, null, T.orbit)
-        .call(() => sound.sparkle(), null, 9.35)
+        .call(() => sound.jet(T.space - SPOOL), null, SPOOL) // spool-up, takeoff roar, then it thins out with the air
+        .call(() => { sound.beep(0); sound.music.cue('climb'); sound.music.setIntensity(0.5, 0.6); }, null, T.roll - 0.25)
+        .call(() => sound.whoosh(), null, 5.5) // through the clouds
+        .call(() => { sound.music.cue('orbit'); sound.music.setIntensity(1, 1.5); sound.sparkle(); }, null, T.space)
         .call(() => { caption.textContent = ''; }, null, T.light)
         .call(() => { sound.music.cue('reveal'); sound.hit(); }, null, T.hit)
         .to(hud, { autoAlpha: 0, duration: 0.5 }, T.iris - 0.3)
@@ -120,9 +97,9 @@ export function runIntro({ sound, sceneReady, reduced }) {
         .call(() => { sound.shutter(); sound.whoosh(); sound.music.setIntensity(0.35, 4); gate.classList.add('is-iris'); }, null, T.iris)
         .to(iris, { r: irisMax(), duration: T.end - T.iris, ease: 'power3.inOut', onUpdate: setIris }, T.iris)
         .call(reveal, null, T.iris + 0.4);
-      PING_BEARINGS.forEach((b) => tl.call(() => sound.radarPing(), null, (b / 360) * SWEEP_PERIOD));
-      COUNT.forEach(([at, n]) => tl.call(() => sound.beep(Number(n)), null, at));
-      CALLOUTS.forEach(([at]) => tl.call(() => sound.callout(), null, at));
+      for (let i = 0; i < PROMPT.length; i++) tl.call(() => sound.typeTick(), null, TYPE_AT[0] + ((TYPE_AT[1] - TYPE_AT[0]) * i) / PROMPT.length);
+      BOOT.forEach(([at]) => tl.call(() => sound.click(), null, at));
+      CALLOUTS.forEach(([at]) => tl.call(() => sound.beep(1), null, at));
       LINES.forEach(([at, dur, text, radio]) => tl.call(() => { tl.add(type(text, dur, radio), at); }, null, at));
       // the 3D sky climbs into its hero framing behind the film, ready for the iris
       const p = { v: 0 };
@@ -132,7 +109,6 @@ export function runIntro({ sound, sceneReady, reduced }) {
     const skip = () => {
       if (!tl || revealed) return;
       tl.kill();
-      drop3d();
       sound.music.cue('reveal');
       sound.music.setIntensity(0.35, 3);
       sound.shutter();

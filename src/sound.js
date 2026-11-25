@@ -328,63 +328,45 @@ export const sound = {
       tone('square', 1200, 700, 0.03, db(-32));
     });
   },
-  radarPing() { fx(0.8, () => tone('sine', 1200, 1180, 0.7, db(-17), 0, [reverb], 0.004)); },
   typeTick() {
     const now = performance.now();
     if (now - lastTick < 35) return;
     lastTick = now;
     fx(0.012, () => noise('white', 'highpass', 3200, 3200, 0.7, 0.01, db(-30), 0, 0.2));
   },
-  callout() { // cockpit chime: ding-dong
-    fx(0.6, () => {
-      tone('sine', 988, 988, 0.45, db(-16), 0, [reverb]);
-      tone('triangle', 988, 988, 0.3, db(-26));
-      tone('sine', 740, 740, 0.55, db(-16), 0.16, [reverb]);
-      tone('triangle', 740, 740, 0.35, db(-26), 0.16);
-    });
-  },
-  beep(i) { // countdown: 3, 2, 1 short; 0 = ignition, longer and higher
+  beep(i) { // 0 = cleared for takeoff, longer and higher; anything else = a short cockpit callout tone
     if (i === 0) fx(0.45, () => tone('sine', 1480, 1480, 0.42, db(-15), 0, [reverb]));
     else fx(0.15, () => tone('sine', 988, 988, 0.13, db(-15)));
   },
-  // ignition to engine cutoff: the roar holds for `dur` seconds, then stops sharply, as engines do
-  liftoff(dur = 2.25) {
+  // jet takeoff over `dur` seconds: turbine whine spooling up, the roar of the roll, then it thins out as the air does
+  jet(dur = 5) {
     try {
       if (!ready()) return;
-      const t = ctx.currentTime;
-      const layer = (kind, type, f0, f1, q, level, attack) => {
-        const s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
-        s.buffer = noiseBuf(kind); s.loop = true;
-        f.type = type; f.Q.value = q;
-        f.frequency.setValueAtTime(f0, t); f.frequency.exponentialRampToValueAtTime(f1, t + Math.min(1.2, dur));
+      const t = ctx.currentTime, end = t + dur;
+      const out = (node, level, attack, hold) => {
+        const g = ctx.createGain();
         g.gain.setValueAtTime(0.0001, t);
         g.gain.exponentialRampToValueAtTime(level, t + attack);
-        g.gain.setValueAtTime(level, t + dur);
-        g.gain.exponentialRampToValueAtTime(0.0001, t + dur + 0.3);
-        s.connect(f).connect(g).connect(sfx);
-        s.start(t, Math.random()); s.stop(t + dur + 0.4);
+        g.gain.setValueAtTime(level, t + hold);
+        g.gain.exponentialRampToValueAtTime(0.0001, end);
+        node.connect(g).connect(sfx);
       };
-      layer('brown', 'lowpass', 220, 1200, 0.7, db(-8), 0.35);   // body of the roar
-      layer('pink', 'bandpass', 600, 1600, 0.9, db(-15), 0.4);    // presence, so small speakers carry it
-      layer('crackle', 'bandpass', 1500, 1100, 1.2, db(-10), 0.5); // the famous Saturn crackle
+      const roar = (kind, type, f0, f1, q, level) => {
+        const s = ctx.createBufferSource(), f = ctx.createBiquadFilter();
+        s.buffer = noiseBuf(kind); s.loop = true;
+        f.type = type; f.Q.value = q;
+        f.frequency.setValueAtTime(f0, t); f.frequency.exponentialRampToValueAtTime(f1, t + dur * 0.45);
+        s.connect(f); out(f, level, dur * 0.25, dur * 0.5);
+        s.start(t, Math.random()); s.stop(end + 0.05);
+      };
+      roar('brown', 'lowpass', 180, 900, 0.7, db(-10));
+      roar('pink', 'bandpass', 500, 1500, 0.9, db(-16));
+      const o = ctx.createOscillator(), lp = ctx.createBiquadFilter();
+      o.type = 'sawtooth'; lp.type = 'lowpass'; lp.frequency.value = 3200;
+      o.frequency.setValueAtTime(220, t); o.frequency.exponentialRampToValueAtTime(1900, t + dur * 0.35);
+      o.connect(lp); out(lp, db(-30), dur * 0.12, dur * 0.4);
+      o.start(t); o.stop(end + 0.05);
     } catch { /* ignore */ }
-  },
-  boom() { // hold-down release at liftoff: a deep thump with a short rumble tail
-    fx(1.2, () => {
-      tone('sine', 110, 40, 0.9, db(-8));
-      tone('triangle', 220, 70, 0.4, db(-15));
-      noise('brown', 'lowpass', 500, 150, 0.7, 0.9, db(-11), 0, 0.02, [reverb]);
-    });
-  },
-  vacBurn(dur = 0.9) { // second stage in near-vacuum: a thin, airy hiss rather than a roar
-    fx(dur + 0.3, () => noise('pink', 'bandpass', 2200, 1400, 0.8, dur, db(-19), 0, 0.3, [reverb]));
-  },
-  stageSep() { // pyro bolts: a hard knock, a hiss of thrusters
-    fx(1.0, () => {
-      tone('sine', 190, 60, 0.28, db(-11));
-      noise('white', 'bandpass', 1300, 600, 1.1, 0.25, db(-15), 0, 0.03, [reverb]);
-      noise('white', 'highpass', 4200, 3000, 0.7, 0.8, db(-26), 0.15, 0.2);
-    });
   },
   whoosh() {
     fx(1.2, () => {
